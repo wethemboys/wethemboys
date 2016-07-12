@@ -309,8 +309,9 @@ label {
 <script>
 $("#actstartdate").datepicker({dateFormat:'yy-mm-dd'});
 $("#actenddate").datepicker({dateFormat:'yy-mm-dd'});
-$("#prjstartdate").datepicker({dateFormat:'yy-mm-dd'});
+$("#prjstartdate").datepicker({dateFormat:'yy-mm-dd',minDate:0});
 $("#prjenddate").datepicker({dateFormat:'yy-mm-dd'});
+//$("#prjenddate").datepicker('disable');
 
 function getCompleteType(type) {
 	switch (type) {
