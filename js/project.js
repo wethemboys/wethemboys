@@ -323,7 +323,7 @@ function displayTaskTemplate( startdate, taskJson )
        var manpowerText = '';
 
        $.each(task.manpower, function(ind, manpower){
-           manpowerText = manpowerText + ' ' + manpower.quantity + 'pcs. ' + manpower.name + '<br/>';
+           manpowerText = manpowerText + ' ' + manpower.quantity + ' ' + manpower.name + '<br/>';
        });
 
        var materialText = '';
