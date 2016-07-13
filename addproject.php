@@ -12,6 +12,7 @@ if (!isset($_SESSION["theuser"])) {
 <link href="bootstrap-3.3.6-dist/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 <link href="js/jquery-ui-1.11.4.custom/jquery-ui.css" type="text/css" rel="stylesheet" />
 <script src="js/jquery.min.js"></script>
+<script src="js/project.js"></script>
 <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
 <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
@@ -118,6 +119,26 @@ label {
 	padding-top:2px;
 	padding-bottom:2px;
 }
+.row_activity{
+    border-top: 1px #c6c6c6 solid;
+}
+.col_activity{
+    width: 9%;
+}
+.col_task_name{
+    width: 10%;
+}
+.col_days{
+    width: 5%;
+}
+.col_start_date, .col_end_date{
+    width: 8%;
+}
+.col_manpower, .col_material{
+    width: 30%;
+}
+
+
 </style>
 </head>
 <body>
@@ -165,16 +186,19 @@ label {
 </div>
 
 <div style="margin-top:10px;width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-width:1px;border-color:#c6c6c6;min-height:300px;">
-<span style="font-size:18px;font-weight:lighter;">Project Activities</span><button class="btn btn-sm btn-warning" style="margin-left:10px;" onclick="addAct()"><span class="glyphicon glyphicon-plus"></span> Add Activity</button>
+<span style="font-size:18px;font-weight:lighter;">Project Activities</span>
+<!--<button class="btn btn-sm btn-warning" style="margin-left:10px;" onclick="addAct()"><span class="glyphicon glyphicon-plus"></span> Add Activity</button>-->
 <hr style="margin-top:5px;margin-bottom:5px;"/>
 <table class="project_table" style="width:100%;">
 <thead>
 <tr>
-<th>Activity</th>
-<th>Duration</th>
-<th>Start Date</th>
-<th>End Date</th>
-<th>Options</th>
+<th class = 'col_activity'>Activity</th>
+<th class = 'col_task_name'>Task Name</th>
+<th class = 'col_days'>Days</th>
+<th class = 'col_start_date'>Start Date</th>
+<th class = 'col_end_date'>End Date</th>
+<th class = 'col_manpower'>Manpower</th>
+<th class = 'col_material'>Materials</th>
 </tr>
 </thead>
 <tbody id="activityview">
@@ -309,9 +333,9 @@ label {
 <script>
 $("#actstartdate").datepicker({dateFormat:'yy-mm-dd'});
 $("#actenddate").datepicker({dateFormat:'yy-mm-dd'});
-$("#prjstartdate").datepicker({dateFormat:'yy-mm-dd'});
+$("#prjstartdate").datepicker({dateFormat:'yy-mm-dd',minDate: 0});
 $("#prjenddate").datepicker({dateFormat:'yy-mm-dd'});
-
+$("#prjenddate").datepicker('disable');
 function getCompleteType(type) {
 	switch (type) {
 		case "admin":
@@ -706,8 +730,13 @@ $("#addprjbtn").on("click", function() {
 
 });
 
- $("#prjname, #prjstartdate, #prjenddate").on("change", function() {
+ $("#prjname, #prjenddate").on("change", function() {
  	drawChart();
+ });
+ 
+  $("#prjstartdate").on("change", function() {
+ 	populateProjectTemplate($(this).val());
+        drawChart();
  });
 </script>
 <script type="text/javascript">
@@ -731,30 +760,50 @@ $("#addprjbtn").on("click", function() {
 
 		      theRow = [];
 		      mainRow = [
-		      	"mainproj",
-		  		"[Project] " + $("#prjname").val(),
+                                "mainproj",
+		  		"Project " + $("#prjname").val(),
 		  		new Date($("#prjstartdate").val()),
 		  		new Date($("#prjenddate").val()),
 		  		parseInt(getDaysBetweenDates($("#prjstartdate").val(), $("#prjenddate").val())),
 		  		0,
 		  		null
 		      ];
-		      theRow.push(mainRow);
-		      for (var c = 0; c < ActList.length; c++) {
-		      	theRow.push([
+		      
+                      var c = 1;
+                      $('.row_activity').each(function(){
+                        var dataParameters = JSON.parse($(this).data('parameters'));
+//                        console.log(dataParameters);
+//                        console.log(dataParameters.startdate);
+                        theRow.push([
 		      		c+"act",
-		      		"[Activity] " + ActList[c]["name"],
-		      		new Date(ActList[c]["startdate"]),
-		      		new Date(ActList[c]["enddate"]),
-		      		parseInt(getDaysBetweenDates(ActList[c]["startdate"], ActList[c]["enddate"])),
+		      		"[Activity] " + dataParameters.name,
+		      		new Date(dataParameters.startdate),
+		      		new Date(dataParameters.enddate),
+		      		parseInt(getDaysBetweenDates(dataParameters.startdate, dataParameters.enddate)),
 		      		0,
 		      		null
 		      	]);
-		      }
+                        c++;
+                      });
+                      
+//		      for (var c = 0; c < ActList.length; c++) {
+//                          console.log(ActList[c]["startdate"]);
+//		      	theRow.push([
+//		      		c+"act",
+//		      		"[Activity] " + ActList[c]["name"],
+//		      		new Date(ActList[c]["startdate"]),
+//		      		new Date(ActList[c]["enddate"]),
+//		      		parseInt(getDaysBetweenDates(ActList[c]["startdate"], ActList[c]["enddate"])),
+//		      		0,
+//		      		null
+//		      	]);
+//		      }
 		      data.addRows(theRow);
 
 		      var options = {
-		      	 height: 275
+		      	 height: 500,
+//                         sortAscending: false
+                         sortColumn: 0
 		      };
 
 		      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
