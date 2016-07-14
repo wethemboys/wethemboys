@@ -284,12 +284,12 @@ function displayProjectTemplate( startdate, templateJson )
     $('#activityview').html('');
     $.each(templateJson, function(i, activities){
        $('#activityview').append("<tr class= 'row_activity activity_"+ i+"'><th colspan='7'>"+activities.name +"</th></tr>");
-       var parameterData = displayTaskTemplate( startdate, activities.tasks );
+       var parameterData = displayTaskTemplate( startdate, activities.tasks,i ,activities.name);
        
        parameterData.startdate = parameterData.startdate.toChartFormat();
        parameterData.enddate= parameterData.enddate.toChartFormat();
        parameterData.name = activities.name;
-       $('.activity_'+ i ).data('parameters',JSON.stringify(parameterData));
+       $('.row_activity.activity_'+ i ).data('parameters',JSON.stringify(parameterData));
     });
 
         var baseDate = new Date(startdate );
@@ -297,7 +297,7 @@ function displayProjectTemplate( startdate, templateJson )
         end.setDate(baseDate.getDate() + parseInt(templateJson[8].tasks[0].end)); 
         $('#prjenddate').datepicker('setDate', end);
 }
-function displayTaskTemplate( startdate, taskJson )
+function displayTaskTemplate( startdate, taskJson, activity_id, activities_name )
 {
     var parameterData = new Object();
     var initialize =0;
@@ -330,7 +330,15 @@ function displayTaskTemplate( startdate, taskJson )
        $.each(task.material, function(index, material){
            materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
        });
-       $('#activityview').append("<tr><td></td><td>"+ task.name+"</td> <td>"+ task.days+"</td><td>"+ start.toInputFormat()+"</td><td>"+ end.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+       $('#activityview').append("<tr class='activity_"+activity_id+" row_task'><td></td><td>"+ task.name+"</td> <td>"+ task.days+"</td><td>"+ start.toInputFormat()+"</td><td>"+ end.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+       var taskData = new Object();
+       taskData.from = start.toChartFormat();
+       taskData.to= end.toChartFormat();
+       taskData.label = task.name;
+       taskData.activity = activities_name;
+
+
+       $('#activityview').find("tr:last").data('parameters',JSON.stringify(taskData));
     });
     return parameterData;
 }

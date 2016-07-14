@@ -12,9 +12,15 @@ if (!isset($_SESSION["theuser"])) {
 <link href="bootstrap-3.3.6-dist/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 <link href="js/jquery-ui-1.11.4.custom/jquery-ui.css" type="text/css" rel="stylesheet" />
 <script src="js/jquery.min.js"></script>
+<script src="js/drawChart.js"></script>
 <script src="js/project.js"></script>
 <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+<script src="js/jquery.fn.gantt.js"></script>
+<link href="http://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" rel="stylesheet" type="text/css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+<link href="css/gantt.css" type="text/css" rel="stylesheet" />
+
 <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
 <style>
 .notif_table, th td {
@@ -26,7 +32,13 @@ if (!isset($_SESSION["theuser"])) {
    padding:5px;
    cursor:pointer;
 }
-
+.fn-gantt *,
+.fn-gantt *:after,
+.fn-gantt *:before {
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
 .project_table > tbody > tr > td {
 	padding:5px;
 }
@@ -209,7 +221,7 @@ label {
 <div style="margin-top:10px;width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-width:1px;border-color:#c6c6c6;">
 <span style="font-size:18px;font-weight:lighter;">Gantt Preview</span>
 <hr style="margin-top:5px;margin-bottom:5px;"/>
-<div id="chart_div" style="width:100%;min-height:300px;"></div>
+<div id="chart_div" ></div>
 </div>
 
 <div style="width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-color:#c6c6c6;border-width:1px;margin-top:10px;">
@@ -740,14 +752,14 @@ $("#addprjbtn").on("click", function() {
  });
 </script>
 <script type="text/javascript">
-    google.charts.load('current', {'packages':['gantt']});
-    google.charts.setOnLoadCallback(drawChart);
+//    google.charts.load('current', {'packages':['gantt']});
+//    google.charts.setOnLoadCallback(drawChart);
 
     function daysToMilliseconds(days) {
       return days * 24 * 60 * 60 * 1000;
     }
 
-    function drawChart() {
+    function drawChart2() {
 	    if ($("#prjname").val() !== "" && $("#prjstartdate").val() !== "" && $("#prjenddate").val() !== "") {
 		      var data = new google.visualization.DataTable();
 		      data.addColumn('string', 'Task ID');
@@ -785,24 +797,10 @@ $("#addprjbtn").on("click", function() {
 		      	]);
                         c++;
                       });
-                      
-//		      for (var c = 0; c < ActList.length; c++) {
-//                          console.log(ActList[c]["startdate"]);
-//		      	theRow.push([
-//		      		c+"act",
-//		      		"[Activity] " + ActList[c]["name"],
-//		      		new Date(ActList[c]["startdate"]),
-//		      		new Date(ActList[c]["enddate"]),
-//		      		parseInt(getDaysBetweenDates(ActList[c]["startdate"], ActList[c]["enddate"])),
-//		      		0,
-//		      		null
-//		      	]);
-//		      }
 		      data.addRows(theRow);
 
 		      var options = {
 		      	 height: 500,
-//                         sortAscending: false
                          sortColumn: 0
 		      };
 
@@ -811,6 +809,7 @@ $("#addprjbtn").on("click", function() {
 		      chart.draw(data, options);
 	    }
     }
+    
 </script>
 </body>
 </html>
