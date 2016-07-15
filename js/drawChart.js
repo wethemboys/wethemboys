@@ -21,7 +21,7 @@ function drawChart(){
             from = new Date(dataParameters.from).getTime();
             values.from ="/Date("+from+")/";
             var baseTo = new Date(dataParameters.to );
-            baseTo.setDate(baseTo.getDate() + 3); 
+            baseTo.setDate(baseTo.getDate() + 2); 
             to = baseTo.getTime();
             values.to ="/Date("+to+")/";
             values.label= dataParameters.label;
@@ -38,7 +38,7 @@ function drawChart(){
             values = new Object();
             
             var baseFrom = new Date(dataParameters.from );
-            baseFrom.setDate(baseFrom.getDate() ); 
+            baseFrom.setDate(baseFrom.getDate() +1); 
             from = baseFrom.getTime();
             values.from ="/Date("+from+")/";
             
@@ -66,7 +66,7 @@ function drawChart(){
             values.from ="/Date("+from+")/";
             
             var baseTo = new Date(dataParameters.to );
-            baseTo.setDate(baseTo.getDate() + 3); 
+            baseTo.setDate(baseTo.getDate() + 2); 
             to = baseTo.getTime();
             values.to ="/Date("+to+")/";
             values.label= 'Latest Finish';

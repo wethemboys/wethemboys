@@ -325,17 +325,19 @@ function displayTaskTemplate( startdate, taskJson, activity_id, activities_name 
        $.each(task.manpower, function(ind, manpower){
            manpowerText = manpowerText + ' ' + manpower.quantity + ' ' + manpower.name + '<br/>';
        });
-
-       var materialText = '';
-       $.each(task.material, function(index, material){
-           materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
-       });
-       $('#activityview').append("<tr class='activity_"+activity_id+" row_task'><td></td><td>"+ task.name+"</td> <td>"+ task.days+"</td><td>"+ start.toInputFormat()+"</td><td>"+ end.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
        var taskData = new Object();
        taskData.from = start.toChartFormat();
        taskData.to= end.toChartFormat();
        taskData.label = task.name;
        taskData.activity = activities_name;
+       
+       end.setDate(end.getDate() + 2); 
+       var materialText = '';
+       $.each(task.material, function(index, material){
+           materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
+       });
+       $('#activityview').append("<tr class='activity_"+activity_id+" row_task'><td></td><td>"+ task.name+"</td> <td>"+ task.days+"</td><td>"+ start.toInputFormat()+"</td><td>"+ end.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+
 
 
        $('#activityview').find("tr:last").data('parameters',JSON.stringify(taskData));
