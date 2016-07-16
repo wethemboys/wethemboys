@@ -223,7 +223,7 @@ if (!isset($_SESSION["theuser"])) {
                                 <option value="3storeybuilding">3 Storey Building</option>
                             </select></td>
                     </tr>
-                    <input type="text" id="hiddenactivityid" value="0"/>
+                    <input type="hidden" id="hiddenactivityid" value="0"/>
                 </table>
             </div>
 
