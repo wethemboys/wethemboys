@@ -202,20 +202,12 @@ if (!isset($_SESSION["theuser"])) {
                 <table class="table_form">
                     <tr>
                         <td><label>Project Name:</label></td><td><input id="prjname" type="text" style="width:200px;margin-left:5px;" /></td>
-                    </tr>
-                    <tr>
+
                         <td><label>Project Location:</label></td><td><input id="prjlocation" type="text" style="width:200px;margin-left:5px;" /></td>
                     </tr>
-                    <tr>
-                        <td><label>Start Date:</label></td><td><input id="prjstartdate" type="text" style="width:200px;margin-left:5px;" readonly="readonly"/></td>
-                    </tr>
-                    <tr>
-                        <td><label>End Date:</label></td><td><input id="prjenddate" type="text" style="width:200px;margin-left:5px;" /></td>
-                    </tr>
+
                     <tr>
                         <td><label>Client:</label></td><td><select id="prjclient" type="text" style="margin-left:5px;width:200px;"><option value="">-- Select Client --</option></select></td>
-                    </tr>
-                    <tr>
                         <td><label>Project Type:</label></td><td><select id="prjtype" type="text" style="margin-left:5px;width:200px;">
                                 <option value="">-- Select Project Type --</option>
                                 <option value="1storeybuilding">1 Storey Building</option>
@@ -223,7 +215,13 @@ if (!isset($_SESSION["theuser"])) {
                                 <option value="3storeybuilding">3 Storey Building</option>
                             </select></td>
                     </tr>
+                    <tr>
+                        <td><label>Start Date:</label></td><td><input id="prjstartdate" type="text" style="width:200px;margin-left:5px;" readonly="readonly"/></td>
+
+                        <td><label>End Date:</label></td><td><input id="prjenddate" type="text" style="width:200px;margin-left:5px;" /></td>
+                    </tr>
                     <input type="hidden" id="hiddenactivityid" value="0"/>
+                    <input type="hidden" id="hiddeneditactivityid" value=""/>
                 </table>
             </div>
 
@@ -354,6 +352,10 @@ if (!isset($_SESSION["theuser"])) {
                             <tr>
                                 <td><label>Task Name:</label></td><td style="padding-left:5px;"><input id="addtaskname" type="text" style="width:250px;" /></td>
                                 <td><label>Days:</label></td><td style="padding-left:5px;"><input id="adddays" type="text" /></td>
+                            </tr>
+                            <tr>
+                                <td><label>Parent Task:</label></td><td><select id="addparent"  style="margin-left:5px;width:250px;">
+                                    </select></td>
                             </tr>
                             <tr>
                                 <td><label>Start Date:</label></td><td style="padding-left:5px;"><input id="addstartdate" type="text" style="width:250px;" readonly="readonly"/></td>

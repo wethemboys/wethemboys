@@ -1,10 +1,12 @@
 
 
-function populateProjectTemplate(startdate)
+function populateProjectTemplate()
 {
+    startdate = $("#prjstartdate").val();
+    prjtype =$("#prjtype").val();
     var templateJson = {} ;
-    if($("#prjtype").val()){
-        var jsonFilename = 'template/'+ $("#prjtype").val() + '.json';
+    if($("#prjtype").val()&&startdate){
+        var jsonFilename = 'template/'+ prjtype + '.json';
         $.getJSON(jsonFilename, function(json) {
             templateJson = json;
             displayProjectTemplate( startdate, templateJson );
@@ -16,7 +18,9 @@ function displayProjectTemplate( startdate, templateJson )
 {
     $('#activityview').html('');
     $.each(templateJson, function(i, activities){
-       $('#activityview').append("<tr class= 'row_activity activity_"+ i+"'><th colspan='7'>"+activities.name +"</th></tr>");
+       $('#activityview').append("<tr class= 'row_activity activity_"+ i+"'><th colspan='7'>"+activities.name +"\
+        <span style='float:right;'><button class='btn btn-warning btn-xs editactivity'><span class='glyphicon glyphicon-plus'></span> Edit Activity/Task/Items</button>\n\
+                <button class='btn btn-danger btn-xs deleteactivity'><span class='glyphicon glyphicon-remove'></span> Delete Activity</button></span></th></tr>");
        var parameterData = displayTaskTemplate( startdate, activities.tasks,i ,activities.name);
        
        parameterData.startdate = parameterData.startdate.toChartFormat();

@@ -344,13 +344,19 @@ $( document ).ready(function() {
     $("#prjname, #prjenddate").on("change", function () {
         drawChart();
     });
-
+    
+    $("#prjtype").on("change", function () {
+        populateProjectTemplate($(this).val());
+        drawChart();
+    }); 
+    
     $("#prjstartdate").on("change", function () {
         populateProjectTemplate($(this).val());
         drawChart();
     }); 
     
     $("#addtaskbutton").on("click", function () {
+        populateParentDropdown();
         mode = $(this).data('mode');
         if(mode == 'none'){
             $("#addtaskname").val('');
@@ -423,6 +429,18 @@ $( document ).ready(function() {
             end.setDate(end.getDate() + parseInt(taskDay) +2); 
             $('#addenddate').datepicker('setDate', end);
         }   
+    });
+    
+    $(document).on("mouseenter" ,".row_activity",function() {
+        classes = $(this).attr("class");
+        var array = classes.split(' ');
+        $("."+ array[1]).css("background-color", "#efefef");
+    });
+    
+    $(document).on("mouseleave" ,".row_activity",function() {
+        classes = $(this).attr("class");
+        var array = classes.split(' ');
+        $("."+ array[1]).css("background-color", "");
     });
     $(document).on("click" ,".add_row_task",function() {
         $(".add_row_task.selected").removeClass('selected');
@@ -580,13 +598,14 @@ $( document ).ready(function() {
     
     $("#addactbtn").on("click", function () {
         actAddName = $("#actname").val();
-       
         
         if (actAddName !== "" ) {
             if (modalMode == "add") {
                 parameterData = {};
                 rowId = $("#hiddenactivityid").val();
-                var newAcitivity = "<tr class='row_activity activity_"+rowId+"'><th colspan='7'>"+actAddName+"</th></tr>";
+                var newAcitivity = "<tr class='row_activity activity_"+rowId+"'><th colspan='7'>"+actAddName+" \n\
+                <span style='float:right;'><button class='btn btn-warning btn-xs editactivity'><span class='glyphicon glyphicon-plus'></span> Edit Activity/Task/Items</button>\n\
+                <button class='btn btn-danger btn-xs deleteactivity'><span class='glyphicon glyphicon-remove'></span> Delete Activity</button></span></th></tr>";
                 $("#activityview").append(newAcitivity);
                 parameterData.name = actAddName;
                 $('.row_activity.activity_'+ rowId ).data('parameters',JSON.stringify(parameterData));
@@ -612,4 +631,42 @@ $( document ).ready(function() {
             showError("Activity not Added", "Please fill up activity name. (Activity name is required)");
         }
     });
+    $(document).on("click" ,".editactivity",function() {
+        classes = $(this).closest('.row_activity').attr("class");
+        var array = classes.split(' ');
+        modalMode = "edit";
+        $("#addActivityModal").find("#theModalTask").html("Edit Activity");
+        $("#addActivityModal").find("#addactbtn").html("Edit Activity");
+        $("#addActivityModal").modal("show");
+        $("#hiddeneditactivityid").val(array[1]);
+        $("#addActivityModal").find("#addhiddenid").val(0);
+    });
+    
+    function populateParentDropdown() {
+        $("#addparent").html('<option value="">-- Select Parent Task--</option>');
+        $('.row_task').each(function(){
+            var dataParameters = JSON.parse($(this).data('parameters'));
+            console.log(dataParameters);
+            $('#addparent').append('<option class="parenttaskoption" value="1" startdate='+dataParameters.to   +'>'+dataParameters.label+'</option>');
+
+        });
+    }
+    
+    $(document).on("change" ,"#addparent",function() {
+        if($(".parenttaskoption:selected").length >0 )
+        {
+            startdate = $(".parenttaskoption:selected").attr('startdate');
+            if(startdate!= ''){
+                    var start =  new Date(startdate );
+                    $('#addstartdate').datepicker('setDate', start);
+                    taskDay =$("#adddays").val();
+                    if ( taskDay != "" && start != "" ) {
+                        var end =  new Date(startdate );
+                        end.setDate(end.getDate() + parseInt(taskDay) +2); 
+                        $('#addenddate').datepicker('setDate', end);
+                    }   
+            }
+        }
+    });
+
 });
