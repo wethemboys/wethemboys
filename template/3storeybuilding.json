@@ -10,20 +10,20 @@
                    "0" : {"id" : 3,"name" : "Sickle","quantity" : 3}
                }
            },
-           "1" : {"name" : "Excavation","days" : 12,"start" : 5,"end" : 17,
+           "1" : {"name" : "Excavation","days" : 12,"start" : 7,"end" : 19,
                "manpower" : {},
                "material" : {
                    "0" : {"id" : 3,"name" : "Sickle","quantity" : 1},
                    "1" : {"id" : 4,"name" : "16mm Deformed Bar","quantity" : 3}
                }
            },
-           "2" : {"name" : "Soil Poisoning","days" : 5,"start" : 17,"end" : 22,
+           "2" : {"name" : "Soil Poisoning","days" : 5,"start" : 21,"end" : 24,
                "manpower" : {
                    "0" : {"id" : 2,"name" : "Labor","quantity" : 1}
                },
                "material" : {}
            },
-           "3" : {"name" : "Gravel Bedding","days" : 5,"start" : 22,"end" : 27,
+           "3" : {"name" : "Gravel Bedding","days" : 5,"start" : 26,"end" : 29,
                "manpower" : {
                    "0" : {"id" : 2,"name" : "Labor","quantity" : 2}
                },
@@ -33,7 +33,7 @@
    },
    "1": {"name":"Concrete Works",
        "tasks" :{
-           "0" : {"name" : "Footings","days" : 7,"start" : 27,"end" : 34,
+           "0" : {"name" : "Footings","days" : 7,"start" : 31,"end" : 36,
                "manpower" : {
                    "0" : {"id" : 5,"name" : "Mansory","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3},
@@ -45,7 +45,7 @@
                    "2" : {"id" : 9,"name" : "Cubic Meter Gravel","quantity" : 4}
                }
            },
-           "1" : {"name" : "Columns","days" : 15,"start" : 34,"end" : 49,
+           "1" : {"name" : "Columns","days" : 15,"start" : 38,"end" : 51,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 3},
                    "1" : {"id" : 5,"name" : "Mansory","quantity" : 3},
@@ -57,7 +57,7 @@
                    "2" : {"id" : 9,"name" : "Cubic Meter Gravel","quantity" : 10}
                }
            },
-           "2" : {"name" : "Beams","days" : 11,"start" : 49,"end" : 60,
+           "2" : {"name" : "Beams","days" : 11,"start" : 53,"end" : 62,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 5},
                    "1" : {"id" : 5,"name" : "Mansory","quantity" : 3},
@@ -69,7 +69,7 @@
                    "2" : {"id" : 9,"name" : "Cubic Meter Gravel","quantity" : 9}
                }
            },
-           "3" : {"name" : "Slabs","days" : 8,"start" : 60,"end" : 68,
+           "3" : {"name" : "Slabs","days" : 8,"start" : 64,"end" : 70,
                "manpower" : {
                    "0" : {"id" : 5,"name" : "Mansory","quantity" : 2},
                    "1" : {"id" : 10,"name" : "Carpentry","quantity" : 2},
@@ -85,7 +85,7 @@
    },
    "2": {"name":"Steel Works",
        "tasks" :{
-           "0" : {"name" : "Footings","days" : 4,"start" : 5,"end" : 9,
+           "0" : {"name" : "Footings","days" : 4,"start" : 7,"end" : 11,
                "manpower" : {
                    "0" : {"id" : 11,"name" : "Welder","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -94,7 +94,7 @@
                    "0" : {"id" : 4,"name" : "16mm Deformed Bar","quantity" : 25}
                }
            },
-           "1" : {"name" : "Columns","days" : 22,"start" : 5,"end" : 27,
+           "1" : {"name" : "Columns","days" : 22,"start" : 7,"end" : 29,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -105,7 +105,7 @@
                    "2" : {"id" : 14,"name" : "10mm Deformed Ba","quantity" : 285}
                }
            },
-           "2" : {"name" : "Beams","days" : 19,"start" : 5,"end" : 24,
+           "2" : {"name" : "Beams","days" : 19,"start" : 7,"end" : 26,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -116,7 +116,7 @@
                    "2" : {"id" : 14,"name" : "10mm Deformed Ba","quantity" : 150}
                }
            },
-           "3" : {"name" : "Slabs","days" : 10,"start" : 5,"end" : 15,
+           "3" : {"name" : "Slabs","days" : 10,"start" : 7,"end" : 17,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -129,7 +129,7 @@
    },
    "3": {"name":"Framework",
        "tasks" :{
-           "0" : {"name" : "Formworks and Scaffoldings","days" : 35,"start" : 5,"end" : 40,
+           "0" : {"name" : "Formworks and Scaffoldings","days" : 35,"start" : 7,"end" : 42,
                "manpower" : {
                    "0" : {"id" : 2,"name" : "Labor","quantity" : 3},
                    "1" : {"id" : 10,"name" : "Carpentry","quantity" : 5}
@@ -144,7 +144,7 @@
    },
    "4": {"name":"Mansory Works",
        "tasks" :{
-           "0" : {"name" : "Mansory","days" : 41,"start" : 5,"end" : 46,
+           "0" : {"name" : "Mansory","days" : 41,"start" : 7,"end" : 48,
                "manpower" : {
                    "0" : {"id" : 5,"name" : "Mansory","quantity" : 5},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3}
@@ -158,7 +158,7 @@
    },
    "5": {"name":"Carpentry Works",
        "tasks" :{
-           "0" : {"name" : "Ceiling, Cabinets and Etc.","days" : 31,"start" : 46,"end" : 77,
+           "0" : {"name" : "Ceiling, Cabinets and Etc.","days" : 31,"start" : 50,"end" : 79,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -172,7 +172,7 @@
    },
    "6": {"name":"Roofing Works",
        "tasks" :{
-           "0" : {"name" : "Roofing Materials, Trusses and etc.","days" : 12,"start" : 77,"end" : 89,
+           "0" : {"name" : "Roofing Materials, Trusses and etc.","days" : 12,"start" : 81,"end" : 91,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 5},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3}
@@ -187,7 +187,7 @@
    },
    "7": {"name":"Pre-Fabricated Works",
        "tasks" :{
-           "0" : {"name" : "Door","days" : 9,"start" : 89,"end" : 98,
+           "0" : {"name" : "Door","days" : 9,"start" : 93,"end" : 100,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -196,7 +196,7 @@
                    "0" : {"id" : 23,"name" : "UPBC","quantity" : 2}
                }
            },
-           "1" : {"name" : "Windows","days" : 9,"start" : 98,"end" : 107,
+           "1" : {"name" : "Windows","days" : 9,"start" : 102,"end" : 109,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -209,7 +209,7 @@
    },
    "8": {"name":"Painting Works",
        "tasks" :{
-           "0" : {"name" : "Exterior","days" : 24,"start" : 107,"end" : 131,
+           "0" : {"name" : "Exterior","days" : 24,"start" : 111,"end" : 133,
                "manpower" : {
                    "0" : {"id" : 26,"name" : "Painter","quantity" : 4}
                },
@@ -225,7 +225,7 @@
    },
    "9": {"name":"Plumbing",
        "tasks" :{
-           "0" : {"name" : "Fixtures","days" : 2,"start" : 5,"end" : 7,
+           "0" : {"name" : "Fixtures","days" : 2,"start" : 7,"end" : 9,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -237,7 +237,7 @@
                    "3" : {"id" : 34,"name" : "Urinal","quantity" : 22}
                }
            },
-           "1" : {"name" : "Waterlines","days" : 12,"start" : 5,"end" : 17,
+           "1" : {"name" : "Waterlines","days" : 12,"start" : 7,"end" : 19,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -248,7 +248,7 @@
                    "2" : {"id" : 37,"name" : "3 /4 inches blue bbc","quantity" : 3}
                }
            },
-           "2" : {"name" : "Sanitary","days" : 12,"start" : 5,"end" : 17,
+           "2" : {"name" : "Sanitary","days" : 12,"start" : 7,"end" : 19,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -259,7 +259,7 @@
                    "2" : {"id" : 40,"name" : "2 inches orange pipe","quantity" : 2}
                }
            },
-           "3" : {"name" : "Storm Drain","days" : 12,"start" : 5,"end" : 17,
+           "3" : {"name" : "Storm Drain","days" : 12,"start" : 7,"end" : 19,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
