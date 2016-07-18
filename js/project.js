@@ -1,5 +1,3 @@
-
-
 function populateProjectTemplate()
 {
     startdate = $("#prjstartdate").val();
@@ -85,7 +83,9 @@ function displayTaskTemplate( startdate, taskJson, activity_id, activities_name 
        taskData.days = task.days;
        taskData.material = materialJson;
        taskData.manpower = manpowerJson;
-       
+       taskData.temporaryid = task.temporaryid;
+       taskData.parentid = task.parentid;
+       $('#temporaryid').val(task.temporaryid);
        $('#activityview').find("tr:last").data('parameters',JSON.stringify(taskData));
     });
     return parameterData;

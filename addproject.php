@@ -19,8 +19,8 @@ if (!isset($_SESSION["theuser"])) {
         <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
         <script src="js/jquery.fn.gantt.js"></script>
         <script src="js/jquery.bootstrap-touchspin.js"></script>
-        <link href="http://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" rel="stylesheet" type="text/css">
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+        <link href="js/prettify/prettify.min.css" rel="stylesheet" type="text/css">
+        <script src="js/prettify/prettify.min.js"></script>
         <link href="css/gantt.css" type="text/css" rel="stylesheet" />
 
         <style>
@@ -222,6 +222,7 @@ if (!isset($_SESSION["theuser"])) {
                     </tr>
                     <input type="hidden" id="hiddenactivityid" value="0"/>
                     <input type="hidden" id="hiddeneditactivityid" value=""/>
+                    <input type="hidden" id="temporaryid" value="0"/>
                 </table>
             </div>
 
