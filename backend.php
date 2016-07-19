@@ -83,27 +83,37 @@ if (!isset($jsr["do"]) || empty($jsr["do"])) {
 
 switch($jsr["do"]) {
 	case "add_project":
-		// name, clientid, startdate, enddate, location
+
+            $activities = json_decode($jsr['activities']);
+            foreach ($activities  as $activity)
+            {
+                echo '<pre>';
+                print_r($activity);
+                echo '</pre>';
+            }
+            die();
+            $temporar_id = array();
+            // name, clientid, startdate, enddate, location
 		if (!isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["userid"]) || empty($jsr["userid"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"])) {
 			dexit(1);
 		}
-		if (isset($jsr["activities"]) || is_array($jsr["activities"]) || count($jsr["activities"]) > 0) {
-			// check activities
-			for ($i = 0; $i < count($jsr["activities"]); $i++) {
-				if (!isset($jsr["activities"][$i]["name"]) || empty($jsr["activities"][$i]["name"]) || !isset($jsr["activities"][$i]["clientneeded"]) || !isset($jsr["activities"][$i]["startdate"]) || empty($jsr["activities"][$i]["enddate"]) || !isset($jsr["activities"][$i]["enddate"])) {
-					dexit(1);
-				}
-
-				// check items
-				if (isset($jsr["activities"][$i]["items"]) || is_array($jsr["activities"][$i]["items"]) || count($jsr["activities"][$i]["items"]) > 0) {
-					for ($j = 0; $j < count($jsr["activities"][$i]["items"]); $j++) {
-						if (!isset($jsr["activities"][$i]["items"][$j]["resourceid"]) || empty($jsr["activities"][$i]["items"][$j]["resourceid"]) || !isset($jsr["activities"][$i]["items"][$j]["quantity"]) || empty($jsr["activities"][$i]["items"][$j]["quantity"])) {
-							dexit(1);
-						}
-					}
-				}
-			}
-		}
+//		if (isset($jsr["activities"]) || is_array($jsr["activities"]) || count($jsr["activities"]) > 0) {
+//			// check activities
+//			for ($i = 0; $i < count($jsr["activities"]); $i++) {
+//				if (!isset($jsr["activities"][$i]["name"]) || empty($jsr["activities"][$i]["name"]) || !isset($jsr["activities"][$i]["clientneeded"]) || !isset($jsr["activities"][$i]["startdate"]) || empty($jsr["activities"][$i]["enddate"]) || !isset($jsr["activities"][$i]["enddate"])) {
+//					dexit(1);
+//				}
+//
+//				// check items
+//				if (isset($jsr["activities"][$i]["items"]) || is_array($jsr["activities"][$i]["items"]) || count($jsr["activities"][$i]["items"]) > 0) {
+//					for ($j = 0; $j < count($jsr["activities"][$i]["items"]); $j++) {
+//						if (!isset($jsr["activities"][$i]["items"][$j]["resourceid"]) || empty($jsr["activities"][$i]["items"][$j]["resourceid"]) || !isset($jsr["activities"][$i]["items"][$j]["quantity"]) || empty($jsr["activities"][$i]["items"][$j]["quantity"])) {
+//							dexit(1);
+//						}
+//					}
+//				}
+//			}
+//		}
 
 		// add them all.
 		// add project.

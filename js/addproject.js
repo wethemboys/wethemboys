@@ -309,7 +309,19 @@ $( document ).ready(function() {
         projectStartDate = $("#prjstartdate").val();
         projectEndDate = $("#prjenddate").val();
         projectClient = $("#prjclient").val();
-
+        jsonObject = [];
+        $('.row_activity').each(function(){
+            activityJson = JSON.parse($(this).data('parameters'));
+            classes = $(this).attr("class");
+            arrayClass = classes.split(' ');
+            activityJson.tasks = [];
+            console.log(arrayClass[1]);
+            $('.row_task.'+arrayClass[1]).each(function(){
+                taskJson = JSON.parse($(this).data('parameters'));
+                activityJson.tasks.push(taskJson);
+            });
+            jsonObject.push(activityJson);
+        });
         if (projectName !== "" && projectStartDate !== "" && projectEndDate !== "" && projectClient !== "") {
             sendJSON = {};
             sendJSON["do"] = "add_project";
@@ -317,7 +329,7 @@ $( document ).ready(function() {
             sendJSON["startdate"] = projectStartDate;
             sendJSON["enddate"] = projectEndDate;
             sendJSON["userid"] = projectClient;
-            sendJSON["activities"] = ActList;
+            sendJSON["activities"] = JSON.stringify(jsonObject);
             xhr = new XMLHttpRequest();
             xhr.open("POST", "backend.php");
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
