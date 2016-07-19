@@ -395,6 +395,7 @@ $( document ).ready(function() {
             }
         }
         else if(mode == 'edit'){
+            
             taskName = $("#addtaskname").val();
             taskDay = $("#adddays").val();
             taskstartday = $("#addstartdate").val();
@@ -402,14 +403,22 @@ $( document ).ready(function() {
             actname = $("#actname").val();
             temporaryid = parseInt($("#addeditid").val())  ;
             parentid = $("#addparent").val();
+            oldJson = $("#addtasktable").find('.add_task_'+temporaryid).data('parameters');
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
+            if(oldJson.to != taskendday){
+                updateChildTaskStartdateModal(temporaryid, taskendday);
+            }
             if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":oldJson.manpower,"material":oldJson.material};
                 var row = '<td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs" ><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs" ><span class="glyphicon glyphicon-remove"></button></td>';
+                manpowerhtml = $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(4)').html();
+                materialhtml = $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(5)').html();
                 $("#addtasktable").find('.add_task_'+temporaryid).html(row);
+                 $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(4)').html(manpowerhtml);
+                 $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(5)').html(materialhtml);
                  $(this).data('mode','none');
                  $(".task_form").hide();
                  $(this).html('Add Task');
@@ -543,7 +552,7 @@ $( document ).ready(function() {
                 manpowerobject.push(parameters);
                 $('.add_row_task.selected').find('td:eq(4)').append(manpowerhtml);
             }
-            else if (parameters.type == 'materials'){
+            else if (parameters.type == 'material'){
                 materialhtml = parameters.quantity + ' ' +parameters.name +'</br>';
                 materialobject.push(parameters);
                 $('.add_row_task.selected').find('td:eq(5)').append(materialhtml);
@@ -632,8 +641,29 @@ $( document ).ready(function() {
                 });
                 $("#hiddenactivityid").val( parseInt($("#hiddenactivityid").val()) + 1);
             } else if(modalMode == "edit") {
-                alert("adasdas");
-                alert($("#hiddenactivityid").val());
+                activityid = $("#hiddeneditactivityid").val();
+                var acitivityhtml = "<th colspan='7'>"+actAddName+" \n\
+                <span style='float:right;'><button class='btn btn-warning btn-xs editactivity'><span class='glyphicon glyphicon-plus'></span> Edit Activity/Task/Items</button>\n\
+                <button class='btn btn-danger btn-xs deleteactivity'><span class='glyphicon glyphicon-remove'></span> Delete Activity</button></span></th>";
+                $(".row_activity."+activityid).html(acitivityhtml);
+                $('.'+activityid+'.row_task').remove();
+                $(".add_row_task").each(function(){ 
+                    var taskData = $(this).data('parameters');
+                    manpowerText = '';
+                    materialText = '';
+                    $.each(taskData.material, function(index, material){
+                        materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
+                    });
+                    $.each(taskData.manpower, function(index, manpower){
+                        manpowerText = manpowerText + ' ' + manpower.quantity + ' ' + manpower.name + '<br/>';
+                    });
+                    from = new Date(taskData.from);
+                    to = new Date(taskData.to);
+                    $("."+activityid+':last').after("<tr class='"+activityid+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+ from.toInputFormat()+"</td><td>"+ to.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+                    $("."+activityid+".row_task:last").data('parameters',JSON.stringify(taskData));
+                    updateChildTaskStartdate(taskData.temporaryid, taskData.to);
+                });
+
             }
             $("#addActivityModal").modal("hide");
             drawChart();
@@ -641,7 +671,7 @@ $( document ).ready(function() {
             showError("Activity not Added", "Please fill up activity name. (Activity name is required)");
         }
     });
-    $(document).on("click" ,".editactivity",function() {
+    $(document).on("click" ,".editactivity",function() {    
         classes = $(this).closest('.row_activity').attr("class");
         activityparameters = JSON.parse($(this).closest('.row_activity').data('parameters'));
         $("#actname").val(activityparameters.name);
@@ -714,5 +744,51 @@ $( document ).ready(function() {
             }
         }
     });
+    
+    $(document).on("click" ,".deleteactivity",function() {    
+        classes = $(this).closest('.row_activity').attr("class");
+        activityparameters = JSON.parse($(this).closest('.row_activity').data('parameters'));
+        $("#actname").val(activityparameters.name);
+        var array = classes.split(' ');
+        $('.'+array[1]).remove();
+        drawChart();
+    });
 
+    function updateChildTaskStartdateModal(parentId, startdate)
+    {
+        $('.add_row_task').each(function(){
+            parameters = $(this).data('parameters');
+            if(parameters.parentid == parentId)
+            {
+                var start =  new Date(startdate );
+                var end =  new Date(startdate );
+                end.setDate(end.getDate() + parseInt(parameters.days) +2); 
+                parameters.from = start.toChartFormat();
+                $(this).find('td:eq(2)').html(start.toInputFormat())
+                parameters.to = end.toChartFormat();
+                $(this).find('td:eq(3)').html(end.toInputFormat());
+                $(this).data('parameters',parameters);
+                updateChildTaskStartdateModal(parameters.temporaryid,end.toInputFormat() );
+            }
+        });
+    }
+    
+    function updateChildTaskStartdate(parentId, startdate)
+    {
+        $('.row_task').each(function(){
+            parameters = JSON.parse($(this).data('parameters'));
+            if(parameters.parentid == parentId)
+            {
+                var start =  new Date(startdate );
+                var end =  new Date(startdate );
+                end.setDate(end.getDate() + parseInt(parameters.days) +2); 
+                parameters.from = start.toChartFormat();
+                $(this).find('td:eq(3)').html(start.toInputFormat());
+                parameters.to = end.toChartFormat();
+                $(this).find('td:eq(4)').html(end.toInputFormat());
+                $(this).data('parameters',JSON.stringify(parameters));
+                updateChildTaskStartdate(parameters.temporaryid,end.toInputFormat() );
+            }
+        });
+    }
 });

@@ -66,7 +66,7 @@ function displayTaskTemplate( startdate, taskJson, activity_id, activities_name 
            manpowerJson.push(manpowerObject);
        });
 
-       end.setDate(end.getDate() + 2); 
+       end.setDate(end.getDate() ); 
        var materialText = '';
        var materialJson = [];
        $.each(task.material, function(index, material){
