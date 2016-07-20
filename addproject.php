@@ -151,7 +151,10 @@ if (!isset($_SESSION["theuser"])) {
                 width: 8%;
             }
             .col_manpower, .col_material{
-                width: 30%;
+                width: 25%;
+            }
+            .col_equipment{
+                width: 10%;
             }
 
             .add_col_task_name{
@@ -164,7 +167,10 @@ if (!isset($_SESSION["theuser"])) {
                 width: 10%;
             }
             .add_col_manpower, .add_col_material{
-                width: 28%;
+                width: 23%;
+            }
+            .add_col_equipment{
+                width: 10%;
             }
             .add_row_task.selected{
                 background-color: #ecffe6;
@@ -248,6 +254,7 @@ if (!isset($_SESSION["theuser"])) {
                             <th class = 'col_end_date'>End Date</th>
                             <th class = 'col_manpower'>Manpower</th>
                             <th class = 'col_material'>Materials</th>
+                            <th class = 'col_equipment'>Equipment</th>
                         </tr>
                     </thead>
                     <tbody id="activityview">
@@ -271,77 +278,6 @@ if (!isset($_SESSION["theuser"])) {
             <p style="text-align:center;">&copy; 2016 E.V.Y. Corporation</p>
         </footer>
 
-        <!-- this is for the project only -->
-
-<!--        <div class="modal fade" id="addActModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document" style="width:80%;">
-                <div class="modal-content" style="overflow:hidden">
-                    <div class="modal-header" style="background-color:#55AA55;">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel" style="color:white;"><span id="theModalTask">- - -</span></h4>
-                    </div>
-                    <div class="modal-body">
-                        <span style="font-size:18px;font-weight:lighter;">Basic Information</span>
-                        <hr style="margin-top:5px;margin-bottom:5px;"/>
-                        <table class="form_table">
-                            <tr>
-                                <td><label>Activity Name:</label></td><td style="padding-left:5px;"><input id="actname" type="text" style="width:250px;" /></td>
-                            </tr>
-                            <tr>
-                                <td><label>Start Date:</label></td><td style="padding-left:5px;"><input id="actstartdate" type="text" style="width:250px;" /></td>
-                            </tr>
-                            <tr>
-                                <td><label>End Date:</label></td><td style="padding-left:5px;"><input id="actenddate" type="text" style="width:250px;" /></td>
-                            </tr>
-                            <tr>
-                                <td></td><td style="padding-left:5px;"><input type="checkbox" id="actcneeded" value="1" style="margin-right:3px;" />Notify Client</td>
-                            </tr>
-                        </table>
-                        <br />
-                        <span style="font-size:18px;font-weight:lighter;">Activity Items</span>
-                        <hr style="margin-top:5px;margin-bottom:5px;"/>
-                        <table class="project_table" style="width:100%;">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Options</th>
-                                </tr>
-                            </thead>
-                            <tbody id="addprjitms">
-                            </tbody>
-                        </table>
-                        <div style="margin-top:20px;">
-                            <span style="font-size:18px;font-weight:lighter;">Add Items</span>
-                            <hr style="margin-top:5px;margin-bottom:5px;"/>
-                            <div style="padding:10px;width:50%;margin:0 auto;height:90px;border-style:solid;border-color:#c6c6c6;border-width:1px;margin-bottom:10px;box-shadow:0px 0px 3px black;">
-                                <p id="itmname" style="text-align:center;">- - -</p>
-                                <table style="margin:0 auto;">
-                                    <tr>
-                                        <td>Price per Unit:</td>
-                                        <td style="padding-left:5px;color:gray;">Php. <span id="itmprice">- - -</span></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <table class="table_form">
-                                <tr>
-                                    <td><label>Item Name:</label></td><td><select id="actadditem" style="width:200px;margin-left:5px;"><option value="">-- Select Item --</option></select></td>
-                                </tr>
-                                <tr>
-                                    <td><label>Quantity:</label></td><td><input id="actadditemqty" type="text" style="width:200px;margin-left:5px;" /></td>
-                                </tr>
-                            </table>
-                        </div>
-                        <button type="button" id="addactitmbtn" class="btn btn-success btn-sm">Add Item</button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button id="addactbtn" type="button" class="btn btn-success">Add Activity</button>
-                    </div>
-                </div>
-            </div>
-        </div>-->
 
         <div class="modal fade" id="addActivityModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document" style="width:80%; max-height: 80%;overflow:auto; ">
@@ -387,6 +323,7 @@ if (!isset($_SESSION["theuser"])) {
                                     <th class = 'add_col_end_date'>End Date</th>
                                     <th class = 'add_col_manpower'>Manpower</th>
                                     <th class = 'add_col_material'>Materials</th>
+                                    <th class = 'add_col_equipment'>Equipment</th>
                                     <th class = 'add_col_action'></th>
                                 </tr>
                             </thead>

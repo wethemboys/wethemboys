@@ -399,7 +399,7 @@ $( document ).ready(function() {
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
             if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":{},"material":{}};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":{},"material":{},"equipment":{}};
                 var row = '<tr class="add_row_task add_task_'+temporaryid+'"><td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs"><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs"><span class="glyphicon glyphicon-remove"></button></td></tr>';
@@ -429,15 +429,17 @@ $( document ).ready(function() {
                 updateChildTaskStartdateModal(temporaryid, taskendday);
             }
             if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":oldJson.manpower,"material":oldJson.material};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":oldJson.manpower,"material":oldJson.material,"equipment":oldJson.equipment};
                 var row = '<td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs" ><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs" ><span class="glyphicon glyphicon-remove"></button></td>';
                 manpowerhtml = $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(4)').html();
                 materialhtml = $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(5)').html();
+                equipmenthtml = $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(6)').html();
                 $("#addtasktable").find('.add_task_'+temporaryid).html(row);
                  $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(4)').html(manpowerhtml);
                  $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(5)').html(materialhtml);
+                 $("#addtasktable").find('.add_task_'+temporaryid).find('td:eq(6)').html(equipmenthtml);
                  $(this).data('mode','none');
                  $(".task_form").hide();
                  $(this).html('Add Task');
@@ -562,6 +564,7 @@ $( document ).ready(function() {
         $('.add_row_task.selected').find('td:eq(5)').html('');
         materialobject =[];
         manpowerobject =[];
+        equipmentobject =[];
         $("#addprjitms tr").each(function(){
             parameters = $(this).data('parameters');
             materialhtml='';
@@ -576,10 +579,16 @@ $( document ).ready(function() {
                 materialobject.push(parameters);
                 $('.add_row_task.selected').find('td:eq(5)').append(materialhtml);
             }
+            else if (parameters.type == 'equipment'){
+                equipmenthtml = parameters.quantity + ' ' +parameters.name +'</br>';
+                equipmentobject.push(parameters);
+                $('.add_row_task.selected').find('td:eq(6)').append(equipmenthtml);
+            }
         });
         dataParameter =$('.add_row_task.selected').data("parameters");
         dataParameter.manpower = manpowerobject;
         dataParameter.material = materialobject;
+        dataParameter.equipment = equipmentobject;
         $('.add_row_task.selected').data("parameters",dataParameter);
     }
     
@@ -629,6 +638,26 @@ $( document ).ready(function() {
                 actAddItemQty.val("");
                 $("#actItmRowID" + value.id).data('parameters',jsonObject);
             });
+            $.each(dataParameters.equipment, function( index, value ) {
+                option = $('#actadditem option[value="' + value.id + '"]');
+                totalprice = (parseInt(option.attr("price")) * parseInt(value.quantity));
+                jsonObject = {
+                    "id":value.id ,
+                    "name":option.data("name"),
+                    "type":option.attr("type"),
+                    "quantity":value.quantity,
+                    "totalprice":totalprice,
+                    "price": option.attr("price")};
+                itemTemplate = '<tr id="%itemrowid%" class="actItemRow"><td>%itemname%</td><td>%itemqty%</td><td>%itemprice%</td><td><button class="deleteitembutton btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button></td></tr>';
+                itemTemplate = itemTemplate.replace("%itemrowid%", "actItmRowID" +value.id);
+                itemTemplate = itemTemplate.replace("%itemname%", jsonObject.name);
+                itemTemplate = itemTemplate.replace("%itemqty%", jsonObject.quantity);
+                itemTemplate = itemTemplate.replace("%itemprice%", "Php. " + totalprice);
+                $("#addprjitms").append(itemTemplate);
+                actAddItem.val("");
+                actAddItemQty.val("");
+                $("#actItmRowID" + value.id).data('parameters',jsonObject);
+            });                        
         }
     }
     
@@ -639,7 +668,7 @@ $( document ).ready(function() {
             if (modalMode == "add") {
                 parameterData = {};
                 rowId = $("#hiddenactivityid").val();
-                var newAcitivity = "<tr class='row_activity activity_"+rowId+"'><th colspan='7'>"+actAddName+" \n\
+                var newAcitivity = "<tr class='row_activity activity_"+rowId+"'><th colspan='8'>"+actAddName+" \n\
                 <span style='float:right;'><button class='btn btn-warning btn-xs editactivity'><span class='glyphicon glyphicon-plus'></span> Edit Activity/Task/Items</button>\n\
                 <button class='btn btn-danger btn-xs deleteactivity'><span class='glyphicon glyphicon-remove'></span> Delete Activity</button></span></th></tr>";
                 $("#activityview").append(newAcitivity);
@@ -649,19 +678,23 @@ $( document ).ready(function() {
                     var taskData = $(this).data('parameters');
                     manpowerText = '';
                     materialText = '';
+                    equipmentText = '';
                     $.each(taskData.material, function(index, material){
                         materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
                     });
                     $.each(taskData.manpower, function(index, manpower){
                         manpowerText = manpowerText + ' ' + manpower.quantity + ' ' + manpower.name + '<br/>';
                     });
-                    $('#activityview').append("<tr class='activity_"+rowId+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+ taskData.from+"</td><td>"+ taskData.to+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+                    $.each(taskData.equipment, function(index, equipment){
+                        equipmentText = equipmentText + ' ' + equipment.quantity + ' ' + equipment.name + '<br/>';
+                    });
+                    $('#activityview').append("<tr class='activity_"+rowId+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+ taskData.from+"</td><td>"+ taskData.to+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td><td>"+ equipmentText+"</td></tr>");
                     $('#activityview').find("tr:last").data('parameters',JSON.stringify(taskData));
                 });
                 $("#hiddenactivityid").val( parseInt($("#hiddenactivityid").val()) + 1);
             } else if(modalMode == "edit") {
                 activityid = $("#hiddeneditactivityid").val();
-                var acitivityhtml = "<th colspan='7'>"+actAddName+" \n\
+                var acitivityhtml = "<th colspan='8'>"+actAddName+" \n\
                 <span style='float:right;'><button class='btn btn-warning btn-xs editactivity'><span class='glyphicon glyphicon-plus'></span> Edit Activity/Task/Items</button>\n\
                 <button class='btn btn-danger btn-xs deleteactivity'><span class='glyphicon glyphicon-remove'></span> Delete Activity</button></span></th>";
                 $(".row_activity."+activityid).html(acitivityhtml);
@@ -670,15 +703,19 @@ $( document ).ready(function() {
                     var taskData = $(this).data('parameters');
                     manpowerText = '';
                     materialText = '';
+                    equipmentText = '';
                     $.each(taskData.material, function(index, material){
                         materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
                     });
                     $.each(taskData.manpower, function(index, manpower){
                         manpowerText = manpowerText + ' ' + manpower.quantity + ' ' + manpower.name + '<br/>';
                     });
+                    $.each(taskData.equipment, function(index, equipment){
+                        equipmentText = equipmentText + ' ' + equipment.quantity + ' ' + equipment.name + '<br/>';
+                    });
                     from = new Date(taskData.from);
                     to = new Date(taskData.to);
-                    $("."+activityid+':last').after("<tr class='"+activityid+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+ from.toInputFormat()+"</td><td>"+ to.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+                    $("."+activityid+':last').after("<tr class='"+activityid+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+ from.toInputFormat()+"</td><td>"+ to.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td><td>"+ equipmentText+"</td></tr>");
                     $("."+activityid+".row_task:last").data('parameters',JSON.stringify(taskData));
                     updateChildTaskStartdate(taskData.temporaryid, taskData.to);
                 });
@@ -713,10 +750,11 @@ $( document ).ready(function() {
             parentid = taskparameter.parentid;
             manpowerText='';
             materialText='';
+            equipmentText='';
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
-            if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":taskparameter.manpower,"material":taskparameter.material};
+            if (taskName != "" && taskstartday != "" && taskendday != ""&& actname != "") {
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":taskparameter.manpower,"material":taskparameter.material,"equipment":taskparameter.equipment};
                 var row = '<tr class="add_row_task add_task_'+temporaryid+'"><td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs"><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs"><span class="glyphicon glyphicon-remove"></button></td></tr>';
@@ -727,8 +765,12 @@ $( document ).ready(function() {
                 $.each(taskparameter.material, function(index, material){
                     materialText = materialText + ' ' + material.quantity + 'pcs. ' + material.name + '<br/>';
                 });
+                $.each(taskparameter.equipment, function(index, equipment){
+                    equipmentText = equipmentText + ' ' + equipment.quantity + 'pcs. ' + equipment.name + '<br/>';
+                });                
                 $("#addtasktable").find("tr:last").find('td:eq(4)').html(manpowerText);
                 $("#addtasktable").find("tr:last").find('td:eq(5)').html(materialText);
+                $("#addtasktable").find("tr:last").find('td:eq(6)').html(equipmentText);
                  $(this).data('mode','none');
                  $(".task_form").hide();
                  $('.add_row_task:last').data('parameters', jsonObject).trigger('click');

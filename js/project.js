@@ -16,7 +16,7 @@ function displayProjectTemplate( startdate, templateJson )
 {
     $('#activityview').html('');
     $.each(templateJson, function(i, activities){
-       $('#activityview').append("<tr class= 'row_activity activity_"+ i+"'><th colspan='7'>"+activities.name +"\
+       $('#activityview').append("<tr class= 'row_activity activity_"+ i+"'><th colspan='8'>"+activities.name +"\
         <span style='float:right;'><button class='btn btn-warning btn-xs editactivity'><span class='glyphicon glyphicon-plus'></span> Edit Activity/Task/Items</button>\n\
                 <button class='btn btn-danger btn-xs deleteactivity'><span class='glyphicon glyphicon-remove'></span> Delete Activity</button></span></th></tr>");
        var parameterData = displayTaskTemplate( startdate, activities.tasks,i ,activities.name);
@@ -74,7 +74,15 @@ function displayTaskTemplate( startdate, taskJson, activity_id, activities_name 
            materialObject = {"id":material.id,"quantity":material.quantity,"name":material.name };
            materialJson.push(materialObject);
        });
-       $('#activityview').append("<tr class='activity_"+activity_id+" row_task'><td></td><td>"+ task.name+"</td> <td>"+ task.days+"</td><td>"+ start.toInputFormat()+"</td><td>"+ end.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td></tr>");
+       
+       var equipmentText = '';
+       var equipmentJson = [];
+       $.each(task.equipment, function(index, equipment){
+           equipmentText = equipmentText + ' ' + equipment.quantity + 'pcs. ' + equipment.name + '<br/>';
+           equipmentObject = {"id":equipment.id,"quantity":equipment.quantity,"name":equipment.name };
+           equipmentJson.push(equipmentObject);
+       });
+       $('#activityview').append("<tr class='activity_"+activity_id+" row_task'><td></td><td>"+ task.name+"</td> <td>"+ task.days+"</td><td>"+ start.toInputFormat()+"</td><td>"+ end.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td><td>"+ equipmentText+"</td></tr>");
        var taskData = new Object();
        taskData.from = start.toChartFormat();
        taskData.to= end.toChartFormat();
@@ -83,6 +91,7 @@ function displayTaskTemplate( startdate, taskJson, activity_id, activities_name 
        taskData.days = task.days;
        taskData.material = materialJson;
        taskData.manpower = manpowerJson;
+       taskData.equipment = equipmentJson;
        taskData.temporaryid = task.temporaryid;
        taskData.parentid = task.parentid;
        $('#temporaryid').val(task.temporaryid);

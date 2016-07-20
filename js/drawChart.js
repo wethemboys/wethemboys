@@ -61,12 +61,12 @@ function drawChart(){
             values = new Object();
             
             var baseFrom = new Date(dataParameters.to );
-            baseFrom.setDate(baseFrom.getDate() ); 
+            baseFrom.setDate(baseFrom.getDate() -2); 
             from = baseFrom.getTime();
             values.from ="/Date("+from+")/";
             
             var baseTo = new Date(dataParameters.to );
-            baseTo.setDate(baseTo.getDate() + 2); 
+            baseTo.setDate(baseTo.getDate() ); 
             to = baseTo.getTime();
             values.to ="/Date("+to+")/";
             values.label= 'Latest Finish';
