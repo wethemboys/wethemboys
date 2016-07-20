@@ -1,10 +1,10 @@
 function populateProjectTemplate()
 {
     startdate = $("#prjstartdate").val();
-    prjtype =$("#prjtype").val();
+    prjsize =$("#prjsize").val();
     var templateJson = {} ;
-    if($("#prjtype").val()&&startdate){
-        var jsonFilename = 'template/'+ prjtype + '.json';
+    if($("#prjsize").val()&&startdate){
+        var jsonFilename = 'template/'+ prjsize + '.json';
         $.getJSON(jsonFilename, function(json) {
             templateJson = json;
             displayProjectTemplate( startdate, templateJson );

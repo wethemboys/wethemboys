@@ -1,8 +1,10 @@
--- MySQL dump 10.13  Distrib 5.7.9, for Win32 (AMD64)
+CREATE DATABASE  IF NOT EXISTS `evypms` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `evypms`;
+-- MySQL dump 10.13  Distrib 5.5.44, for debian-linux-gnu (i686)
 --
--- Host: 127.0.0.1    Database: evypms
+-- Host: localhost    Database: evypms
 -- ------------------------------------------------------
--- Server version	5.5.5-10.1.13-MariaDB
+-- Server version	5.5.44-0ubuntu0.12.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +16,35 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `files`
+--
+
+DROP TABLE IF EXISTS `files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `files` (
+  `FileID` int(11) NOT NULL AUTO_INCREMENT,
+  `ProjectID` longtext NOT NULL,
+  `UserID` longtext NOT NULL,
+  `Name` longtext NOT NULL,
+  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Type` longtext NOT NULL,
+  `Filename` longtext NOT NULL,
+  PRIMARY KEY (`FileID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `files`
+--
+
+LOCK TABLES `files` WRITE;
+/*!40000 ALTER TABLE `files` DISABLE KEYS */;
+INSERT INTO `files` VALUES (3,'1','1','Screen Shot 2016-04-15 at 9.57.36 PM.png','2016-06-01 09:47:48','image/png','574eaf4417b381574eaf4417b3e.png');
+/*!40000 ALTER TABLE `files` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `activities`
@@ -43,6 +74,41 @@ LOCK TABLES `activities` WRITE;
 /*!40000 ALTER TABLE `activities` DISABLE KEYS */;
 INSERT INTO `activities` VALUES (1,'1','asdasda','2016-05-01 00:00:00','2016-05-26 00:00:00','50',1,'0'),(2,'1','safsdgsg','2016-05-10 00:00:00','2016-06-30 00:00:00','50',1,'0'),(3,'2','asd','2016-07-13 00:00:00','2016-07-21 00:00:00','100',1,'0'),(4,'3','asd','2016-07-12 00:00:00','2016-07-13 00:00:00','50',1,'0'),(5,'3','eeqweqeq','2016-07-14 00:00:00','2016-07-18 00:00:00','50',1,'0');
 /*!40000 ALTER TABLE `activities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `task`
+--
+
+DROP TABLE IF EXISTS `task`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `task` (
+  `TaskID` int(11) NOT NULL AUTO_INCREMENT,
+  `ProjectID` longtext NOT NULL,
+  `ActivityID` longtext NOT NULL,
+  `Name` longtext NOT NULL,
+  `StartDate` datetime NOT NULL,
+  `EndDate` datetime NOT NULL,
+  `ActualStartDate` datetime NOT NULL,
+  `ActualEndDate` datetime NOT NULL,
+  `Weight` longtext NOT NULL,
+  `Percentage` longtext NOT NULL,
+  `Budget` longtext NOT NULL,
+  `ActualCost` longtext NOT NULL,
+  `Parent` int(11) DEFAULT NULL,
+  `Days` int(3) DEFAULT NULL,
+  PRIMARY KEY (`TaskID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `task`
+--
+
+LOCK TABLES `task` WRITE;
+/*!40000 ALTER TABLE `task` DISABLE KEYS */;
+/*!40000 ALTER TABLE `task` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -76,6 +142,35 @@ INSERT INTO `activities_resources` VALUES (1,'3','4','15','3','0','0','3'),(2,'3
 UNLOCK TABLES;
 
 --
+-- Table structure for table `task_resources`
+--
+
+DROP TABLE IF EXISTS `task_resources`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `task_resources` (
+  `TaskResID` int(11) NOT NULL AUTO_INCREMENT,
+  `ProjectID` longtext NOT NULL,
+  `ActivityID` longtext NOT NULL,
+  `ResourceID` longtext NOT NULL,
+  `Quantity` longtext NOT NULL,
+  `Type` longtext NOT NULL,
+  `Used` longtext NOT NULL,
+  `Remaining` longtext NOT NULL,
+  PRIMARY KEY (`TaskResID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `task_resources`
+--
+
+LOCK TABLES `task_resources` WRITE;
+/*!40000 ALTER TABLE `task_resources` DISABLE KEYS */;
+/*!40000 ALTER TABLE `task_resources` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `comments`
 --
 
@@ -103,32 +198,32 @@ INSERT INTO `comments` VALUES (4,'1','2016-06-01 09:50:28','1','hello'),(5,'1','
 UNLOCK TABLES;
 
 --
--- Table structure for table `files`
+-- Table structure for table `task_checklist`
 --
 
-DROP TABLE IF EXISTS `files`;
+DROP TABLE IF EXISTS `task_checklist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `files` (
-  `FileID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `task_checklist` (
+  `TaskCLID` int(11) NOT NULL AUTO_INCREMENT,
   `ProjectID` longtext NOT NULL,
-  `UserID` longtext NOT NULL,
+  `ActivityID` longtext NOT NULL,
+  `TaskID` longtext NOT NULL,
   `Name` longtext NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Type` longtext NOT NULL,
-  `Filename` longtext NOT NULL,
-  PRIMARY KEY (`FileID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+  `Status` tinyint(1) NOT NULL,
+  `EndDate` datetime NOT NULL,
+  `ActualEndDate` datetime NOT NULL,
+  PRIMARY KEY (`TaskCLID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `files`
+-- Dumping data for table `task_checklist`
 --
 
-LOCK TABLES `files` WRITE;
-/*!40000 ALTER TABLE `files` DISABLE KEYS */;
-INSERT INTO `files` VALUES (3,'1','1','Screen Shot 2016-04-15 at 9.57.36 PM.png','2016-06-01 09:47:48','image/png','574eaf4417b381574eaf4417b3e.png');
-/*!40000 ALTER TABLE `files` ENABLE KEYS */;
+LOCK TABLES `task_checklist` WRITE;
+/*!40000 ALTER TABLE `task_checklist` DISABLE KEYS */;
+/*!40000 ALTER TABLE `task_checklist` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -178,6 +273,8 @@ CREATE TABLE `projects` (
   `Progress` longtext NOT NULL,
   `Location` longtext NOT NULL,
   `ProjectType` varchar(45) NOT NULL,
+  `LotSize` varchar(45) DEFAULT NULL,
+  `OtherSize` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`ProjectID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -188,7 +285,7 @@ CREATE TABLE `projects` (
 
 LOCK TABLES `projects` WRITE;
 /*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES (1,'2','Cool Test','2016-05-01 00:00:00','2016-06-30 00:00:00','1','100','',''),(2,'2','dasdsa','2016-07-12 00:00:00','2016-07-28 00:00:00','0','56.25','',''),(3,'2','zdad','2016-07-06 00:00:00','2016-07-28 00:00:00','0','54.545454545455','','');
+INSERT INTO `projects` VALUES (1,'2','Cool Test','2016-05-01 00:00:00','2016-06-30 00:00:00','1','100','','',NULL,NULL),(2,'2','dasdsa','2016-07-12 00:00:00','2016-07-28 00:00:00','0','56.25','','',NULL,NULL),(3,'2','zdad','2016-07-06 00:00:00','2016-07-28 00:00:00','0','54.545454545455','','',NULL,NULL);
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -219,99 +316,6 @@ INSERT INTO `resources` VALUES (1,'Foreman','manpower','100'),(2,'Labor','manpow
 UNLOCK TABLES;
 
 --
--- Table structure for table `task`
---
-
-DROP TABLE IF EXISTS `task`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `task` (
-  `TaskID` int(11) NOT NULL AUTO_INCREMENT,
-  `ProjectID` longtext NOT NULL,
-  `ActivityID` longtext NOT NULL,
-  `Name` longtext NOT NULL,
-  `StartDate` datetime NOT NULL,
-  `EndDate` datetime NOT NULL,
-  `ActualStartDate` datetime NOT NULL,
-  `ActualEndDate` datetime NOT NULL,
-  `Weight` longtext NOT NULL,
-  `Percentage` longtext NOT NULL,
-  `Budget` longtext NOT NULL,
-  `ActualCost` longtext NOT NULL,
-  `Parent` int(11) DEFAULT NULL,
-  `Days` int(3) DEFAULT NULL,
-  PRIMARY KEY (`TaskID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `task`
---
-
-LOCK TABLES `task` WRITE;
-/*!40000 ALTER TABLE `task` DISABLE KEYS */;
-/*!40000 ALTER TABLE `task` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `task_checklist`
---
-
-DROP TABLE IF EXISTS `task_checklist`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `task_checklist` (
-  `TaskCLID` int(11) NOT NULL AUTO_INCREMENT,
-  `ProjectID` longtext NOT NULL,
-  `ActivityID` longtext NOT NULL,
-  `TaskID` longtext NOT NULL,
-  `Name` longtext NOT NULL,
-  `Status` tinyint(1) NOT NULL,
-  `EndDate` datetime NOT NULL,
-  `ActualEndDate` datetime NOT NULL,
-  PRIMARY KEY (`TaskCLID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `task_checklist`
---
-
-LOCK TABLES `task_checklist` WRITE;
-/*!40000 ALTER TABLE `task_checklist` DISABLE KEYS */;
-/*!40000 ALTER TABLE `task_checklist` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `task_resources`
---
-
-DROP TABLE IF EXISTS `task_resources`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `task_resources` (
-  `TaskResID` int(11) NOT NULL AUTO_INCREMENT,
-  `ProjectID` longtext NOT NULL,
-  `ActivityID` longtext NOT NULL,
-  `ResourceID` longtext NOT NULL,
-  `Quantity` longtext NOT NULL,
-  `Type` longtext NOT NULL,
-  `Used` longtext NOT NULL,
-  `Remaining` longtext NOT NULL,
-  PRIMARY KEY (`TaskResID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `task_resources`
---
-
-LOCK TABLES `task_resources` WRITE;
-/*!40000 ALTER TABLE `task_resources` DISABLE KEYS */;
-/*!40000 ALTER TABLE `task_resources` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `users`
 --
 
@@ -337,6 +341,14 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES (1,'Adminboy','admin','2c08e8f5884750a7b99f6f2f342fc638db25ff31','admin'),(2,'feihl','feihl','2c08e8f5884750a7b99f6f2f342fc638db25ff31','client');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'evypms'
+--
+
+--
+-- Dumping routines for database 'evypms'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -347,4 +359,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-19 20:02:59
+-- Dump completed on 2016-07-20 17:38:16

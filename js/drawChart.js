@@ -21,7 +21,7 @@ function drawChart(){
             from = new Date(dataParameters.from).getTime();
             values.from ="/Date("+from+")/";
             var baseTo = new Date(dataParameters.to );
-            baseTo.setDate(baseTo.getDate() + 2); 
+            baseTo.setDate(baseTo.getDate() ); 
             to = baseTo.getTime();
             values.to ="/Date("+to+")/";
             values.label= dataParameters.label;

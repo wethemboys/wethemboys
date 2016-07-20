@@ -204,16 +204,24 @@ if (!isset($_SESSION["theuser"])) {
                         <td><label>Project Name:</label></td><td><input id="prjname" type="text" style="width:200px;margin-left:5px;" /></td>
 
                         <td><label>Project Location:</label></td><td><input id="prjlocation" type="text" style="width:200px;margin-left:5px;" /></td>
-                    </tr>
-
-                    <tr>
-                        <td><label>Client:</label></td><td><select id="prjclient" type="text" style="margin-left:5px;width:200px;"><option value="">-- Select Client --</option></select></td>
-                        <td><label>Project Type:</label></td><td><select id="prjtype" type="text" style="margin-left:5px;width:200px;">
+                       <td><label>Project Type:</label></td><td><select id="prjtype" type="text" style="margin-left:5px;width:200px;">
                                 <option value="">-- Select Project Type --</option>
                                 <option value="1storeybuilding">1 Storey Building</option>
                                 <option value="2storeybuilding">2 Storey Building</option>
                                 <option value="3storeybuilding">3 Storey Building</option>
                             </select></td>
+                    </tr>
+
+                    <tr>
+                        <td><label>Client:</label></td><td><select id="prjclient" type="text" style="margin-left:5px;width:200px;"><option value="">-- Select Client --</option></select></td>
+                        <td><label>Lot size:</label></td><td><select id="prjsize" type="text" style="margin-left:5px;width:200px;">
+                                <option value="">-- Select Lot Size--</option>
+                                <option value="75">75 Square Meters</option>
+                                <option value="90">90 Square Meters</option>
+                                <option value="105">105 Square Meters</option>
+                                <option value="others">Others</option>
+                            </select></td>
+                            <td class="tdothersize" style="display:none;"><label>Other size</label></td><td class="tdothersize" style="display:none;"><input id="prjsizeother" type="text" style="width:200px;margin-left:5px;"/></td>
                     </tr>
                     <tr>
                         <td><label>Start Date:</label></td><td><input id="prjstartdate" type="text" style="width:200px;margin-left:5px;" readonly="readonly"/></td>

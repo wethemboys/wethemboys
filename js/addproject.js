@@ -357,7 +357,14 @@ $( document ).ready(function() {
         drawChart();
     });
     
-    $("#prjtype").on("change", function () {
+    $("#prjsize").on("change", function () {
+        if($(this).val() == 'others'){
+            $('.tdothersize').show();
+        }
+        else
+        {
+            $('.tdothersize').hide();
+        }
         populateProjectTemplate($(this).val());
         drawChart();
     }); 
