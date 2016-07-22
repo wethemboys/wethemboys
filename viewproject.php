@@ -322,7 +322,7 @@ label {
 <table class="project_table" style="width:100%;">
 <thead>
 <tr>
-<th>Activity</th>
+<th>Activity/Task</th>
 <th>Duration</th>
 <th>Start Date</th>
 <th>End Date</th>

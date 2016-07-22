@@ -83,60 +83,42 @@ if (!isset($jsr["do"]) || empty($jsr["do"])) {
 
 switch($jsr["do"]) {
 	case "add_project":
-
             $activities = json_decode($jsr['activities']);
-            foreach ($activities  as $activity)
-            {
-                echo '<pre>';
-                print_r($activity);
-                echo '</pre>';
-            }
-            die();
-            $temporar_id = array();
-            // name, clientid, startdate, enddate, location
+            $temporary_id = array();
 		if (!isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["userid"]) || empty($jsr["userid"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"])) {
 			dexit(1);
 		}
-//		if (isset($jsr["activities"]) || is_array($jsr["activities"]) || count($jsr["activities"]) > 0) {
-//			// check activities
-//			for ($i = 0; $i < count($jsr["activities"]); $i++) {
-//				if (!isset($jsr["activities"][$i]["name"]) || empty($jsr["activities"][$i]["name"]) || !isset($jsr["activities"][$i]["clientneeded"]) || !isset($jsr["activities"][$i]["startdate"]) || empty($jsr["activities"][$i]["enddate"]) || !isset($jsr["activities"][$i]["enddate"])) {
-//					dexit(1);
-//				}
-//
-//				// check items
-//				if (isset($jsr["activities"][$i]["items"]) || is_array($jsr["activities"][$i]["items"]) || count($jsr["activities"][$i]["items"]) > 0) {
-//					for ($j = 0; $j < count($jsr["activities"][$i]["items"]); $j++) {
-//						if (!isset($jsr["activities"][$i]["items"][$j]["resourceid"]) || empty($jsr["activities"][$i]["items"][$j]["resourceid"]) || !isset($jsr["activities"][$i]["items"][$j]["quantity"]) || empty($jsr["activities"][$i]["items"][$j]["quantity"])) {
-//							dexit(1);
-//						}
-//					}
-//				}
-//			}
-//		}
-
-		// add them all.
-		// add project.
 		$query = insertsql("projects", array("Name", "StartDate", "EndDate", "UserID", "Status"), array($jsr["name"], $jsr["startdate"], $jsr["enddate"], $jsr["userid"], 0));
 		$mysqli->query($query);
 		$pid = $mysqli->insert_id;
-		if (isset($jsr["activities"]) || is_array($jsr["activities"]) || count($jsr["activities"]) > 0) {
-			$act_weight = (100 / count($jsr["activities"]));
-			// add activities
-			for ($i = 0; $i < count($jsr["activities"]); $i++) {
-				$query = insertsql("activities", array("ProjectID", "Name", "StartDate", "EndDate", "Weight", "ClientNeeded"), array($pid, $jsr["activities"][$i]["name"], $jsr["activities"][$i]["startdate"], $jsr["activities"][$i]["enddate"], $act_weight, $jsr["activities"][$i]["clientneeded"]));
-				$mysqli->query($query);
-				$actid = $mysqli->insert_id;
-
-				// add activity items
-				if (isset($jsr["activities"][$i]["items"]) || is_array($jsr["activities"][$i]["items"]) || count($jsr["activities"][$i]["items"]) > 0) {
-					for ($j = 0; $j < count($jsr["activities"][$i]["items"]); $j++) {
-						$query = insertsql("activities_resources", array("ProjectID", "ActivityID", "ResourceID", "Quantity", "Used", "Remaining", "Type"), array($pid, $actid, $jsr["activities"][$i]["items"][$j]["resourceid"], $jsr["activities"][$i]["items"][$j]["quantity"], "0", $jsr["activities"][$i]["items"][$j]["quantity"], "0"));
-						$mysqli->query($query);
-					}
-				}
-			}
-		}
+                foreach($activities as $activity)
+                {
+                    $query = insertsql("activities", array("ProjectID", "Name", "StartDate", "EndDate", "Weight", "ClientNeeded"), array($pid, $activity->name, $activity->startdate, $activity->enddate, 0, 0));
+                    $mysqli->query($query);
+                    $actid = $mysqli->insert_id;
+                    foreach ($activity->tasks as $tasks)
+                    {
+                        $parent = '';
+                        if(isset($temporary_id[$tasks->parentid])){
+                            $parent = $temporary_id[$tasks->parentid];
+                        }
+                        $query = insertsql("task", 
+                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent"),
+                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $parent));
+                        $mysqli->query($query);
+                        $taskid = $mysqli->insert_id;
+                        $temporary_id[$tasks->temporaryid] = $taskid;
+                        
+                        $resources_array = array_merge($tasks->manpower,$tasks->material,$tasks->equipment);
+                        foreach($resources_array as $resources)
+                        {
+                            $query = insertsql("task_resources",
+                                    array("ProjectID", "TaskId", "ResourceID", "Quantity", "Remaining"),
+                                        array($pid,$taskid, $resources->id, $resources->quantity,$resources->quantity));
+                            $mysqli->query($query);
+                        }
+                    }
+                }
 		die(json_encode(array("success"=>true)));
 	break;
 
@@ -583,7 +565,7 @@ switch($jsr["do"]) {
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"])) {
 			dexit(1);
 		}
-		$query = "SELECT * FROM activities WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
+		$query = "SELECT activities.Name Activity,task.* FROM task left join activities on task.ActivityID = activities.ActivityID WHERE task.ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			$activities = array();
@@ -592,7 +574,7 @@ switch($jsr["do"]) {
 				foreach ($activity as $key=>$value) {
 					$activities[$c][$key] = $value;
 				}
-				$query = "SELECT SUM(activities_resources.Quantity * resources.Price) as TotalPrice FROM activities_resources INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ActivityID='".$mysqli->real_escape_string($activity["ActivityID"])."'";
+				$query = "SELECT SUM(task_resources.Quantity * resources.Price) as TotalPrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE TaskID='".$mysqli->real_escape_string($activity["TaskID"])."'";
 				$itt = $mysqli->query($query);
 				if ($itt->num_rows > 0) {
 					$activities[$c]["TotalPrice"] = $itt->fetch_assoc()["TotalPrice"];

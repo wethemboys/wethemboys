@@ -865,12 +865,18 @@ function getactivities() {
 		activities = JSON.parse(xhr.responseText);
 		$("#activityview").html("");
 		ogags = false;
+                activityheader = '';
 		for (i = 0; i < activities.length; i++) {
-			if (user["Type"] == "client") {
-				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td></td></tr>';
-			} else {
-				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
-			}
+                        if(activityheader != activities[i]["Activity"])
+                        {
+                            $("#activityview").append('<tr><td colspan="5" style ="font-weight:bold;">'+activities[i]["Activity"]+'</td></tr>');
+                            activityheader = activities[i]["Activity"];
+                        }
+//			if (user["Type"] == "client") {
+				theActivity = '<tr actid="%actid%"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
+//			} else {
+//				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
+//			}
 			theActivity = theActivity.replace("%actid%", activities[i]["ActivityID"]).replace("%actname%", activities[i]["Name"]).replace("%days%", getDaysBetweenDates(activities[i]["StartDate"].split(" ")[0], activities[i]["EndDate"].split(" ")[0])).replace("%startdate%", FormalDateTime(activities[i]["StartDate"])[0]).replace("%enddate%", FormalDateTime(activities[i]["EndDate"])[0]);
 			if (activities[i]["TotalPrice"] !== null) {
 				theActivity = theActivity.replace("%totalprice%", activities[i]["TotalPrice"]);

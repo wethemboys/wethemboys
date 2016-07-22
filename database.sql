@@ -14,11 +14,11 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-use evypms;
+
 --
 -- Table structure for table `activities`
 --
-
+USE evypms;
 DROP TABLE IF EXISTS `activities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -293,13 +293,13 @@ DROP TABLE IF EXISTS `task_resources`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_resources` (
   `TaskResID` int(11) NOT NULL AUTO_INCREMENT,
-  `ProjectID` longtext NOT NULL,
-  `ActivityID` longtext NOT NULL,
-  `ResourceID` longtext NOT NULL,
-  `Quantity` longtext NOT NULL,
-  `Type` longtext NOT NULL,
-  `Used` longtext NOT NULL,
-  `Remaining` longtext NOT NULL,
+  `ProjectID` int(11) NOT NULL,
+  `TaskID` int(11) NOT NULL,
+  `ResourceID` int(11) NOT NULL,
+  `Quantity` int(11) NOT NULL,
+  `Type` int(1) NOT NULL DEFAULT '0',
+  `Used` int(11) NOT NULL DEFAULT '0',
+  `Remaining` int(11) NOT NULL,
   PRIMARY KEY (`TaskResID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -349,4 +349,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-20 22:44:46
+-- Dump completed on 2016-07-23  0:07:27
