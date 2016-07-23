@@ -53,7 +53,7 @@ function updatesql($table, $columns, $values, $where) {
 
 function updatePercentage($projectid) {
 	global $mysqli;
-	$totalacts = $mysqli->query("SELECT activities.*, DATEDIFF(projects.EndDate, projects.StartDate) as ProjectDiff, DATEDIFF(activities.EndDate, projects.StartDate) as ActivityDiff FROM activities INNER JOIN projects ON activities.ProjectID=projects.ProjectID WHERE activities.ProjectID='".$mysqli->real_escape_string($projectid)."' AND Done=1 ORDER BY EndDate DESC LIMIT 1");
+	$totalacts = $mysqli->query("SELECT task.*, DATEDIFF(projects.EndDate, projects.StartDate) as ProjectDiff, DATEDIFF(task.EndDate, projects.StartDate) as ActivityDiff FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE task.ProjectID='".$mysqli->real_escape_string($projectid)."' AND Done=1 ORDER BY EndDate DESC LIMIT 1");
 	if ($totalacts->num_rows > 0) {
 		$totalacts = $totalacts->fetch_assoc();
 		$progress = $totalacts["ActivityDiff"] / $totalacts["ProjectDiff"] * 100;
@@ -343,7 +343,39 @@ switch($jsr["do"]) {
 		}
 		die(json_encode(array("success"=>true)));
 	break;
+        
+	case "task_done":
+		if (!isset($jsr["taskid"]) || empty($jsr["taskid"])) {
+			dexit(1);
+		}
+		if ($_SESSION["theuser"]["Type"] !== "admin") {
+			$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), "0"));
+			$mysqli->query($query);
+		}
 
+		$query = "SELECT task.*, projects.Name as ProjectName, projects.UserID as ClientID, projects.UserID as ClientID, DATEDIFF(task.StartDate, CURDATE()) as AdvanceDays FROM task INNER JOIN projects ON projects.ProjectID=task.ProjectID WHERE TaskID='".$mysqli->real_escape_string($jsr["taskid"])."'";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			$theAct = $qq->fetch_assoc();
+			if ($theAct["Done"] == 0 || $theAct["Done"] == "0") {
+				$query = "UPDATE task SET Done=1 WHERE TaskID='".$mysqli->real_escape_string($jsr["taskid"])."'";
+			} else {
+				$query = "UPDATE task SET Done=0 WHERE TaskID='".$mysqli->real_escape_string($jsr["taskid"])."'";
+			}
+
+//			if ((int) $theAct["AdvanceDays"] > 0) {
+//				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "AdvanceDays"=>$theAct["AdvanceDays"]);
+//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "advance_activity", json_encode($kiss), "0", $theAct["ProjectID"], $theAct["ActivityID"])));
+//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "advance_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"], $theAct["ActivityID"])));
+//			}
+
+			$mysqli->query($query);
+			$progress = updatePercentage($theAct["ProjectID"]);
+			die(json_encode(array("success"=>true, "progress"=>$progress)));
+		} else {
+			dexit(1);
+		}
+	break;
 	case "activity_done":
 		if (!isset($jsr["activityid"]) || empty($jsr["activityid"])) {
 			dexit(1);

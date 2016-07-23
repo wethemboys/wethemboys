@@ -865,8 +865,12 @@ function getactivities() {
 		activities = JSON.parse(xhr.responseText);
 		$("#activityview").html("");
 		ogags = false;
+                doneArray = [];
                 activityheader = '';
 		for (i = 0; i < activities.length; i++) {
+                        if(activities[i]["Done"] == 1){
+                            doneArray.push(activities[i]["TaskID"]);
+                        }
                         if(activityheader != activities[i]["Activity"])
                         {
                             parameters = {"name":activities[i]["Activity"]};
@@ -875,7 +879,7 @@ function getactivities() {
                             activityheader = activities[i]["Activity"];
                         }
 //			if (user["Type"] == "client") {
-				theActivity = '<tr taskid="%taskid%" class="activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
+				theActivity = '<tr taskid="%taskid%" class="activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" class="doneCheckbox" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			} else {
 //				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			}
@@ -888,13 +892,16 @@ function getactivities() {
 			}
 			if ((activities[i]["Done"] == "0" || activities[i]["Done"] == 0) && !ogags) {
 				theActivity = theActivity.replace("%checked%", "");
-				ogags = true;
-			} else if (activities[i]["Done"] == "1" || activities[i]["Done"] == 1) {
+			}else if (activities[i]["Done"] == "1" || activities[i]["Done"] == 1) {
 				theActivity = theActivity.replace("%checked%", "checked disabled");
-			}
-			if (ogags) {
-				theActivity = theActivity.replace("%checked%", "disabled");
-			}
+			}else if ((activities[i]["Done"] == "0" || activities[i]["Done"] == 0) && activities[i]["Parent"] == 0) {
+				theActivity = theActivity.replace("%checked%", "");
+			}else if ((activities[i]["Done"] == "0" || activities[i]["Done"] == 0) && $.inArray( activities[i]["Parent"], doneArray ) != -1) {
+				theActivity = theActivity.replace("%checked%", "");
+			}else{
+                            theActivity = theActivity.replace("%checked%", "disabled");
+                        }
+                        ogags = true;
                         parameters = {
                             "from":activities[i]["StartDate"].substring(0,10),
                             "to":activities[i]["EndDate"].substring(0,10),
@@ -1048,7 +1055,7 @@ function loadsimgantt() {
 	}
 }
 
-  	google.charts.load('current', {'packages':['gantt']});
+//  	google.charts.load('current', {'packages':['gantt']});
     // google.charts.setOnLoadCallback(drawChart);
 
     function daysToMilliseconds(days) {
@@ -1098,16 +1105,16 @@ function loadsimgantt() {
 		      chart.draw(data, options);
 	    }
     }
-
-function checkState(checkbox) {
-	theCbox = checkbox.target;
-	theActID = checkbox.target.parentNode.parentNode.getAttribute("actid");
+$(document).on("change" ,".doneCheckbox",function() {
+    console.log(this);
+    console.log($(this).closest('.row_task').data('parameters'));
+    params = JSON.parse($(this).closest('.row_task').data('parameters'));
 	xhr = new XMLHttpRequest();
 	xhr.open("POST", "backend.php");
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	jsr = {
-		"do":"activity_done",
-		"activityid":theActID,
+		"do":"task_done",
+		"taskid":params.temporaryid
 	}
 	xhr.send(JSON.stringify(jsr));
 	xhr.onload = function() {
@@ -1128,6 +1135,39 @@ function checkState(checkbox) {
 			getactivities();
 		}
 	}
+});
+function checkState(checkbox) {
+//    console.log(checkbox);
+//    console.log($(checkbox).closest('.row_task').data('parameters'));
+//    params = JSON.parse($(checkbox).closest('.row_task').data('parameters'));
+//	theCbox = checkbox.target;
+//	theActID = checkbox.target.parentNode.parentNode.getAttribute("actid");
+//	xhr = new XMLHttpRequest();
+//	xhr.open("POST", "backend.php");
+//	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//	jsr = {
+//		"do":"activity_done",
+//		"activityid":theActID,
+//	}
+//	xhr.send(JSON.stringify(jsr));
+//	xhr.onload = function() {
+//		theCheck = JSON.parse(xhr.responseText);
+//		if (user["Type"] == "client") {
+//			showOk("Edit Request Sent", "Change Request successfully sent.");
+//			theRowx.target.value = "";
+//		} else {
+//			$("#progressindicator").html(Math.round(theCheck["progress"]) + "%");
+//			if (theCheck["progress"] == "100" || theCheck["progress"] == 100) {
+//				$("#statusindicator").html("Completed");
+//			} else {
+//				$("#statusindicator").html("In Progress");
+//			}
+//			var completed = Math.round(theCheck["progress"]);
+//			var inprogress = 100 - completed;
+//			updatePie(inprogress, completed);
+//			getactivities();
+//		}
+//	}
 }
 
 function editused(theRowx) {

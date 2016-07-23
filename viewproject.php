@@ -54,7 +54,7 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 <script src="js/prettify/prettify.min.js"></script>
 <link href="css/gantt.css" type="text/css" rel="stylesheet" />
 <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
 <link rel="stylesheet" href="js/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="js/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
 <style>
@@ -259,7 +259,7 @@ label {
 	<div style="display:table;margin-top:10px;">
 		<div style="display:table-row">
 			<div style="display:table-cell;vertical-align:top;">
-				<img src="http://www.fashatude.com/static/fashatude/img/user_icon.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;" />
+				<!--<img src="http://www.fashatude.com/static/fashatude/img/user_icon.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;" />-->
 			</div>
 			<div style="display:table-cell;vertical-align:top;padding-left:5px;width:110px;">
 				<label style="margin-bottom:0px;color:green;font-size:12px;">%username%</label>
