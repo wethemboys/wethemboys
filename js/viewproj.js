@@ -869,15 +869,17 @@ function getactivities() {
 		for (i = 0; i < activities.length; i++) {
                         if(activityheader != activities[i]["Activity"])
                         {
-                            $("#activityview").append('<tr><td colspan="5" style ="font-weight:bold;">'+activities[i]["Activity"]+'</td></tr>');
+                            parameters = {"name":activities[i]["Activity"]};
+                            $("#activityview").append('<tr actid="'+activities[i]["ActivityID"]+'" class="row_activity activity_'+activities[i]["ActivityID"]+'"><td colspan="5" style ="font-weight:bold;">'+activities[i]["Activity"]+'</td></tr>');
+                            $("#activityview").find('tr:last').data('parameters',JSON.stringify(parameters));
                             activityheader = activities[i]["Activity"];
                         }
 //			if (user["Type"] == "client") {
-				theActivity = '<tr actid="%actid%"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
+				theActivity = '<tr taskid="%taskid%" class="activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			} else {
 //				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			}
-			theActivity = theActivity.replace("%actid%", activities[i]["ActivityID"]).replace("%actname%", activities[i]["Name"]).replace("%days%", getDaysBetweenDates(activities[i]["StartDate"].split(" ")[0], activities[i]["EndDate"].split(" ")[0])).replace("%startdate%", FormalDateTime(activities[i]["StartDate"])[0]).replace("%enddate%", FormalDateTime(activities[i]["EndDate"])[0]);
+			theActivity = theActivity.replace("%taskid%", activities[i]["TaskID"]).replace("%actname%", activities[i]["Name"]).replace("%days%", activities[i]["Days"] ).replace("%startdate%", FormalDateTime(activities[i]["StartDate"])[0]).replace("%enddate%", FormalDateTime(activities[i]["EndDate"])[0]);
 			if (activities[i]["TotalPrice"] !== null) {
 				theActivity = theActivity.replace("%totalprice%", activities[i]["TotalPrice"]);
 				ActTotalPrice += parseInt(activities[i]["TotalPrice"]);
@@ -893,10 +895,20 @@ function getactivities() {
 			if (ogags) {
 				theActivity = theActivity.replace("%checked%", "disabled");
 			}
+                        parameters = {
+                            "from":activities[i]["StartDate"].substring(0,10),
+                            "to":activities[i]["EndDate"].substring(0,10),
+                            "label":activities[i]["Name"],
+                            "activity":"Earthworks",
+                            "days":activities[i]["Das"],
+                            "temporaryid":activities[i]["TaskID"],
+                            "parent":activities[i]["Parent"],
+                            };
 			$("#activityview").append(theActivity);
+                        $("#activityview").find('tr:last').data('parameters',JSON.stringify(parameters));
 		}
 		$("#totalpriceview").html("Php. " + ActTotalPrice);
-		drawChart(activities);
+		drawChart();
 	}
 }
 
@@ -1043,7 +1055,7 @@ function loadsimgantt() {
       return days * 24 * 60 * 60 * 1000;
     }
 
-    function drawChart(theActivities) {
+    function drawChart2(theActivities) {
 	    if ($("#prjname").val() !== "" && $("#prjstartdate").val() !== "" && $("#prjenddate").val() !== "") {
 		      var data = new google.visualization.DataTable();
 		      data.addColumn('string', 'Task ID');

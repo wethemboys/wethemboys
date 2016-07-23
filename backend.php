@@ -363,11 +363,11 @@ switch($jsr["do"]) {
 				$query = "UPDATE activities SET Done=0 WHERE ActivityID='".$mysqli->real_escape_string($jsr["activityid"])."'";
 			}
 
-			if ((int) $theAct["AdvanceDays"] > 0) {
-				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "AdvanceDays"=>$theAct["AdvanceDays"]);
-				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "advance_activity", json_encode($kiss), "0", $theAct["ProjectID"], $theAct["ActivityID"])));
-				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "advance_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"], $theAct["ActivityID"])));
-			}
+//			if ((int) $theAct["AdvanceDays"] > 0) {
+//				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "AdvanceDays"=>$theAct["AdvanceDays"]);
+//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "advance_activity", json_encode($kiss), "0", $theAct["ProjectID"], $theAct["ActivityID"])));
+//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "advance_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"], $theAct["ActivityID"])));
+//			}
 
 			$mysqli->query($query);
 			$progress = updatePercentage($theAct["ProjectID"]);

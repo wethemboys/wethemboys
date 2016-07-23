@@ -47,11 +47,24 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 <script src="js/jquery.min.js"></script>
 <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 <script src="js/Chart.js"></script>
+<script src="js/drawChart2.js"></script>
+<script src="js/jquery.fn.gantt.js"></script>
+<script src="js/jquery.bootstrap-touchspin.js"></script>
+<link href="js/prettify/prettify.min.css" rel="stylesheet" type="text/css">
+<script src="js/prettify/prettify.min.js"></script>
+<link href="css/gantt.css" type="text/css" rel="stylesheet" />
 <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <link rel="stylesheet" href="js/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="js/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
 <style>
+.fn-gantt *,
+.fn-gantt *:after,
+.fn-gantt *:before {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
 .notif_table, th td {
    border-top-style:solid;
    border-bottom-style:solid;
@@ -313,7 +326,7 @@ label {
 <div id="gantt_preview" style="display:none;margin-top:10px;width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-width:1px;border-color:#c6c6c6;">
 <span style="font-size:18px;font-weight:lighter;">Gantt Preview</span>
 <hr style="margin-top:5px;margin-bottom:5px;"/>
-<div id="gantt_div" style="width:100%;"></div>
+<div id="chart_div" style="width:100%;"></div>
 </div>
 
 <div id="activities" style="position:relative;display:none;margin-top:10px;width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-width:1px;border-color:#c6c6c6;min-height:300px;">
