@@ -53,10 +53,15 @@ function updatesql($table, $columns, $values, $where) {
 
 function updatePercentage($projectid) {
 	global $mysqli;
-	$totalacts = $mysqli->query("SELECT task.*, DATEDIFF(projects.EndDate, projects.StartDate) as ProjectDiff, DATEDIFF(task.EndDate, projects.StartDate) as ActivityDiff FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE task.ProjectID='".$mysqli->real_escape_string($projectid)."' AND Done=1 ORDER BY EndDate DESC LIMIT 1");
-	if ($totalacts->num_rows > 0) {
-		$totalacts = $totalacts->fetch_assoc();
-		$progress = $totalacts["ActivityDiff"] / $totalacts["ProjectDiff"] * 100;
+	$totaldays = $mysqli->query("select sum(Days) TotalDays from task where ProjectID ='".$mysqli->real_escape_string($projectid)."'");
+        if ($totaldays->num_rows > 0) {
+		$totaldays = $totaldays->fetch_assoc();
+		$totaldays = $totaldays["TotalDays"];
+	}
+        $daysDone = $mysqli->query("select sum(Days) DaysDone  from task where ProjectID ='".$mysqli->real_escape_string($projectid)."'  and Done =1");
+        if ($daysDone->num_rows > 0) {
+		$daysDone = $daysDone->fetch_assoc();
+		$progress = $daysDone["DaysDone"] / $totaldays * 100;
 		if ($progress == 100) {
 			$query = "UPDATE projects SET Status=1, Progress='100' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
 		} else {
@@ -88,7 +93,9 @@ switch($jsr["do"]) {
 		if (!isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["userid"]) || empty($jsr["userid"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"])) {
 			dexit(1);
 		}
-		$query = insertsql("projects", array("Name", "StartDate", "EndDate", "UserID", "Status"), array($jsr["name"], $jsr["startdate"], $jsr["enddate"], $jsr["userid"], 0));
+		$query = insertsql("projects", 
+                        array("Name", "StartDate", "EndDate", "UserID", "Status","Location","ProjectType","LotSize","OtherSize"), 
+                        array($jsr["name"], $jsr["startdate"], $jsr["enddate"], $jsr["userid"], 0,$jsr["location"],$jsr["type"],$jsr["size"],$jsr["othersize"]));
 		$mysqli->query($query);
 		$pid = $mysqli->insert_id;
                 foreach($activities as $activity)
@@ -181,18 +188,18 @@ switch($jsr["do"]) {
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"])) {
 			dexit(1);
 		}
-		$query = "SELECT projects.*, users.Name as ClientName, (SELECT SUM(activities_resources.Used * resources.Price) as ActualCost FROM `activities_resources` INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ActualCost, (SELECT SUM(activities_resources.Quantity * resources.Price) as ProgrammedCost FROM `activities_resources` INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ProgrammedCost FROM projects INNER JOIN users ON projects.UserID=users.UserID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
+		$query = "SELECT projects.*, users.Name as ClientName, (SELECT SUM(task_resources.Used * resources.Price) as ActualCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ActualCost, (SELECT SUM(task_resources.Quantity * resources.Price) as ProgrammedCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ProgrammedCost FROM projects INNER JOIN users ON projects.UserID=users.UserID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			$project = $qq->fetch_assoc();
 			$project["activities"] = array();
-			$query = "SELECT activities.*, (SELECT SUM(activities_resources.Used * resources.Price) as ActualCost FROM `activities_resources` INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE activities_resources.ActivityID=activities.ActivityID) as ActualCost, (SELECT SUM(activities_resources.Quantity * resources.Price) FROM activities_resources INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE activities_resources.ActivityID=activities.ActivityID) as ProgrammedCost FROM activities WHERE ProjectID='".$mysqli->real_escape_string($project["ProjectID"])."'";
+			$query = "SELECT task.*,activities.name Activity, (SELECT SUM(task_resources.Used * resources.Price) as ActualCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE task_resources.TaskID=task.TaskID) as ActualCost, (SELECT SUM(task_resources.Quantity * resources.Price) FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE task_resources.TaskID=task.TaskID) as ProgrammedCost FROM task LEFT JOIN activities on task.ActivityID =activities.ActivityID WHERE task.ProjectID='".$mysqli->real_escape_string($project["ProjectID"])."'";
 			$qq = $mysqli->query($query);
 			if ($qq->num_rows > 0) {
 				$c = 0;
 				while ($activity = $qq->fetch_assoc()) {
 					$project["activities"][$c] = $activity;
-					$query = "SELECT activities_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM `activities_resources` INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ActivityID='".$mysqli->real_escape_string($activity["ActivityID"])."'";
+					$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE TaskID='".$mysqli->real_escape_string($activity["TaskID"])."'";
 					$project["activities"][$c]["resources"] = array();
 					$qqd = $mysqli->query($query);
 					if ($qqd->num_rows > 0) {
@@ -212,7 +219,7 @@ switch($jsr["do"]) {
 	break;
 
 	case "list_files":
-		$query = "SELECT files.*, users.Name as UploaderName FROM files INNER JOIN users ON users.UserID=files.UserID";
+		$query = "SELECT files.*, users.Name as UploaderName FROM files INNER JOIN users ON users.UserID=files.UserID where ProjectId= '".$mysqli->real_escape_string($activity["projectid"])."'";
 		$ff = $mysqli->query($query);
 		if ($ff->num_rows > 0) {
 			$files = array();
@@ -251,14 +258,14 @@ switch($jsr["do"]) {
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"])) {
 			dexit(1);
 		}
-		$query = "SELECT * FROM activities WHERE CURDATE() <= EndDate AND ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
+		$query = "SELECT * FROM task WHERE CURDATE() <= EndDate AND ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
 		$qqx = $mysqli->query($query);
 		if ($qqx->num_rows > 0) {
 			$c = 0;
 			while ($acts = $qqx->fetch_assoc()) {
 				$curact[$c] = $acts;
 				$curact[$c]["resources"] = array();
-				$query = "SELECT activities_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM activities_resources INNER JOIN resources ON resources.ResourceID=activities_resources.ResourceID WHERE ActivityID='".$curact[$c]["ActivityID"]."'";
+				$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON resources.ResourceID=task_resources.ResourceID WHERE TaskID='".$curact[$c]["TaskID"]."'";
 				$qq = $mysqli->query($query);
 				if ($qq->num_rows > 0) {
 					$x = 0;
@@ -282,7 +289,7 @@ switch($jsr["do"]) {
 			dexit(1);
 		}
 
-		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT activities_resources.*, resources.Name as ResourceName, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM activities_resources INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable";
+		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable";
 		$prj = $mysqli->query($query);
 		if ($prj->num_rows > 0) {
 			$resources = array();
@@ -409,7 +416,7 @@ switch($jsr["do"]) {
 		}
 	break;
 
-	case "add_activity":
+        case "add_activity": 
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"]) || !isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"]) || !isset($jsr["clientneeded"])) {
 			dexit(1);
 		}
@@ -565,7 +572,7 @@ switch($jsr["do"]) {
 	break;
 
 	case "update_used_resource":
-		if (!isset($jsr["actresid"]) || empty($jsr["actresid"]) || !isset($jsr["use"]) || empty($jsr["use"])) {
+		if (!isset($jsr["taskresid"]) || empty($jsr["taskresid"]) || !isset($jsr["use"]) || empty($jsr["use"])) {
 			dexit(1);
 		}
 
@@ -574,7 +581,7 @@ switch($jsr["do"]) {
 			$mysqli->query($query);
 		}
 
-		$query = "SELECT * FROM activities_resources WHERE ActResID='".$mysqli->real_escape_string($jsr["actresid"])."'";
+		$query = "SELECT * FROM task_resources WHERE TaskResID='".$mysqli->real_escape_string($jsr["taskresid"])."'";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			$theR = $qq->fetch_assoc();
@@ -582,7 +589,7 @@ switch($jsr["do"]) {
 			$use = (int) $jsr["use"];
 			if ($use <= $quantity) {
 				$remaining = $quantity - $use;
-				$query = "UPDATE activities_resources SET Used='".$mysqli->real_escape_string($use)."', Remaining='".$mysqli->real_escape_string($remaining)."' WHERE ActResID='".$mysqli->real_escape_string($jsr["actresid"])."'";
+				$query = "UPDATE task_resources SET Used='".$mysqli->real_escape_string($use)."', Remaining='".$mysqli->real_escape_string($remaining)."' WHERE TaskResID='".$mysqli->real_escape_string($jsr["taskresid"])."'";
 				$mysqli->query($query);
 				die(json_encode(array("success"=>true,"quantity"=>$quantity,"used"=>$use,"remaining"=>$remaining)));
 			} else {

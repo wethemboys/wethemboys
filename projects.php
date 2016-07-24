@@ -13,7 +13,8 @@ if (!isset($_SESSION["theuser"])) {
 <script src="js/jquery.min.js"></script>
 </head>
 <style>
-
+.coloredtr:nth-child(even) {background-color: #d9edf7}
+.coloredtr:nth-child(odd) {background-color: #f4f7f9}
 .project_table > tbody > tr > td {
    padding:3px;
 }
@@ -370,7 +371,7 @@ function loadtheprojects() {
     	prj_tbl.html("");
     	projects = JSON.parse(xhr.responseText);
     	for (i = 0; i < projects.length; i++) {
-    		prj_tplate = "<tr onclick=\"gotoproj('%prjid%')\"><td>%prjname%</td><td>%startdate%</td><td>%enddate%</td><td>%status%</td><td><div><div style='margin:0;' class='progress'><div class='progress-bar progress-bar-success' style='width:%width%;color:black;'>%complete_text% Complete</div></div></td></tr>";
+    		prj_tplate = "<tr class='coloredtr' onclick=\"gotoproj('%prjid%')\"><td>%prjname%</td><td>%startdate%</td><td>%enddate%</td><td>%status%</td><td><div><div style='margin:0;' class='progress'><div class='progress-bar progress-bar-success' style='width:%width%;color:black;'>%complete_text% Complete</div></div></td></tr>";
     		prj_tplate = prj_tplate.replace("%prjid%", projects[i]["ProjectID"]);
     		prj_tplate = prj_tplate.replace("%prjname%", projects[i]["Name"]);
     		prj_tplate = prj_tplate.replace("%startdate%", FormalDateTime(projects[i]["StartDate"])[0]);

@@ -309,6 +309,10 @@ $( document ).ready(function() {
         projectStartDate = $("#prjstartdate").val();
         projectEndDate = $("#prjenddate").val();
         projectClient = $("#prjclient").val();
+        projectLocation = $("#prjlocation").val();
+        projectType = $("#prjtype").val();
+        projectSize = $("#prjsize").val();
+        projectOtherSize = $("#prjsizeother").val();
         jsonObject = [];
         $('.row_activity').each(function(){
             activityJson = JSON.parse($(this).data('parameters'));
@@ -329,6 +333,10 @@ $( document ).ready(function() {
             sendJSON["startdate"] = projectStartDate;
             sendJSON["enddate"] = projectEndDate;
             sendJSON["userid"] = projectClient;
+            sendJSON["location"] = projectLocation;
+            sendJSON["type"] = projectType;
+            sendJSON["size"] = projectSize;
+            sendJSON["othersize"] = projectOtherSize;
             sendJSON["activities"] = JSON.stringify(jsonObject);
             xhr = new XMLHttpRequest();
             xhr.open("POST", "backend.php");

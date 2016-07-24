@@ -545,7 +545,8 @@ function getfiles() {
 	xhr.open("POST", "backend.php");
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	jsr = {
-		"do":"list_files"
+		"do":"list_files",
+		"projectid":ProjectID
 	}
 	xhr.send(JSON.stringify(jsr));
 	xhr.onload = function() {
@@ -874,12 +875,12 @@ function getactivities() {
                         if(activityheader != activities[i]["Activity"])
                         {
                             parameters = {"name":activities[i]["Activity"]};
-                            $("#activityview").append('<tr actid="'+activities[i]["ActivityID"]+'" class="row_activity activity_'+activities[i]["ActivityID"]+'"><td colspan="5" style ="font-weight:bold;">'+activities[i]["Activity"]+'</td></tr>');
+                            $("#activityview").append('<tr actid="'+activities[i]["ActivityID"]+'" class=" coloredtr row_activity activity_'+activities[i]["ActivityID"]+'"><td colspan="6" style ="font-weight:bold;">'+activities[i]["Activity"]+'</td></tr>');
                             $("#activityview").find('tr:last').data('parameters',JSON.stringify(parameters));
                             activityheader = activities[i]["Activity"];
                         }
 //			if (user["Type"] == "client") {
-				theActivity = '<tr taskid="%taskid%" class="activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" class="doneCheckbox" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
+				theActivity = '<tr taskid="%taskid%" class="coloredtr activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" class="doneCheckbox" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			} else {
 //				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			}
@@ -1106,8 +1107,6 @@ function loadsimgantt() {
 	    }
     }
 $(document).on("change" ,".doneCheckbox",function() {
-    console.log(this);
-    console.log($(this).closest('.row_task').data('parameters'));
     params = JSON.parse($(this).closest('.row_task').data('parameters'));
 	xhr = new XMLHttpRequest();
 	xhr.open("POST", "backend.php");
@@ -1136,52 +1135,22 @@ $(document).on("change" ,".doneCheckbox",function() {
 		}
 	}
 });
-function checkState(checkbox) {
-//    console.log(checkbox);
-//    console.log($(checkbox).closest('.row_task').data('parameters'));
-//    params = JSON.parse($(checkbox).closest('.row_task').data('parameters'));
-//	theCbox = checkbox.target;
-//	theActID = checkbox.target.parentNode.parentNode.getAttribute("actid");
-//	xhr = new XMLHttpRequest();
-//	xhr.open("POST", "backend.php");
-//	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-//	jsr = {
-//		"do":"activity_done",
-//		"activityid":theActID,
-//	}
-//	xhr.send(JSON.stringify(jsr));
-//	xhr.onload = function() {
-//		theCheck = JSON.parse(xhr.responseText);
-//		if (user["Type"] == "client") {
-//			showOk("Edit Request Sent", "Change Request successfully sent.");
-//			theRowx.target.value = "";
-//		} else {
-//			$("#progressindicator").html(Math.round(theCheck["progress"]) + "%");
-//			if (theCheck["progress"] == "100" || theCheck["progress"] == 100) {
-//				$("#statusindicator").html("Completed");
-//			} else {
-//				$("#statusindicator").html("In Progress");
-//			}
-//			var completed = Math.round(theCheck["progress"]);
-//			var inprogress = 100 - completed;
-//			updatePie(inprogress, completed);
-//			getactivities();
-//		}
-//	}
-}
 
-function editused(theRowx) {
-	theRow = theRowx.target.parentNode.parentNode;
-	tActResID = theRow.getAttribute("actresid");
-	theQuantity = theRow.childNodes[1].innerHTML;
-	if (parseInt(theRowx.target.value) <= parseInt(theQuantity)) {
+$(document).on("change" ,".editused",function() {
+
+//	tActResID = theRow.getAttribute("actresid");
+	theRow = $(this).closest('tr');
+        ActResId = $(this).closest('tr').attr('actresid');
+        theQuantity = $(this).closest('tr').find('td:eq(1)').html();
+	if (parseInt($(this).val()) <= parseInt(theQuantity)) {
+            alert('ajax');
 		xhr = new XMLHttpRequest();
 		xhr.open("POST", "backend.php");
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(JSON.stringify({
 			"do":"update_used_resource",
-			"actresid":tActResID,
-			"use":theRowx.target.value
+			"taskresid":ActResId,
+			"use":$(this).val()
 		}));
 		xhr.onload = function() {
 			eEe = JSON.parse(xhr.responseText);
@@ -1189,22 +1158,57 @@ function editused(theRowx) {
 				$("#edituseModal").modal("hide");
 				if (user["Type"] == "client") {
 					showOk("Edit Request Sent", "Change Request successfully sent.");
-					theRowx.target.value = "";
+					$(this).val('');
 				} else {
 					tblPlate = "<td>%name%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' onchange='editused(event)' /></td><td>%remaining%</td>";
-					tblPlate = tblPlate.replace("%name%", theRow.childNodes[0].innerHTML);
+					tblPlate = tblPlate.replace("%name%",  $(theRow).find('tr:eq(0)').html());
 					tblPlate = tblPlate.replace("%quantity%", theQuantity);
 					tblPlate = tblPlate.replace("%used%", eEe["used"]);
 					tblPlate = tblPlate.replace("%remaining%", eEe["remaining"]);
-					theRow.innerHTML = tblPlate;
+                                        $(theRow).html(tblPlate)
 				}
-			} else {
-				alert("Tangina there is a problem!");
-			}
+			} 
 		}
 	} else {
 		showError("Edit Error", "Used Quantity must be less than the Real Quantity");
 	}
+});
+function editused(theRowx) {
+//    
+//	theRow = theRowx.target.parentNode.parentNode;
+//	tActResID = theRow.getAttribute("actresid");
+//	theQuantity = theRow.childNodes[1].innerHTML;
+//	if (parseInt(theRowx.target.value) <= parseInt(theQuantity)) {
+//		xhr = new XMLHttpRequest();
+//		xhr.open("POST", "backend.php");
+//		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//		xhr.send(JSON.stringify({
+//			"do":"update_used_resource",
+//			"actresid":tActResID,
+//			"use":theRowx.target.value
+//		}));
+//		xhr.onload = function() {
+//			eEe = JSON.parse(xhr.responseText);
+//			if (eEe["success"]) {
+//				$("#edituseModal").modal("hide");
+//				if (user["Type"] == "client") {
+//					showOk("Edit Request Sent", "Change Request successfully sent.");
+//					theRowx.target.value = "";
+//				} else {
+//					tblPlate = "<td>%name%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' onchange='editused(event)' /></td><td>%remaining%</td>";
+//					tblPlate = tblPlate.replace("%name%", theRow.childNodes[0].innerHTML);
+//					tblPlate = tblPlate.replace("%quantity%", theQuantity);
+//					tblPlate = tblPlate.replace("%used%", eEe["used"]);
+//					tblPlate = tblPlate.replace("%remaining%", eEe["remaining"]);
+//					theRow.innerHTML = tblPlate;
+//				}
+//			} else {
+//				alert("Tangina there is a problem!");
+//			}
+//		}
+//	} else {
+//		showError("Edit Error", "Used Quantity must be less than the Real Quantity");
+//	}
 }
 
 function getcurrentactivity() {
@@ -1220,15 +1224,15 @@ function getcurrentactivity() {
 		theCont = $("#currentacts");
 		theCont.html("");
 		for (var i = 0; i < tActivity.length; i++) {
-			mmT = "<span style=\"font-size:18px;font-weight:lighter;display:block;margin-top:3px;\">Current Activity: <span style=\"font-size:12px;color:gray;font-weight:normal;\">%theactivityname%<\/span><\/span>\r\n<hr style=\"margin-top:5px;margin-bottom:5px;\"\/>\r\n<table class=\"project_table\" style=\"width:100%;\">\r\n<thead>\r\n<tr>\r\n<th>Resource Name<\/th>\r\n<th>Quantity<\/th>\r\n<th>Used<\/th>\r\n<th>Remaining<\/th>\r\n<\/tr>\r\n<\/thead>\r\n<tbody>\r\n%tdata%\r\n<\/tbody>\r\n<\/table>";
+			mmT = "<span style=\"font-size:18px;font-weight:lighter;display:block;margin-top:3px;\">Current Task: <span style=\"font-size:12px;color:gray;font-weight:normal;\">%theactivityname%<\/span><\/span>\r\n<hr style=\"margin-top:5px;margin-bottom:5px;\"\/>\r\n<table class=\"project_table\" style=\"width:100%;border-bottom:1px solid #929292;\">\r\n<thead>\r\n<tr>\r\n<th style=\"width:40%\">Resource Name<\/th>\r\n<th style=\"width:20%\">Quantity<\/th>\r\n<th style=\"width:20%\">Used<\/th>\r\n<th style=\"width:20%\">Remaining<\/th>\r\n<\/tr>\r\n<\/thead>\r\n<tbody>\r\n%tdata%\r\n<\/tbody>\r\n<\/table>";
 			nnT = "";
 			for (var j = 0; j < tActivity[i]["resources"].length; j++) {
 				if (user["Type"] == "client") {
-					tblPlate = "<tr actresid='%actresid%'><td>%name%</td><td>%quantity%</td><td>%used%</td><td>%remaining%</td></tr>";
+					tblPlate = "<tr actresid='%actresid%' class='coloredtr'><td>%name%</td><td>%quantity%</td><td>%used%</td><td>%remaining%</td></tr>";
 				} else {
-					tblPlate = "<tr actresid='%actresid%'><td>%name%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' onchange='editused(event)' /></td><td>%remaining%</td></tr>";
+					tblPlate = "<tr actresid='%actresid%' class='coloredtr'><td>%name%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' class='editused' onchange='editused(event)' /></td><td>%remaining%</td></tr>";
 				}
-				tblPlate = tblPlate.replace("%actresid%", tActivity[i]["resources"][j]["ActResID"]);
+				tblPlate = tblPlate.replace("%actresid%", tActivity[i]["resources"][j]["TaskResID"]);
 				tblPlate = tblPlate.replace("%name%", tActivity[i]["resources"][j]["ResourceName"]);
 				tblPlate = tblPlate.replace("%quantity%", tActivity[i]["resources"][j]["Quantity"]);
 				tblPlate = tblPlate.replace("%used%", tActivity[i]["resources"][j]["Used"]);
@@ -1256,13 +1260,14 @@ function getallresources() {
 		theTbl.html("");
 		tPrice = 0;
 		for (var i = 0; i < theResources.length; i++) {
-			tblPlate = "<tr><td>%name%</td><td>%quantity%</td><td>%price%</td></tr>";
+			tblPlate = "<tr class='coloredtr'><td>%name%</td><td>%quantity%</td><td>%price%</td></tr>";
 			tblPlate = tblPlate.replace("%name%", theResources[i]["ResourceName"]);
 			tblPlate = tblPlate.replace("%quantity%", theResources[i]["QuantityTotal"]);
 			tblPlate = tblPlate.replace("%price%", "Php. " + theResources[i]["PriceTotal"]);
 			theTbl.append(tblPlate);
 			tPrice += parseInt(theResources[i]["PriceTotal"]);
 		}
+                theTbl.append("<hr/>");
 		$("#overallresourcesprice").html("Php. " + tPrice);
 		getcurrentactivity();
 	}
@@ -1304,8 +1309,8 @@ function controls() {
 		}
 		$("#act_list").html("");
 		for (var a = 0; a < proj["activities"].length; a++) {
-			tBlex = '<span style="margin-top:5px;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Activity Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Activity Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table>';
-			tBlex = tBlex.replace("%header%", proj["activities"][a]["Name"]);
+			tBlex = '<span style="margin-top:5px;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table>';
+			tBlex = tBlex.replace("%header%",proj["activities"][a]["Activity"] +' - '+proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%actname%", proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%startdate%", FormalDateTime(proj["activities"][a]["StartDate"])[0]);
 			tBlex = tBlex.replace("%enddate%", FormalDateTime(proj["activities"][a]["EndDate"])[0]);
@@ -1322,7 +1327,7 @@ function controls() {
 			ActPrice = 0;
 			bLejx = "";
 			for (var b = 0; b < proj["activities"][a]["resources"].length; b++) {
-				bLej = "<tr><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
+				bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
 				bLej = bLej.replace("%name%", proj["activities"][a]["resources"][b]["ResourceName"]);
 				bLej = bLej.replace("%qty%", proj["activities"][a]["resources"][b]["Quantity"]);
 				bLej = bLej.replace("%remaining%", proj["activities"][a]["resources"][b]["Remaining"]);

@@ -27,7 +27,7 @@ function FormalDateTime($datetime) {
 
 if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 	$mysqli = new mysqli("localhost", "root", "", "evypms");
-	$query = "SELECT projects.*, users.Name as ClientName, (SELECT SUM(activities_resources.Used * resources.Price) as ActualCost FROM `activities_resources` INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ActualCost, (SELECT SUM(activities_resources.Quantity * resources.Price) as ProgrammedCost FROM `activities_resources` INNER JOIN resources ON activities_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ProgrammedCost FROM projects INNER JOIN users ON projects.UserID=users.UserID WHERE ProjectID='".$mysqli->real_escape_string($_GET["pid"])."'";
+	$query = "SELECT projects.*, users.Name as ClientName, (SELECT SUM(task_resources.Used * resources.Price) as ActualCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ActualCost, (SELECT SUM(task_resources.Quantity * resources.Price) as ProgrammedCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ProgrammedCost FROM projects INNER JOIN users ON projects.UserID=users.UserID WHERE ProjectID='".$mysqli->real_escape_string($_GET["pid"])."'";
 	$qq = $mysqli->query($query);
 	if ($qq->num_rows > 0) {
 		$project = $qq->fetch_assoc();
@@ -74,7 +74,9 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
    padding:5px;
    cursor:pointer;
 }
-
+.coloredtr:nth-child(even) {background-color: #d9edf7}
+.coloredtr:nth-child(odd) {background-color: #f4f7f9}
+.row_activity {border-top: 1px solid #929292}
 .project_table > tbody > tr > td {
 	padding:5px;
 }
@@ -293,28 +295,40 @@ label {
 <span style="font-size:18px;font-weight:lighter;">Project Information</span>
 <hr style="margin-top:5px;margin-bottom:5px;"/>
 <table style="width:100%;" class="table_form">
-<tr>
+<tr class='coloredtr'>
 <td>Project Name:</td><td id="prjnameindicator2" style="color:gray;"><?php echo $project["Name"];?></td>
 </tr>
-<tr>
+<tr class='coloredtr'>
 <td>Start Date:</td><td id="prjstartdateindicator2" rawdate="<?php echo $project["StartDate"];?>" style="color:gray;"><?php echo FormalDateTime($project["StartDate"])[0];?></td>
 </tr>
-<tr>
+<tr class='coloredtr'>
 <td>End Date:</td><td id="prjenddateindicator2" rawdate="<?php echo $project["EndDate"];?>" style="color:gray;"><?php echo FormalDateTime($project["EndDate"])[0];?></td>
 </tr>
-<tr>
+<tr class='coloredtr'>
 <td>Client Name:</td><td id="prjclientnameindicator2" clientid="<?php echo $project["UserID"];?>" style="color:gray;"><?php echo $project["ClientName"];?></td>
 </tr>
-<tr>
+<tr class='coloredtr'>
 <td>Progress:</td><td id="progressindicator2" style="color:gray;"><?php echo round($project["Progress"]);?>%</td>
 </tr>
-<tr>
+<tr class='coloredtr'>
 <td>Status:</td><td id="statusindicator2" style="color:gray;"><?php echo ($project["Status"] == "1" ? "Completed" : "In Progress");?></td>
 </tr>
-<tr>
-<td>Programmed Cost:</td><td id="programmedcostindicator2" style="color:gray;"></td>
+<tr class='coloredtr'>
+<td>Location:</td><td id="locationindicator" style="color:gray;"><?php echo $project["Location"];?></td>
 </tr>
-<tr>
+<tr class='coloredtr'>
+<?php
+$lotSize = $project['LotSize'] . ' Square Meters';
+if ($project['LotSize'] == 'others'){
+    $lotSize =  $project['OtherSize'];
+}
+?>
+<td>Lot Size:</td><td id="statusindicator2" style="color:gray;"><?php echo $lotSize;?></td>
+</tr>
+<tr class='coloredtr'>
+<td >Programmed Cost:</td><td id="programmedcostindicator2" style="color:gray;"></td>
+</tr>
+<tr class='coloredtr'>
 <td>Actual Cost:</td><td id="actualcostindicator2" style="color:gray;"></td>
 </tr>
 </table>
