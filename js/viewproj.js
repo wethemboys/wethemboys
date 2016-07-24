@@ -1143,7 +1143,6 @@ $(document).on("change" ,".editused",function() {
         ActResId = $(this).closest('tr').attr('actresid');
         theQuantity = $(this).closest('tr').find('td:eq(1)').html();
 	if (parseInt($(this).val()) <= parseInt(theQuantity)) {
-            alert('ajax');
 		xhr = new XMLHttpRequest();
 		xhr.open("POST", "backend.php");
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
