@@ -219,7 +219,7 @@ switch($jsr["do"]) {
 	break;
 
 	case "list_files":
-		$query = "SELECT files.*, users.Name as UploaderName FROM files INNER JOIN users ON users.UserID=files.UserID where ProjectId= '".$mysqli->real_escape_string($activity["projectid"])."'";
+		$query = "SELECT files.*, users.Name as UploaderName FROM files INNER JOIN users ON users.UserID=files.UserID where ProjectId= '".$mysqli->real_escape_string($jsr["projectid"])."'";
 		$ff = $mysqli->query($query);
 		if ($ff->num_rows > 0) {
 			$files = array();
