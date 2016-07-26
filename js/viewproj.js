@@ -1308,11 +1308,12 @@ function controls() {
 		}
 		$("#act_list").html("");
 		for (var a = 0; a < proj["activities"].length; a++) {
-			tBlex = '<span style="margin-top:5px;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table>';
+			tBlex = '<span style="margin-top:5px;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table>';
 			tBlex = tBlex.replace("%header%",proj["activities"][a]["Activity"] +' - '+proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%actname%", proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%startdate%", FormalDateTime(proj["activities"][a]["StartDate"])[0]);
 			tBlex = tBlex.replace("%enddate%", FormalDateTime(proj["activities"][a]["EndDate"])[0]);
+                        tBlex = tBlex.replace("%astatus%", proj["activities"][a]["Done"]== 1 ? 'Done':'In Progress');
 			if (proj["activities"][a]["ProgrammedCost"] !== null && proj["activities"][a]["ProgrammedCost"] !== "0") {
 				tBlex = tBlex.replace("%pcost%", "Php. " + proj["activities"][a]["ProgrammedCost"]);
 			} else {

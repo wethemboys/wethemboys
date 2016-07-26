@@ -133,18 +133,7 @@ footer {
 </style>
 <body>
 <nav style="position:relative;height:50px;background-color: #378B2E;">
-<ul class="menu_bar">
-<li><a href="index.php">Home</a></li>
-<li class="selected"><a href="projects.php">Projects</a>
-<ul class="sub_menu">
-	<li><a href="projects.php?m=inprogress">In Progress</a></li>
-	<li><a href="projects.php?m=completed">Completed</a></li>
-</ul>
-</li>
-<li id="resourcesbtn"><a href="resources.php">Resources</a></li>
-<li id="clientsbtn"><a href="clients.php">Clients</a></li>
-<li style="position:absolute;right:10px;"><a id="mn_optbtn" style="outline-width:0px;cursor:pointer"><span class="glyphicon glyphicon-menu-hamburger" style="margin-right:5px;"></span> <span id="usr_menu_disp">Marvin Gaye</span></a></li>
-</ul>
+<?php require 'menu.php'?>
 <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;top:50px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
 	<div style="display:table;width:100%;">
 	<div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>

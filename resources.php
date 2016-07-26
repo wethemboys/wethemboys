@@ -80,7 +80,6 @@ footer {
 	color:#111;
 }
 
-
 .menu_bar {
 	position:relative;
     list-style-type: none;
@@ -102,7 +101,6 @@ footer {
     text-decoration: none;
 }
 
-/* Change the link color to #111 (black) on hover */
 .menu_bar li a:hover {
     background-color: #5FAE57;
 }
@@ -111,19 +109,6 @@ footer {
 	background-color: #5FAE57;
 }
 
-.menu_options td {
-	text-align:center;
-	font-size:12px;
-	padding:3px;
-}
-.menu_options td:hover {
-	background-color:#efefef;
-	cursor:pointer;
-}
-.menu_options a {
-	text-decoration:none;
-	color:#111;
-}
 
 .menu_bar li:hover .sub_menu{
 	display:block;
@@ -159,41 +144,10 @@ footer {
     background-color: #378B2E;
 }
 
-.menu_bar li {
-    float: left;
-}
-
-.menu_bar li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-/* Change the link color to #111 (black) on hover */
-.menu_bar li a:hover {
-    background-color: #5FAE57;
-}
-
-.menu_bar .selected {
-	background-color: #5FAE57;
-}
 </style>
 <body>
 <nav style="position:relative;height:50px;background-color: #378B2E;">
-<ul class="menu_bar">
-<li><a href="index.php">Home</a></li>
-<li><a href="projects.php">Projects</a>
-<ul class="sub_menu">
-	<li><a href="projects.php?m=inprogress">In Progress</a></li>
-	<li><a href="projects.php?m=completed">Completed</a></li>
-</ul>
-</li>
-<li id="resourcesbtn" class="selected"><a href="resources.php">Resources</a></li>
-<li id="clientsbtn"><a href="clients.php">Clients</a></li>
-<li style="position:absolute;right:10px;"><a id="mn_optbtn" style="outline-width:0px;cursor:pointer"><span class="glyphicon glyphicon-menu-hamburger" style="margin-right:5px;"></span> <span id="usr_menu_disp">Marvin Gaye</span></a></li>
-</ul>
+<?php require 'menu.php'?>
 <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;top:50px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
 	<div style="display:table;width:100%;">
 	<div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>

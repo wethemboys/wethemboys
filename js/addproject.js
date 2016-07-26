@@ -319,7 +319,6 @@ $( document ).ready(function() {
             classes = $(this).attr("class");
             arrayClass = classes.split(' ');
             activityJson.tasks = [];
-            console.log(arrayClass[1]);
             $('.row_task.'+arrayClass[1]).each(function(){
                 taskJson = JSON.parse($(this).data('parameters'));
                 activityJson.tasks.push(taskJson);
@@ -392,8 +391,12 @@ $( document ).ready(function() {
             $("#addenddate").val('');
             $("#addparent").val('');
             $(".task_form").show();
+            $("#tdnotify").hide();
+            $("#addnotify").prop('checked',false);
+            $("#addmessage").val('');
             $(this).html('Add');
             $(this).data('mode','add');
+            
         }
         else if(mode == 'add'){
             taskName = $("#addtaskname").val();
@@ -403,11 +406,13 @@ $( document ).ready(function() {
             actname = $("#actname").val();
             temporaryid = parseInt($("#temporaryid").val()) + 1;
             parentid = $("#addparent").val();
+            notify = $("#addnotify").is(':checked');
+            message = $("#addmessage").val();
             $("#temporaryid").val(temporaryid);
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
             if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":{},"material":{},"equipment":{}};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":{},"material":{},"equipment":{},"notify":notify,"message":message};
                 var row = '<tr class="add_row_task add_task_'+temporaryid+'"><td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs"><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs"><span class="glyphicon glyphicon-remove"></button></td></tr>';
@@ -430,6 +435,8 @@ $( document ).ready(function() {
             actname = $("#actname").val();
             temporaryid = parseInt($("#addeditid").val())  ;
             parentid = $("#addparent").val();
+            notify = $("#addnotify").is(':checked');
+            message = $("#addmessage").val();
             oldJson = $("#addtasktable").find('.add_task_'+temporaryid).data('parameters');
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
@@ -437,7 +444,7 @@ $( document ).ready(function() {
                 updateChildTaskStartdateModal(temporaryid, taskendday);
             }
             if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":oldJson.manpower,"material":oldJson.material,"equipment":oldJson.equipment};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":oldJson.manpower,"material":oldJson.material,"equipment":oldJson.equipment,"notify":notify,"message":message};
                 var row = '<td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs" ><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs" ><span class="glyphicon glyphicon-remove"></button></td>';
@@ -497,6 +504,14 @@ $( document ).ready(function() {
         $("#adddays").val(data.days);
         $("#addeditid").val(data.temporaryid);
         $("#addparent").val(data.parentid);
+        $("#addmessage").val(data.message);
+        $("#addnotify").prop('checked',data.notify);
+        if(data.notify){
+            $('#tdnotify').show();
+        }
+        else{
+            $('#tdnotify').hide();
+        }
         var start =  new Date(data.from );
         $('#addstartdate').datepicker('setDate', start);
         var end =  new Date(data.to );
@@ -696,7 +711,9 @@ $( document ).ready(function() {
                     $.each(taskData.equipment, function(index, equipment){
                         equipmentText = equipmentText + ' ' + equipment.quantity + ' ' + equipment.name + '<br/>';
                     });
-                    $('#activityview').append("<tr class='activity_"+rowId+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+ taskData.from+"</td><td>"+ taskData.to+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td><td>"+ equipmentText+"</td></tr>");
+                    from = new Date(taskData.from);
+                    to = new Date(taskData.to);
+                    $('#activityview').append("<tr class='activity_"+rowId+" row_task'><td></td><td>"+ taskData.label+"</td> <td>"+ taskData.days+"</td><td>"+from.toInputFormat()+"</td><td>"+to.toInputFormat()+"</td><td>"+manpowerText+"</td><td>"+ materialText+"</td><td>"+ equipmentText+"</td></tr>");
                     $('#activityview').find("tr:last").data('parameters',JSON.stringify(taskData));
                 });
                 $("#hiddenactivityid").val( parseInt($("#hiddenactivityid").val()) + 1);
@@ -735,7 +752,9 @@ $( document ).ready(function() {
             showError("Activity not Added", "Please fill up activity name. (Activity name is required)");
         }
     });
-    $(document).on("click" ,".editactivity",function() {    
+    $(document).on("click" ,".editactivity",function() {
+        $('#addtaskbutton').data('mode','none');
+        $('#addtaskbutton').html('Add Task');
         classes = $(this).closest('.row_activity').attr("class");
         activityparameters = JSON.parse($(this).closest('.row_activity').data('parameters'));
         $("#actname").val(activityparameters.name);
@@ -746,7 +765,8 @@ $( document ).ready(function() {
         $("#addActivityModal").modal("show");
         $("#hiddeneditactivityid").val(array[1]);
         $("#addtasktable").html('');
- 
+        $("#addnotify").prop('checked',false);
+        
         $('.'+array[1]+'.row_task').each(function(){
             taskparameter = JSON.parse($(this).data('parameters'));
             taskName = taskparameter.label;
@@ -756,13 +776,14 @@ $( document ).ready(function() {
             actname = taskparameter.activity;
             temporaryid = taskparameter.temporaryid;
             parentid = taskparameter.parentid;
+            
             manpowerText='';
             materialText='';
             equipmentText='';
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
             if (taskName != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":taskparameter.manpower,"material":taskparameter.material,"equipment":taskparameter.equipment};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":taskparameter.manpower,"material":taskparameter.material,"equipment":taskparameter.equipment,"notify":taskparameter.notify,"message":taskparameter.message};
                 var row = '<tr class="add_row_task add_task_'+temporaryid+'"><td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs"><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs"><span class="glyphicon glyphicon-remove"></button></td></tr>';
@@ -803,6 +824,7 @@ $( document ).ready(function() {
             startdate = $(".parenttaskoption:selected").attr('startdate');
             if(startdate!= ''){
                     var start =  new Date(startdate );
+                    start.setDate(start.getDate() + 1);
                     $('#addstartdate').datepicker('setDate', start);
                     taskDay =$("#adddays").val();
                     if ( taskDay != "" && start != "" ) {
@@ -811,6 +833,25 @@ $( document ).ready(function() {
                         $('#addenddate').datepicker('setDate', end);
                     }   
             }
+        }
+    });
+    $(document).on("change" ,"#addnotify",function() {
+        if($(this).is(':checked') )
+        {
+            $('#tdnotify').show();
+            if (!($('#addmessage').val()!='')){
+                message = $('#addmessagetemplate').val();
+                message= message.replace("%clientNameHolder%",$('#prjclient option:selected').text());
+                message= message.replace("%locationHolder%",$('#prjlocation').val());
+                message= message.replace("%startDateHolder%",$('#addstartdate').val());
+                message= message.replace("%taskNameHolder%",$('#addtaskname').val());
+                $('#addmessage').val(message);
+            }
+        }
+        else
+        {
+            $('#tdnotify').hide();
+            $('#addmessage').val('');
         }
     });
     

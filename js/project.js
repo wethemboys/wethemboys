@@ -94,6 +94,7 @@ function displayTaskTemplate( startdate, taskJson, activity_id, activities_name 
        taskData.equipment = equipmentJson;
        taskData.temporaryid = task.temporaryid;
        taskData.parentid = task.parentid;
+       taskData.notify = false;
        $('#temporaryid').val(task.temporaryid);
        $('#activityview').find("tr:last").data('parameters',JSON.stringify(taskData));
     });

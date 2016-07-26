@@ -88,6 +88,7 @@ if (!isset($jsr["do"]) || empty($jsr["do"])) {
 
 switch($jsr["do"]) {
 	case "add_project":
+            
             $activities = json_decode($jsr['activities']);
             $temporary_id = array();
 		if (!isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["userid"]) || empty($jsr["userid"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"])) {
@@ -110,8 +111,8 @@ switch($jsr["do"]) {
                             $parent = $temporary_id[$tasks->parentid];
                         }
                         $query = insertsql("task", 
-                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent"),
-                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $parent));
+                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent", "ClientNeeded"),
+                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $parent,  $tasks->notify));
                         $mysqli->query($query);
                         $taskid = $mysqli->insert_id;
                         $temporary_id[$tasks->temporaryid] = $taskid;
@@ -143,7 +144,22 @@ switch($jsr["do"]) {
 		$mysqli->query($query);
 		die(json_encode(array("success"=>true)));
 	break;
+        
+	case "edit_project":
+		if (!isset($jsr["projectid"]) || empty($jsr["projectid"]) || !isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["userid"]) || empty($jsr["userid"]) || !clientExist($jsr["clientid"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"])) {
+			dexit(1);
+		}
 
+		if ($_SESSION["theuser"]["Type"] !== "admin") {
+			$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), "0"));
+			$mysqli->query($query);
+		}
+
+		$query = updatesql("projects", array("Name", "StartDate", "EndDate", "UserID"), array($jsr["name"], $jsr["startdate"], $jsr["enddate"], $jsr["userid"]), array("ProjectID", $jsr["projectid"]));
+		$mysqli->query($query);
+		die(json_encode(array("success"=>true)));
+	break;
+        
 	case "addfile":
 		if (!isset($jsr["filename"]) || empty($jsr["filename"]) || !isset($jsr["type"]) || empty($jsr["type"]) || !isset($jsr["projectid"]) || empty($jsr["projectid"]) || !isset($jsr["file"]) || empty($jsr["file"])) {
 			die(json_encode(array("success"=>false)));
@@ -258,7 +274,7 @@ switch($jsr["do"]) {
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"])) {
 			dexit(1);
 		}
-		$query = "SELECT * FROM task WHERE CURDATE() <= EndDate AND ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
+		$query = "SELECT * FROM task WHERE CURDATE() <= EndDate AND CURDATE() >= StartDate AND ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
 		$qqx = $mysqli->query($query);
 		if ($qqx->num_rows > 0) {
 			$c = 0;
@@ -289,16 +305,19 @@ switch($jsr["do"]) {
 			dexit(1);
 		}
 
-		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable";
+		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable";
 		$prj = $mysqli->query($query);
 		if ($prj->num_rows > 0) {
 			$resources = array();
 			$r = 0;
 			while ($resource = $prj->fetch_assoc()) {
+
+                            if($resource['ResourceType']=='material'){
 				foreach ($resource as $key=>$value) {
-					$resources[$r][$key] = $value;
+                                    $resources[$r][$key] = $value;	
 				}
 				$r++;
+                            }
 			}
 			die(json_encode($resources));
 		} else {

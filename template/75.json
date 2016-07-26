@@ -1,7 +1,7 @@
     {
    "0": {"name":"Earthworks",
        "tasks" :{
-           "0" : {"temporaryid":1, "name" : "Clearing and Grubing","days" : 5,"start" : 0,"end" : 7,"parentid":"",
+           "0" : {"temporaryid":1, "name" : "Clearing and Grubing","days" : 5,"start" : 0,"end" : 4,"parentid":"",
                "manpower" : {
                    "0" : {"id" : 1,"name" : "Foreman","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -11,7 +11,7 @@
                },
                "equipment" : {}
            },
-           "1" : {"temporaryid":2, "name" : "Excavation","days" : 12,"start" : 7,"end" : 21,"parentid":1,
+           "1" : {"temporaryid":2, "name" : "Excavation","days" : 12,"start" : 5,"end" : 16,"parentid":1,
                "manpower" : {},
                "material" : {
                    "0" : {"id" : 3,"name" : "Sickle","quantity" : 1},
@@ -19,14 +19,14 @@
                },
                "equipment" : {}
            },
-           "2" : {"temporaryid":3, "name" : "Soil Poisoning","days" : 5,"start" : 21,"end" : 28,"parentid":2,
+           "2" : {"temporaryid":3, "name" : "Soil Poisoning","days" : 5,"start" : 17,"end" : 21,"parentid":2,
                "manpower" : {
                    "0" : {"id" : 2,"name" : "Labor","quantity" : 1}
                },
                "material" : {},
                "equipment" : {}
            },
-           "3" : {"temporaryid":4, "name" : "Gravel Bedding","days" : 5,"start" : 28,"end" : 35,"parentid":3,
+           "3" : {"temporaryid":4, "name" : "Gravel Bedding","days" : 5,"start" : 22,"end" : 26,"parentid":3,
                "manpower" : {
                    "0" : {"id" : 2,"name" : "Labor","quantity" : 2}
                },
@@ -37,7 +37,7 @@
    },
    "1": {"name":"Concrete Works",
        "tasks" :{
-           "0" : {"temporaryid":5, "name" : "Footings","days" : 7,"start" : 35,"end" : 44,"parentid":4,
+           "0" : {"temporaryid":5, "name" : "Footings","days" : 7,"start" : 27,"end" : 33,"parentid":4,
                "manpower" : {
                    "0" : {"id" : 5,"name" : "Mansory","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3},
@@ -52,7 +52,7 @@
                    "0" : {"id" : 41,"name" : "Cement Mixer","quantity" : 1}
                }
            },
-           "1" : {"temporaryid":6, "name" : "Columns","days" : 15,"start" : 44,"end" : 61,"parentid":5,
+           "1" : {"temporaryid":6, "name" : "Columns","days" : 15,"start" : 34,"end" : 48,"parentid":5,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 3},
                    "1" : {"id" : 5,"name" : "Mansory","quantity" : 3},
@@ -65,7 +65,7 @@
                },
                "equipment" : {}
            },
-           "2" : {"temporaryid":7, "name" : "Beams","days" : 11,"start" : 61,"end" : 74,"parentid":6,
+           "2" : {"temporaryid":7, "name" : "Beams","days" : 11,"start" : 49,"end" : 59,"parentid":6,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 5},
                    "1" : {"id" : 5,"name" : "Mansory","quantity" : 3},
@@ -78,7 +78,7 @@
                },
                "equipment" : {}
            },
-           "3" : {"temporaryid":8, "name" : "Slabs","days" : 8,"start" : 74,"end" : 84,"parentid":7,
+           "3" : {"temporaryid":8, "name" : "Slabs","days" : 8,"start" : 60,"end" : 67,"parentid":7,
                "manpower" : {
                    "0" : {"id" : 5,"name" : "Mansory","quantity" : 2},
                    "1" : {"id" : 10,"name" : "Carpentry","quantity" : 2},
@@ -95,7 +95,7 @@
    },
    "2": {"name":"Steel Works",
        "tasks" :{
-           "0" : {"temporaryid":9, "name" : "Footings","days" : 4,"start" : 7,"end" : 13,"parentid":1,
+           "0" : {"temporaryid":9, "name" : "Footings","days" : 4,"start" : 5,"end" : 8,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 11,"name" : "Welder","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -105,7 +105,7 @@
                },
                "equipment" : {}
            },
-           "1" : {"temporaryid":10, "name" : "Columns","days" : 22,"start" : 7,"end" : 31,"parentid":1,
+           "1" : {"temporaryid":10, "name" : "Columns","days" : 22,"start" : 5,"end" : 26,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -117,7 +117,7 @@
                },
                "equipment" : {}
            },
-           "2" : {"temporaryid":11, "name" : "Beams","days" : 19,"start" : 7,"end" : 28,"parentid":1,
+           "2" : {"temporaryid":11, "name" : "Beams","days" : 19,"start" : 5,"end" : 24,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -129,7 +129,7 @@
                },
                "equipment" : {}
            },
-           "3" : {"temporaryid":12, "name" : "Slabs","days" : 10,"start" : 7,"end" : 19,"parentid":1,
+           "3" : {"temporaryid":12, "name" : "Slabs","days" : 10,"start" : 5,"end" : 14,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -143,7 +143,7 @@
    },
    "3": {"name":"Framework",
        "tasks" :{
-           "0" : {"temporaryid":13, "name" : "Formworks and Scaffoldings","days" : 35,"start" : 7,"end" : 44,"parentid":1,
+           "0" : {"temporaryid":13, "name" : "Formworks and Scaffoldings","days" : 35,"start" : 5,"end" : 39,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 2,"name" : "Labor","quantity" : 3},
                    "1" : {"id" : 10,"name" : "Carpentry","quantity" : 5}
@@ -159,7 +159,7 @@
    },
    "4": {"name":"Mansory Works",
        "tasks" :{
-           "0" : {"temporaryid":14, "name" : "Mansory","days" : 41,"start" : 7,"end" : 50,"parentid":1,
+           "0" : {"temporaryid":14, "name" : "Mansory","days" : 41,"start" : 5,"end" : 45,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 5,"name" : "Mansory","quantity" : 5},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3}
@@ -174,7 +174,7 @@
    },
    "5": {"name":"Carpentry Works",
        "tasks" :{
-           "0" : {"temporaryid":15, "name" : "Ceiling, Cabinets and Etc.","days" : 31,"start" : 50,"end" : 83,"parentid":14,
+           "0" : {"temporaryid":15, "name" : "Ceiling, Cabinets and Etc.","days" : 31,"start" : 46,"end" : 76,"parentid":14,
                "manpower" : {
                    "0" : {"id" : 12,"name" : "Steel Man","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -189,7 +189,7 @@
    },
    "6": {"name":"Roofing Works",
        "tasks" :{
-           "0" : {"temporaryid":16, "name" : "Roofing Materials, Trusses and etc.","days" : 12,"start" : 83,"end" : 97,"parentid":15,
+           "0" : {"temporaryid":16, "name" : "Roofing Materials, Trusses and etc.","days" : 12,"start" : 77,"end" : 88,"parentid":15,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 5},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3}
@@ -205,7 +205,7 @@
    },
    "7": {"name":"Pre-Fabricated Works",
        "tasks" :{
-           "0" : {"temporaryid":17, "name" : "Door","days" : 9,"start" : 97,"end" : 108,"parentid":16,
+           "0" : {"temporaryid":17, "name" : "Door","days" : 9,"start" : 89,"end" : 98,"parentid":16,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -215,7 +215,7 @@
                },
                "equipment" : {}
            },
-           "1" : {"temporaryid":18, "name" : "Windows","days" : 9,"start" : 108,"end" : 119,"parentid":17,
+           "1" : {"temporaryid":18, "name" : "Windows","days" : 9,"start" : 99,"end" : 108,"parentid":17,
                "manpower" : {
                    "0" : {"id" : 10,"name" : "Carpentry","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -229,7 +229,7 @@
    },
    "8": {"name":"Painting Works",
        "tasks" :{
-           "0" : {"temporaryid":19, "name" : "Exterior","days" : 24,"start" : 119,"end" : 145,"parentid":18,
+           "0" : {"temporaryid":19, "name" : "Exterior","days" : 24,"start" : 109,"end" : 132,"parentid":18,
                "manpower" : {
                    "0" : {"id" : 26,"name" : "Painter","quantity" : 4}
                },
@@ -246,7 +246,7 @@
    },
    "9": {"name":"Plumbing",
        "tasks" :{
-           "0" : {"temporaryid":20, "name" : "Fixtures","days" : 2,"start" : 7,"end" : 11,"parentid":1,
+           "0" : {"temporaryid":20, "name" : "Fixtures","days" : 2,"start" : 5,"end" : 6,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -259,7 +259,7 @@
                },
                "equipment" : {}
            },
-           "1" : {"temporaryid":21, "name" : "Waterlines","days" : 12,"start" : 7,"end" : 21,"parentid":1,
+           "1" : {"temporaryid":21, "name" : "Waterlines","days" : 12,"start" : 5,"end" : 16,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -271,7 +271,7 @@
                },
                "equipment" : {}
            },
-           "2" : {"temporaryid":22, "name" : "Sanitary","days" : 12,"start" : 7,"end" : 21,"parentid":1,
+           "2" : {"temporaryid":22, "name" : "Sanitary","days" : 12,"start" : 5,"end" : 16,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -283,7 +283,7 @@
                },
                "equipment" : {}
            },
-           "3" : {"temporaryid":23, "name" : "Storm Drain","days" : 12,"start" : 7,"end" : 21,"parentid":1,
+           "3" : {"temporaryid":23, "name" : "Storm Drain","days" : 12,"start" : 5,"end" : 16,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 30,"name" : "Plumber","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -297,7 +297,7 @@
    },
    "10": {"name":" Electrical Works",
        "tasks" :{
-           "0" : {"temporaryid":24, "name" : "Fixtures and Boxes","days" : 3,"start" : 7,"end" : 12,"parentid":1,
+           "0" : {"temporaryid":24, "name" : "Fixtures and Boxes","days" : 3,"start" : 5,"end" : 7,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 42,"name" : "Electrician","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}
@@ -308,7 +308,7 @@
                },
                "equipment" : {}
            },
-           "1" : {"temporaryid":25, "name" : "Fittings","days" : 5,"start" : 7,"end" : 14,"parentid":1,
+           "1" : {"temporaryid":25, "name" : "Fittings","days" : 5,"start" : 5,"end" : 9,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 42,"name" : "Electrician","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -318,7 +318,7 @@
                },
                "equipment" : {}
            },
-           "2" : {"temporaryid":26, "name" : "Wiring","days" : 10,"start" : 7,"end" : 19,"parentid":1,
+           "2" : {"temporaryid":26, "name" : "Wiring","days" : 10,"start" : 5,"end" : 14,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 42,"name" : "Electrician","quantity" : 2},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 2}
@@ -328,7 +328,7 @@
                },
                "equipment" : {}
            },
-           "3" : {"temporaryid":27, "name" : "Enclosed Circuit Breaker","days" : 2,"start" : 7,"end" : 11,"parentid":1,
+           "3" : {"temporaryid":27, "name" : "Enclosed Circuit Breaker","days" : 2,"start" : 5,"end" : 6,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 42,"name" : "Electrician","quantity" : 1}
                },
@@ -337,7 +337,7 @@
                },
                "equipment" : {}
            },
-           "4" : {"temporaryid":28, "name" : "Testing and Commissioning","days" : 2,"start" : 7,"end" : 11,"parentid":1,
+           "4" : {"temporaryid":28, "name" : "Testing and Commissioning","days" : 2,"start" : 5,"end" : 6,"parentid":1,
                "manpower" : {
                    "0" : {"id" : 42,"name" : "Electrician","quantity" : 1},
                    "1" : {"id" : 2,"name" : "Labor","quantity" : 1}

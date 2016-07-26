@@ -4,6 +4,8 @@ function drawChart(){
         $('.row_task').each(function(){
             var from = 0;
             var to = 0;
+            var latestStart = 0;
+            var latestFinish = 0;
             var values = new Object();
             
             var dataParameters = JSON.parse($(this).data('parameters'));
@@ -20,59 +22,74 @@ function drawChart(){
             
             from = new Date(dataParameters.from).getTime();
             values.from ="/Date("+from+")/";
+            
+            
+            latestStart = new Date(dataParameters.from);
+            latestStart.setDate( latestStart.getDate() + 3);
+            latestStart = latestStart.getTime();;
+            values.latestStart  ="/Date("+latestStart+")/";
+            
+            
             var baseTo = new Date(dataParameters.to );
             baseTo.setDate(baseTo.getDate() ); 
             to = baseTo.getTime();
             values.to ="/Date("+to+")/";
+            
+            latestFinish = new Date(dataParameters.to);
+            latestFinish.setDate( latestFinish.getDate() + 3);
+            latestFinish = latestFinish.getTime();;
+            values.latestFinish  ="/Date("+latestFinish+")/";
+            
+            
             values.label= dataParameters.label;
             values.customClass = dataParameters.label;
             
             mainTaskJson.values.push(values);
             sourceJson.push(mainTaskJson);
             
-            
-            var latestStart= new Object();
-            latestStart.name = '';
-            latestStart.desc = "<span class='font-blue'>Latest Start</span>";
-            latestStart.values = [];
-            values = new Object();
-            
-            var baseFrom = new Date(dataParameters.from );
-            baseFrom.setDate(baseFrom.getDate() +1); 
-            from = baseFrom.getTime();
-            values.from ="/Date("+from+")/";
-            
-            var baseTo = new Date(dataParameters.from );
-            baseTo.setDate(baseTo.getDate() + 3); 
-            to = baseTo.getTime();
-            values.to ="/Date("+to+")/";
-            
-            values.label= 'Latest Start';
-            values.customClass =dataParameters.label + " - Latest Start";
-            latestStart.values.push(values);
-            sourceJson.push(latestStart);
-            
-            
-            
-            var latestEnd= new Object();
-            latestEnd.name = '';
-            latestEnd.desc =  "<span class='font-red'>Latest Finish</span>";
-            latestEnd.values = [];
-            values = new Object();
-            
-            var baseFrom = new Date(dataParameters.to );
-            baseFrom.setDate(baseFrom.getDate() -2); 
-            from = baseFrom.getTime();
-            values.from ="/Date("+from+")/";
-            
-            var baseTo = new Date(dataParameters.to );
-            baseTo.setDate(baseTo.getDate() ); 
-            to = baseTo.getTime();
-            values.to ="/Date("+to+")/";
-            values.label= 'Latest Finish';
-            values.customClass =dataParameters.label + " - Latest Finish";
-            latestEnd.values.push(values);
-            sourceJson.push(latestEnd);
+//            
+//            var latestStart= new Object();
+//            latestStart.name = '';
+//            latestStart.desc = "<span class='font-blue'>Latest Start</span>";
+//            latestStart.values = [];
+//            values = new Object();
+//            
+//            var baseFrom = new Date(dataParameters.from );
+//            baseFrom.setDate(baseFrom.getDate() +1); 
+//            from = baseFrom.getTime();
+//            values.from ="/Date("+from+")/";
+//            
+//            var baseTo = new Date(dataParameters.from );
+//            baseTo.setDate(baseTo.getDate() + 3); 
+//            to = baseTo.getTime();
+//            values.to ="/Date("+to+")/";
+//            
+//            values.label= 'Latest Start';
+//            values.customClass =dataParameters.label + " - Latest Start";
+//            latestStart.values.push(values);
+//            sourceJson.push(latestStart);
+//            
+//            
+//            
+//            var latestEnd= new Object();
+//            latestEnd.name = '';
+//            latestEnd.desc =  "<span class='font-red'>Latest Finish</span>";
+//            latestEnd.values = [];
+//            values = new Object();
+//            
+//            var baseFrom = new Date(dataParameters.to );
+//            baseFrom.setDate(baseFrom.getDate() -2); 
+//            from = baseFrom.getTime();
+//            values.from ="/Date("+from+")/";
+//            
+//            var baseTo = new Date(dataParameters.to );
+//            baseTo.setDate(baseTo.getDate() ); 
+//            to = baseTo.getTime();
+//            values.to ="/Date("+to+")/";
+//            values.label= 'Latest Finish';
+//            values.customClass =dataParameters.label + " - Latest Finish";
+//            latestEnd.values.push(values);
+//            sourceJson.push(latestEnd);
         });
 //        console.log(sourceJson.length);
         if(sourceJson.length > 0){
@@ -91,11 +108,13 @@ function drawChart(){
 //                    alert("Empty space clicked - add an item!");
                 },
                 onRender: function() {
+                    $('.row.spacer').html('<table style="margin: auto;font-weight:bold;"><tbody style="text-align: center;"><tr><td colspan="2">LEGENDS</td></tr><tr><td>Latest Start:</td><td style="background-color: #65D065;height: 15px;width: 30px;"></td></tr><tr><td>Latest Finish:</td><td style="background-color: #F88484;height: 15px;width: 30px;"></td></tr></tbody></table>');
 //                    if (window.console && typeof console.log === "function") {
 //                        console.log("chart rendered");
 //                    }
                 }
             });
+            
         }
             prettyPrint();
 

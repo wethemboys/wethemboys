@@ -89,17 +89,16 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 .project_table th {
 	font-size:14px;
 }
-
 .menu_bar {
 	position:relative;
     list-style-type: none;
     margin: 0;
     padding: 0;
     background-color: #378B2E;
-    overflow:hidden;
 }
 
 .menu_bar li {
+	position:relative;
     float: left;
 }
 
@@ -111,13 +110,76 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
     text-decoration: none;
 }
 
-/* Change the link color to #111 (black) on hover */
 .menu_bar li a:hover {
+    background-color: #5FAE57;
+}
+
+.menu_bar .selected {
+	background-color: #5FAE57;
+}
+
+
+.menu_bar li:hover .sub_menu{
+	display:block;
+}
+
+.menu_bar .sub_menu {
+	position:absolute;
+	top:50;
+	left:0;
+	z-index:9999;
+	color:white;
+	display:none;
+	padding:2px;
+	background-color: #378B2E;
+	list-style-type:none;
+	width:200px;
+	font-size:12px;
+}
+
+.menu_bar .sub_menu > li {
+	width:100%;
+}
+
+.menu_bar .sub_menu > li > a{
+	text-align:left;
+}
+
+.menu_bar {
+	position:relative;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #378B2E;
+}
+.inside_menu_bar {
+    position:relative;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #378B2E;
+    overflow:hidden;
+}
+
+.inside_menu_bar li {
+    float: left;
+}
+
+.inside_menu_bar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+.inside_menu_bar li a:hover {
     background-color: #5FAE57;
     cursor:pointer;
 }
 
-.menu_bar .selected {
+.inside_menu_bar .selected {
 	background-color: #5FAE57;
 }
 body, html {
@@ -168,17 +230,36 @@ label {
 	padding-top:2px;
 	padding-bottom:2px;
 }
+<?php if($_SESSION["theuser"]['Type'] == 'client'){?>
+#act_list .project_table thead tr th:nth-child(6),#act_list  .project_table thead tr th:nth-child(2),#act_list  .project_table thead tr th:nth-child(3),
+#act_list .project_table thead tr th:nth-child(4),#act_list  .project_table thead tr th:nth-child(5){
+    display:none;
+}
+#act_list .project_table tbody tr td:nth-child(6),#act_list  .project_table tbody tr td:nth-child(2),#act_list  .project_table tbody tr td:nth-child(3),
+#act_list .project_table tbody tr td:nth-child(4),#act_list  .project_table tbody tr td:nth-child(5){
+    display:none;
+}
+#activities .project_table tbody tr td:nth-child(5),#activities .project_table thead tr th:nth-child(5){
+    display:none;
+}
+<?php }?>
 </style>
 </head>
 <body>
 <nav style="position:relative;">
-<ul class="menu_bar">
-<li><a href="index.php">Home</a></li>
-<li class="selected"><a href="projects.php">Projects</a></li>
-<li id="resourcesbtnx"><a href="resources.php">Resources</a></li>
-<li id="clientsbtn"><a href="clients.php">Clients</a></li>
-<li style="position:absolute;right:10px;"><a id="mn_optbtn" style="outline-width:0px;cursor:pointer"><span class="glyphicon glyphicon-menu-hamburger" style="margin-right:5px;"></span> <span id="usr_menu_disp">Marvin Gaye</span></a></li>
-</ul>
+<nav style="position:relative;height:50px;background-color: #378B2E;">
+    <?php require 'menu.php'?>
+    <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
+        <div style="display:table;width:100%;">
+            <div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>
+            <div style="display:table-cell;vertical-align:top;"><span id="uname_display" style="font-weight:bold;display:block;">Marvin Gaye</span><span id="usr_type" style="display:block;font-size:12px;font-weight:bold;color:gray;">Administrator</span></div>
+        </div>
+
+        <table style="width:100%;margin-top:10px;" class="menu_options">
+            <tr><td><a id="logout_btn" style="cursor:pointer;">Sign Out</a></td></tr>
+        </table>
+    </div>
+</nav>
 <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
 	<div style="display:table;width:100%;">
 	<div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>
@@ -244,7 +325,7 @@ label {
 </div>
 </div>
 <nav style="margin:5px;">
-<ul class="menu_bar" style="border-radius:5px;">
+<ul class="inside_menu_bar" style="border-radius:5px;">
 <li id="commentsbtn" class="selected"><a>Comments</a></li>
 <li id="controlmonitoringbtn"><a>Controlling Monitoring</a></li>
 <li id="activitiesbtn"><a>Activities</a></li>
@@ -344,7 +425,7 @@ if ($project['LotSize'] == 'others'){
 </div>
 
 <div id="activities" style="position:relative;display:none;margin-top:10px;width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-width:1px;border-color:#c6c6c6;min-height:300px;">
-<span style="font-size:18px;font-weight:lighter;">Project Activities</span><button id="addactbtnm" class="btn btn-sm btn-warning" style="margin-left:10px;" onclick="addAct()"><span class="glyphicon glyphicon-plus"></span> Add Activity</button>
+<span style="font-size:18px;font-weight:lighter;">Project Activities</span><button id="addactbtnm" class="btn btn-sm btn-warning " style="margin-left:10px;display:none;" onclick="addAct()"><span class="glyphicon glyphicon-plus"></span> Add Activity</button>
 <hr style="margin-top:5px;margin-bottom:5px;"/>
 <table class="project_table" style="width:100%;">
 <thead>

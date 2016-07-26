@@ -4,6 +4,25 @@ session_start();
 if (!isset($_SESSION["theuser"])) {
     header("Location: login.php");
 }
+function getCompleteType($type) {
+	switch ($type) {
+		case "admin":
+			return "Administrator";
+		break;
+
+		case "engineer":
+			return "Project Engineer";
+		break;
+
+		case "architect":
+			return "Project Architect";
+		break;
+
+		case "client":
+			return "Client";
+		break;
+	}
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -56,35 +75,6 @@ if (!isset($_SESSION["theuser"])) {
                 font-size:14px;
             }
 
-            .menu_bar {
-                position:relative;
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                background-color: #378B2E;
-                overflow:hidden;
-            }
-
-            .menu_bar li {
-                float: left;
-            }
-
-            .menu_bar li a {
-                display: block;
-                color: white;
-                text-align: center;
-                padding: 14px 16px;
-                text-decoration: none;
-            }
-
-            /* Change the link color to #111 (black) on hover */
-            .menu_bar li a:hover {
-                background-color: #5FAE57;
-            }
-
-            .menu_bar .selected {
-                background-color: #5FAE57;
-            }
             body, html {
                 background-color:#efefef;
                 height:100%;
@@ -106,7 +96,61 @@ if (!isset($_SESSION["theuser"])) {
                 font-size:12px;
                 padding:3px;
             }
+.menu_bar {
+	position:relative;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #378B2E !important;
+}
 
+.menu_bar li {
+	position:relative;
+    float: left;
+    background-color:#378B2E;
+}
+
+.menu_bar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+.menu_bar li a:hover {
+    background-color: #5FAE57;
+}
+
+.menu_bar .selected {
+	background-color: #5FAE57;
+}
+.menu_bar li:hover .sub_menu{
+	display:block;
+}
+
+.menu_bar .sub_menu {
+	position:absolute;
+	top:50;
+	left:0;
+	z-index:9999;
+	color:white;
+	display:none;
+	padding:2px;
+	background-color: #378B2E;
+	list-style-type:none;
+	width:200px;
+	font-size:12px;
+}
+
+.menu_bar .sub_menu > li {
+	width:100%;
+}
+
+.menu_bar .sub_menu > li > a{
+	text-align:left;
+}
             .menu_options tr {
                 border-style:solid;
                 border-width:1px;
@@ -178,14 +222,8 @@ if (!isset($_SESSION["theuser"])) {
         </style>
     </head>
     <body>
-        <nav style="position:relative;">
-            <ul class="menu_bar">
-                <li><a href="index.php">Home</a></li>
-                <li class="selected"><a href="projects.php">Projects</a></li>
-                <li><a href="resources.php">Resources</a></li>
-                <li><a href="clients.php">Clients</a></li>
-                <li style="position:absolute;right:10px;"><a id="mn_optbtn" style="outline-width:0px;cursor:pointer"><span class="glyphicon glyphicon-menu-hamburger" style="margin-right:5px;"></span> <span id="usr_menu_disp">Marvin Gaye</span></a></li>
-            </ul>
+        <nav style="position:relative;height:50px;background-color: #378B2E;">
+            <?php require 'menu.php'?>
             <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
                 <div style="display:table;width:100%;">
                     <div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>
@@ -299,12 +337,37 @@ if (!isset($_SESSION["theuser"])) {
                                 <td><label>Days:</label></td><td style="padding-left:5px;"><input id="adddays" type="text" /></td>
                             </tr>
                             <tr>
-                                <td><label>Parent Task:</label></td><td><select id="addparent"  style="margin-left:5px;width:250px;">
-                                    </select></td>
+                                <td><label>Parent Task:</label></td><td><select id="addparent"  style="margin-left:5px;width:250px;"></select></td>
+                                
                             </tr>
                             <tr>
                                 <td><label>Start Date:</label></td><td style="padding-left:5px;"><input id="addstartdate" type="text" style="width:250px;" readonly="readonly"/></td>
                                 <td><label>End Date:</label></td><td style="padding-left:5px;"><input id="addenddate" type="text" style="width:250px;" /></td>
+                            </tr>
+                            <tr>
+                                <td><input id="addnotify" type="checkbox"/><label for="addnotify" >Notify Client</label></td>
+                            </tr>
+                            <tr id="tdnotify" style="display:none;">
+                                <td colspan="6">
+<textarea rows="10" cols="100" id="addmessage">
+
+</textarea>
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                                <td colspan="6">
+<textarea rows="10" cols="100" id="addmessagetemplate">
+Good day %clientNameHolder%,
+
+Please be reminded that your presence is required to be at %locationHolder% on %startDateHolder% for the %taskNameHolder% Task.
+
+Thank you and looking forward to seeing you.
+
+<?php echo getCompleteType($_SESSION["theuser"]['Type'])?>
+
+<?php echo $_SESSION["theuser"]['Name']?>
+</textarea>
+                                </td>
                             </tr>
                         </table>
                         <input type="hidden" id="addhiddenid"/>

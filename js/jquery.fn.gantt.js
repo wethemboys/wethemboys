@@ -943,7 +943,7 @@
             createProgressBar: function (days, daysid, cls, desc, label, dataObj) {
                 var cellWidth = tools.getCellSize();
                 var barMarg = tools.getProgressBarMargin() || 0;
-                var bar = $('<div class="bar"><div class="fn-label">' + label + '</div></div>')
+                var bar = $('<div class="bar"><div class="fn-label">' + '' + '</div></div>')
                         .addClass(cls)
                         .css({
                             width: ((cellWidth * days) - barMarg) + 2
@@ -973,7 +973,18 @@
                 });
                 return bar;
             },
-
+            
+            createLatestBar: function (days, daysid, cls, desc, label, dataObj) {
+                var cellWidth = tools.getCellSize();
+                var barMarg = tools.getProgressBarMargin() || 0;
+                var bar = $('<div class="bar"><div class="fn-label">' + '' + '</div></div>')
+                        .addClass(cls)
+                        .css({
+                            width: ((cellWidth * 1) - barMarg) + 2
+                        })
+                        .data("dataObj", dataObj);
+                return bar;
+            },
             // Remove the `wd` (weekday) class and add `today` class to the
             // current day/week/month (depending on the current scale)
             markNow: function (element) {
@@ -1030,7 +1041,8 @@
 
                         $.each(entry.values, function (j, day) {
                             var _bar = null;
-
+                            var _latestStart = null;
+                            var _latestFinish = null;
                             switch (settings.scale) {
                                 // **Hourly data**
                                 case "hours":
@@ -1157,6 +1169,14 @@
                                     var from = $(element).find("#dh-" + dFrom);
                                     var cFrom = from.attr("offset");
 
+                                    var dlateststart = tools.genId(tools.dateDeserialize(day.latestStart).getTime());
+                                    var lateststart = $(element).find("#dh-" + dlateststart);
+                                    var clateststart = lateststart.attr("offset");
+                                    
+                                    var dlatestfinish = tools.genId(tools.dateDeserialize(day.latestFinish).getTime());
+                                    var latestfinish = $(element).find("#dh-" + dlatestfinish);
+                                    var clatestfinish = latestfinish.attr("offset");
+                                    
                                     var dl = Math.floor(((dTo / 1000) - (dFrom / 1000)) / 86400) + 1;
                                     _bar = core.createProgressBar(
                                                 dl,
@@ -1166,14 +1186,35 @@
                                                 day.label ? day.label : "",
                                                 day.dataObj ? day.dataObj : null
                                         );
-
+                                    _latestStart = core.createLatestBar(
+                                                dl,
+                                                day.id ? day.id : "",
+                                                day.customClass ? day.customClass : "",
+                                                day.desc ? day.desc : "",
+                                                day.label ? day.label : "",
+                                                day.dataObj ? day.dataObj : null
+                                        );
+                                    _latestFinish = core.createLatestBar(
+                                                dl,
+                                                day.id ? day.id : "",
+                                                day.customClass ? day.customClass : "",
+                                                day.desc ? day.desc : "",
+                                                day.label ? day.label : "",
+                                                day.dataObj ? day.dataObj : null
+                                        );
                                     // find row
                                     var topEl = $(element).find("#rowheader" + i);
 
                                     var top = tools.getCellSize() * 4 + 2 + parseInt(topEl.attr("offset"), 10);
                                     _bar.css({ 'top': top, 'left': Math.floor(cFrom) });
-
                                     datapanel.append(_bar);
+
+                                    _latestStart.css({ 'top': top, 'left': Math.floor(clateststart),'background-color':'#65D065','z-index':100 });
+                                    datapanel.append(_latestStart);
+                                    
+                                    _latestFinish.css({ 'top': top, 'left': Math.floor(clatestfinish),'background-color':'#F88484' ,'z-index':100});
+                                    datapanel.append(_latestFinish);
+
 
                                     break;
                             }
