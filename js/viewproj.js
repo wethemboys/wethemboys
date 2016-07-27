@@ -853,7 +853,10 @@ function getactivities() {
 //			} else {
 //				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			}
-			theActivity = theActivity.replace("%taskid%", activities[i]["TaskID"]).replace("%actname%", activities[i]["Name"]).replace("%days%", activities[i]["Days"] ).replace("%startdate%", FormalDateTime(activities[i]["StartDate"])[0]).replace("%enddate%", FormalDateTime(activities[i]["EndDate"])[0]);
+			theActivity = theActivity.replace("%taskid%", activities[i]["TaskID"]).replace("%actname%", activities[i]["Name"]).replace("%days%", activities[i]["Days"] ).replace("%startdate%", FormalDateTime(activities[i]["StartDate"])[0]);
+                        endDate = (activities[i]["ActualEndDate"] != '0000-00-00 00:00:00') ? activities[i]["ActualEndDate"]:activities[i]["EndDate"];
+ 
+                        theActivity = theActivity.replace("%enddate%", FormalDateTime(endDate)[0]);
 			if (activities[i]["TotalPrice"] !== null) {
 				theActivity = theActivity.replace("%totalprice%", activities[i]["TotalPrice"]);
 				ActTotalPrice += parseInt(activities[i]["TotalPrice"]);
@@ -875,9 +878,11 @@ function getactivities() {
                         parameters = {
                             "from":activities[i]["StartDate"].substring(0,10),
                             "to":activities[i]["EndDate"].substring(0,10),
+                            "actualTo":activities[i]["ActualEndDate"].substring(0,10),
                             "label":activities[i]["Name"],
                             "activity":"Earthworks",
-                            "days":activities[i]["Das"],
+                            "days":activities[i]["Days"],
+                            "actualDays":activities[i]["ActualDays"],
                             "temporaryid":activities[i]["TaskID"],
                             "parent":activities[i]["Parent"],
                             };

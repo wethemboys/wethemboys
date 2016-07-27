@@ -23,6 +23,13 @@ function drawChart(){
             from = new Date(dataParameters.from).getTime();
             values.from ="/Date("+from+")/";
             
+            values.actualTo= '';
+            if(dataParameters.actualTo != '0000-00-00') {
+                actualTo = new Date(dataParameters.actualTo).getTime();
+                values.actualTo ="/Date("+actualTo+")/";
+            }
+            values.actualDays = dataParameters.actualDays;
+            values.days = dataParameters.days;
             latestStart = new Date(dataParameters.from);
             latestStart.setDate( latestStart.getDate() + 3);
             latestStart = latestStart.getTime();;

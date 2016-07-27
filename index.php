@@ -263,6 +263,10 @@ function getCompleteType(type) {
 		case "architect":
 			return "Project Architect";
 		break;
+                
+		case "manager":
+			return "Project Manager";
+		break;
 
 		case "client":
 			return "Client";
@@ -357,11 +361,11 @@ function getnotifications() {
 			minfo = JSON.parse(notifs[i]["RequestData"]);
 			switch (notifs[i]["Type"]) {
 				case "late_activity":
-					notif_tmp = notif_tmp.replace("%message%", "Activity: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
+					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
 				break;
 
 				case "advance_activity":
-					notif_tmp = notif_tmp.replace("%message%", "Activity: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is advanced by <b>"+minfo["AdvanceDays"]+" Days</b>");
+					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is advanced by <b>"+minfo["AdvanceDays"]+" Days</b>");
 				break;
 
 				case "client_needed":

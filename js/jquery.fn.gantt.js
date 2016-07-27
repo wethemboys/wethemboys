@@ -985,6 +985,17 @@
                         .data("dataObj", dataObj);
                 return bar;
             },
+            createExtensionBar: function (days, daysid, cls, desc, label, dataObj) {
+                var cellWidth = tools.getCellSize();
+                var barMarg = tools.getProgressBarMargin() || 0;
+                var bar = $('<div class="bar"><div class="fn-label">' + '' + '</div></div>')
+                        .addClass(cls)
+                        .css({
+                            width: ((cellWidth * days) - barMarg) + 2
+                        })
+                        .data("dataObj", dataObj);
+                return bar;
+            },
             // Remove the `wd` (weekday) class and add `today` class to the
             // current day/week/month (depending on the current scale)
             markNow: function (element) {
@@ -1043,6 +1054,7 @@
                             var _bar = null;
                             var _latestStart = null;
                             var _latestFinish = null;
+                            var _extension = null;
                             switch (settings.scale) {
                                 // **Hourly data**
                                 case "hours":
@@ -1165,7 +1177,14 @@
                                 default:
                                     var dFrom = tools.genId(tools.dateDeserialize(day.from).getTime());
                                     var dTo = tools.genId(tools.dateDeserialize(day.to).getTime());
-
+                                    if(day.actualTo){
+                                        var dActualTo = tools.genId(tools.dateDeserialize(day.actualTo).getTime());
+                                        if (dTo >dActualTo)
+                                        {
+                                            dTo = dActualTo;
+                                        }
+                                        
+                                    }
                                     var from = $(element).find("#dh-" + dFrom);
                                     var cFrom = from.attr("offset");
 
@@ -1202,6 +1221,7 @@
                                                 day.label ? day.label : "",
                                                 day.dataObj ? day.dataObj : null
                                         );
+
                                     // find row
                                     var topEl = $(element).find("#rowheader" + i);
 
@@ -1214,8 +1234,19 @@
                                     
                                     _latestFinish.css({ 'top': top, 'left': Math.floor(clatestfinish),'background-color':'#F88484' ,'z-index':100});
                                     datapanel.append(_latestFinish);
-
-
+                                    
+                                    if(day.actualDays != "0"){
+                                        _extension = core.createExtensionBar(
+                                                    parseInt(day.actualDays) -parseInt(day.days),
+                                                    day.id ? day.id : "",
+                                                    day.customClass ? day.customClass : "",
+                                                    day.desc ? day.desc : "",
+                                                    day.label ? day.label : "",
+                                                    day.dataObj ? day.dataObj : null
+                                            );
+                                    _extension.css({ 'top': top, 'left': parseInt(_bar.css('left') )+parseInt( _bar.width())  ,'background-color':'#FCB872' ,'z-index':99});
+                                    datapanel.append(_extension);
+                                    }
                                     break;
                             }
                             var $l = _bar.find(".fn-label");
