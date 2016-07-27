@@ -110,7 +110,7 @@ function drawChart(){
 //                    alert("Empty space clicked - add an item!");
                 },
                 onRender: function() {
-                        $('.row.spacer').html('<table style="margin: auto;font-weight:bold;"><tbody style="text-align: center;"><tr><td colspan="2">LEGENDS</td></tr><tr><td>Latest Start:</td><td style="background-color: #65D065;height: 15px;width: 30px;"></td></tr><tr><td>Latest Finish:</td><td style="background-color: #F88484;height: 15px;width: 30px;"></td></tr></tbody></table>');
+                        $('.row.spacer').html('<table style="margin: auto;font-weight:bold;"><tbody style="text-align: center;"><tr><td colspan="2">LEGENDS</td></tr><tr><td>Latest Start:</td><td style="background-color: #65D065;height: 15px;width: 30px;"></td></tr><tr><td>Latest Finish:</td><td style="background-color: #F88484;height: 15px;width: 30px;"></td></tr><tr><td>Dalayed:</td><td style="background-color: #FCB872;height: 15px;width: 30px;"></td></tr></tbody></table>');
 //                    if (window.console && typeof console.log === "function") {
 //                        console.log("chart rendered");
 //                    }
