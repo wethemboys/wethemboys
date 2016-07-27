@@ -1,7 +1,7 @@
 <?php
 	// PROJECT MANAGEMENT SYSTEM
 	// VERSION 1.0
-
+        error_reporting(0);
 // LOGIN CHECK
 session_name('evypms');
 session_start();
@@ -128,8 +128,8 @@ switch($jsr["do"]) {
                             $parent = $temporary_id[$tasks->parentid];
                         }
                         $query = insertsql("task", 
-                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent", "ClientNeeded"),
-                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $parent,  $tasks->notify));
+                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent", "ClientNeeded","Message"),
+                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $parent,  $tasks->notify,$tasks->message));
                         $mysqli->query($query);
                         $taskid = $mysqli->insert_id;
                         $temporary_id[$tasks->temporaryid] = $taskid;
@@ -414,9 +414,9 @@ switch($jsr["do"]) {
 				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "advance_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"],$jsr["taskid"])));
 			}
                         elseif( $daysDiff > 3) {
-				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "DelayDays"=> $daysDiff - 3);
-				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_activity", json_encode($kiss), "0", $theAct["ProjectID"],$jsr["taskid"])));
-				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"], $jsr["taskid"])));
+//				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "DelayDays"=> $daysDiff - 3);
+//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_activity", json_encode($kiss), "0", $theAct["ProjectID"],$jsr["taskid"])));
+//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestDagta", "ToUser", "ProjectID", "TaskID"), array("0", "late_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"], $jsr["taskid"])));
 			}
      
 			$mysqli->query($query);
@@ -556,16 +556,16 @@ switch($jsr["do"]) {
 	case "get_notifications":
 
 		// late notifications
-//		$query = "SELECT activities.*, DATEDIFF(CURDATE(), activities.EndDate) as DelayDays, projects.UserID as ClientID, projects.Name as ProjectName FROM activities INNER JOIN projects ON activities.ProjectID=projects.ProjectID WHERE Done=0 AND CURDATE() > activities.EndDate";
-//		$qq = $mysqli->query($query);
-//		if ($qq->num_rows > 0) {
-//			while ($cake = $qq->fetch_assoc()) {
-//				$mysqli->query("DELETE FROM notifications WHERE Type='late_activity' AND ActivityID='".$mysqli->real_escape_string($cake["ActivityID"])."' AND ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."'");
-//				$kiss = array("ActivityName"=>$cake["Name"], "ProjectName"=>$cake["ProjectName"], "DelayDays"=>$cake["DelayDays"]);
-//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "late_activity", json_encode($kiss), "0", $cake["ProjectID"], $cake["ActivityID"])));
-//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "late_activity", json_encode($kiss), $cake["ClientID"], $cake["ProjectID"], $cake["ActivityID"])));
-//			}
-//		}
+		$query = "SELECT task.*, DATEDIFF(CURDATE(), task.EndDate) as DelayDays, projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND CURDATE() > task.EndDate";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			while ($cake = $qq->fetch_assoc()) {
+				$mysqli->query("DELETE FROM notifications WHERE Type='late_task' AND TaskID='".$mysqli->real_escape_string($cake["TaskID"])."' AND ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."'");
+				$kiss = array("TaskName"=>$cake["Name"], "ProjectName"=>$cake["ProjectName"], "DelayDays"=>$cake["DelayDays"]);
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_task", json_encode($kiss), "0", $cake["ProjectID"], $cake["TaskID"])));
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_task", json_encode($kiss), $cake["ClientID"], $cake["ProjectID"], $cake["TaskID"])));
+			}
+		}
 //
 //		// payment notification
 //		$query = "SELECT * FROM projects WHERE DateDiff(StartDate, CURDATE()) = 7";
@@ -595,15 +595,16 @@ switch($jsr["do"]) {
 //		}
 
 		// client needed notifications
-//		$query = "SELECT activities.*, projects.UserID as ClientID, projects.Name as ProjectName FROM activities INNER JOIN projects ON activities.ProjectID=projects.ProjectID WHERE Done=0 AND ClientNeeded=1 AND DateDiff(activities.StartDate, CURDATE()) = 2";
-//		$qq = $mysqli->query($query);
-//		if ($qq->num_rows > 0) {
-//			while ($cake = $qq->fetch_assoc()) {
-//				$mysqli->query("DELETE FROM notifications WHERE Type='client_needed' AND ActivityID='".$mysqli->real_escape_string($cake["ActivityID"])."' AND ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."'");
-//				$kiss = array("ActivityName"=>$cake["Name"], "ProjectName"=>$cake["ProjectName"]);
-//				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "ActivityID"), array("0", "client_needed", json_encode($kiss), $cake["ClientID"], $cake["ProjectID"], $cake["ActivityID"])));
-//			}
-//		}
+		$query = "SELECT task.*, projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND ClientNeeded=1 AND DateDiff(task.StartDate, CURDATE()) = 2";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			while ($cake = $qq->fetch_assoc()) {
+
+				$mysqli->query("DELETE FROM notifications WHERE Type='client_needed' AND TaskID='".$mysqli->real_escape_string($cake["TaskID"])."' AND ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."'");
+				$kiss = array("TaskName"=>$cake["Name"], "ProjectName"=>$cake["ProjectName"],"Message"=>$cake["Message"]);
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "client_needed", json_encode($kiss), $cake["ClientID"], $cake["ProjectID"], $cake["TaskID"])));
+			}
+		}
 		if ($_SESSION["theuser"]["Type"] == "admin" || $_SESSION["theuser"]["Type"] == "manager" || $_SESSION["theuser"]["Type"] == "engineer" || $_SESSION["theuser"]["Type"] == "architect") {
 			$query = "SELECT notifications.*, users.Name as Username FROM notifications LEFT JOIN users ON notifications.UserID=users.UserID WHERE ToUser='0'";
 		} else {

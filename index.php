@@ -359,9 +359,14 @@ function getnotifications() {
 			notif_tmp = notif_tmp.replace("%datetime%", theDateTime[0] + " | " + theDateTime[1]);
 
 			minfo = JSON.parse(notifs[i]["RequestData"]);
+                        console.log(minfo);
 			switch (notifs[i]["Type"]) {
 				case "late_activity":
 					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
+				break
+                                
+				case "late_task":
+					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
 				break;
 
 				case "advance_activity":
@@ -369,7 +374,11 @@ function getnotifications() {
 				break;
 
 				case "client_needed":
-					notif_tmp = notif_tmp.replace("%message%", "<b>You</b> are needed on Activity: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> 2 days from now.");
+					notif_tmp = notif_tmp.replace("%message%", "<b>You</b> are needed on Activity: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> 2 days from now.%message%");
+                                        if(minfo["Message"] !== null)
+                                        {notif_tmp = notif_tmp.replace("%message%","<br/> " +minfo["Message"].replace(/\n/g,'<br/>'));}
+                                        else
+                                            {notif_tmp = notif_tmp.replace("%message%", "");}
 				break;
 
 				case "change_request":
@@ -383,6 +392,7 @@ function getnotifications() {
 				case "paymentend":
 					notif_tmp = notif_tmp.replace("%message%", "Please pay the remaining 90% for the Project: <b>"+minfo["ProjectName"]+"</b>.");
 				break;
+
 
 				default:
 					notif_tmp = notif_tmp.replace("%message%", "<b>"+notifs[i]["Username"]+"</b> has created a project modification");
