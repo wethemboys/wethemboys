@@ -1055,6 +1055,7 @@
                             var _latestStart = null;
                             var _latestFinish = null;
                             var _extension = null;
+                            var diffDays =0;
                             switch (settings.scale) {
                                 // **Hourly data**
                                 case "hours":
@@ -1197,8 +1198,14 @@
                                     var clatestfinish = latestfinish.attr("offset");
                                     
                                     var dl = Math.floor(((dTo / 1000) - (dFrom / 1000)) / 86400) + 1;
+                                    if(parseInt(day.actualDays)  > parseInt(day.days)){
+                                        diffDays = parseInt(day.actualDays)  - parseInt(day.days);
+                                        if( diffDays > 3 ){
+                                           diffDays =3;
+                                        }
+                                    }
                                     _bar = core.createProgressBar(
-                                                dl,
+                                                dl + diffDays,
                                                 day.id ? day.id : "",
                                                 day.customClass ? day.customClass : "",
                                                 day.desc ? day.desc : "",
@@ -1226,7 +1233,7 @@
                                     var topEl = $(element).find("#rowheader" + i);
 
                                     var top = tools.getCellSize() * 4 + 2 + parseInt(topEl.attr("offset"), 10);
-                                    _bar.css({ 'top': top, 'left': Math.floor(cFrom) });
+                                    _bar.css({ 'top': top, 'left': Math.floor(cFrom) ,'z-index':99 });
                                     datapanel.append(_bar);
 
                                     _latestStart.css({ 'top': top, 'left': Math.floor(clateststart),'background-color':'#65D065','z-index':100 });
@@ -1237,14 +1244,14 @@
                                     
                                     if(day.actualDays != "0"){
                                         _extension = core.createExtensionBar(
-                                                    parseInt(day.actualDays) -parseInt(day.days),
+                                                    parseInt(day.actualDays) -parseInt(day.days) - diffDays,
                                                     day.id ? day.id : "",
                                                     day.customClass ? day.customClass : "",
                                                     day.desc ? day.desc : "",
                                                     day.label ? day.label : "",
                                                     day.dataObj ? day.dataObj : null
                                             );
-                                    _extension.css({ 'top': top, 'left': parseInt(_bar.css('left') )+parseInt( _bar.width())  ,'background-color':'#FCB872' ,'z-index':99});
+                                    _extension.css({ 'top': top, 'left': parseInt(_bar.css('left') )+parseInt( _bar.width())  ,'background-color':'#FCB872' ,'z-index':98});
                                     datapanel.append(_extension);
                                     }
                                     break;
