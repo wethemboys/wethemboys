@@ -410,8 +410,8 @@ switch($jsr["do"]) {
 
 			if ( $daysDiff < 0) {
 				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "AdvanceDays"=> abs($daysDiff));
-				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskId"), array("0", "advance_activity", json_encode($kiss), "0", $theAct["ProjectID"], $jsr["taskid"])));
-				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskId"), array("0", "advance_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"],$jsr["taskid"])));
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "advance_activity", json_encode($kiss), "0", $theAct["ProjectID"], $jsr["taskid"])));
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "advance_activity", json_encode($kiss), $theAct["ClientID"], $theAct["ProjectID"],$jsr["taskid"])));
 			}
                         elseif( $daysDiff > 3) {
 				$kiss = array("ActivityName"=>$theAct["Name"], "ProjectName"=>$theAct["ProjectName"], "DelayDays"=> $daysDiff - 3);

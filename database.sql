@@ -246,6 +246,7 @@ CREATE TABLE `notifications` (
   `ToUser` longtext NOT NULL,
   `ProjectID` longtext NOT NULL,
   `ActivityID` longtext NOT NULL,
+  `TaskID` int(3) DEFAULT NULL,
   PRIMARY KEY (`NotificationID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -256,7 +257,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (1,'0','2016-06-01 09:46:54','late_activity','{\"ActivityName\":\"asdasda\",\"ProjectName\":\"Cool Test\",\"DelayDays\":\"6\"}','0','1','1'),(2,'0','2016-06-01 09:46:54','late_activity','{\"ActivityName\":\"asdasda\",\"ProjectName\":\"Cool Test\",\"DelayDays\":\"6\"}','2','1','1'),(3,'1','2016-06-01 09:50:28','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','0','',''),(4,'1','2016-06-01 09:50:28','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','2','',''),(5,'2','2016-06-01 09:50:58','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','0','',''),(6,'2','2016-06-01 09:50:58','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','2','',''),(7,'2','2016-06-01 09:51:38','change_request','{\"ProjectName\":\"Cool Test\",\"subject\":\"Housing\",\"message\":\"Paki ayos yung gawa niyo king ina niyo\"}','0','1',''),(8,'1','2016-07-09 04:51:46','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"test\"}','0','',''),(9,'1','2016-07-09 04:51:46','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"test\"}','2','',''),(10,'0','2016-07-12 13:12:24','advance_activity','{\"ActivityName\":\"asd\",\"ProjectName\":\"dasdsa\",\"AdvanceDays\":\"1\"}','0','2','3'),(11,'0','2016-07-12 13:12:24','advance_activity','{\"ActivityName\":\"asd\",\"ProjectName\":\"dasdsa\",\"AdvanceDays\":\"1\"}','2','2','3'),(14,'0','2016-07-27 06:54:01','late_activity','{\"ActivityName\":\"Additional Activity\",\"ProjectName\":\"PROJECT A\",\"DelayDays\":null}','0','1','16'),(15,'0','2016-07-27 06:54:01','late_activity','{\"ActivityName\":\"Additional Activity\",\"ProjectName\":\"PROJECT A\",\"DelayDays\":null}','4','1','16');
+INSERT INTO `notifications` VALUES (1,'0','2016-06-01 09:46:54','late_activity','{\"ActivityName\":\"asdasda\",\"ProjectName\":\"Cool Test\",\"DelayDays\":\"6\"}','0','100','1',NULL),(2,'0','2016-06-01 09:46:54','late_activity','{\"ActivityName\":\"asdasda\",\"ProjectName\":\"Cool Test\",\"DelayDays\":\"6\"}','2','100','1',NULL),(3,'1','2016-06-01 09:50:28','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','0','100','',NULL),(4,'1','2016-06-01 09:50:28','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','2','100','',NULL),(5,'2','2016-06-01 09:50:58','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','0','100','',NULL),(6,'2','2016-06-01 09:50:58','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"hello\"}','2','100','',NULL),(7,'2','2016-06-01 09:51:38','change_request','{\"ProjectName\":\"Cool Test\",\"subject\":\"Housing\",\"message\":\"Paki ayos yung gawa niyo king ina niyo\"}','0','100','',NULL),(8,'1','2016-07-09 04:51:46','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"test\"}','0','100','',NULL),(9,'1','2016-07-09 04:51:46','add_comment','{\"do\":\"add_comment\",\"projectid\":\"1\",\"commentdata\":\"test\"}','2','100','',NULL),(10,'0','2016-07-12 13:12:24','advance_activity','{\"ActivityName\":\"asd\",\"ProjectName\":\"dasdsa\",\"AdvanceDays\":\"1\"}','0','100','3',NULL),(11,'0','2016-07-12 13:12:24','advance_activity','{\"ActivityName\":\"asd\",\"ProjectName\":\"dasdsa\",\"AdvanceDays\":\"1\"}','2','100','3',NULL),(14,'0','2016-07-27 06:54:01','late_activity','{\"ActivityName\":\"Additional Activity\",\"ProjectName\":\"PROJECT A\",\"DelayDays\":null}','0','100','16',NULL),(15,'0','2016-07-27 06:54:01','late_activity','{\"ActivityName\":\"Additional Activity\",\"ProjectName\":\"PROJECT A\",\"DelayDays\":null}','4','100','16',NULL);
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -363,4 +364,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-27 20:05:12
+-- Dump completed on 2016-07-27 20:38:17

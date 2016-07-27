@@ -1393,7 +1393,7 @@ $("#resourcesbtn").on("click", function() {
             var formattaskstartday = new Date(taskstartday );
             var formattaskendday = new Date(taskendday );
             if (taskName != "" && taskDay != "" && taskstartday != "" && taskendday != ""&& actname != "") {
-                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":{},"material":{},"equipment":{},"notify":notify,"message":message};
+                jsonObject= {"from":taskstartday,"to":taskendday,"label":taskName,"activity":actname,"days":taskDay,"temporaryid":temporaryid,"parentid":parentid,"manpower":[],"material":[],"equipment":[],"notify":notify,"message":message};
                 var row = '<tr class="add_row_task add_task_'+temporaryid+'"><td>'+taskName+'</td> <td>'+taskDay+'</td><td>'+formattaskstartday.toInputFormat()+'</td><td>'+formattaskendday.toInputFormat()+'</td><td></td><td></td><td><td/>\n\
                 <td><button class="edittaskbutton btn-xs"><span class="glyphicon glyphicon-edit"></button>\n\
                 <button class="deletetaskbutton btn-xs"><span class="glyphicon glyphicon-remove"></button></td></tr>';
@@ -1751,7 +1751,7 @@ Date.locale = {
         actAddName = $("#actname").val();
         
         if (actAddName !== "" ) {
-                mainJson = []
+                mainJson = [];
                 activityJson = {};
                 rowId = $("#hiddenactivityid").val();
                 activityJson.name = actAddName;
@@ -1761,11 +1761,11 @@ Date.locale = {
                     taskJson = $(this).data('parameters');
                     activityJson.tasks.push(taskJson);
                 });
-                mainJson.tasks.push(activityJson);
+                mainJson.push(activityJson);
 			jsr = {
 				"do":"add_activity",
 				"projectid":ProjectID,
-				"activities":JSON.stringify(mainJson)
+				"activities":JSON.stringify(activityJson)
 			}
 
             xhr = new XMLHttpRequest();
