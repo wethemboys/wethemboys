@@ -4,7 +4,25 @@ session_start();
 if (!isset($_SESSION["theuser"])) {
 	header("Location: login.php");
 }
+function getCompleteType($type) {
+	switch ($type) {
+		case "admin":
+			return "Administrator";
+		break;
 
+		case "engineer":
+			return "Project Engineer";
+		break;
+
+		case "architect":
+			return "Project Architect";
+		break;
+
+		case "client":
+			return "Client";
+		break;
+	}
+}
 function FormalDateTime($datetime) {
 	$rawdate = explode(" ", $datetime);
 	$date = $rawdate[0];
@@ -58,6 +76,9 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 <link rel="stylesheet" href="js/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="js/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
 <style>
+#adddays, #actadditemqty{
+width: 50px;
+}
 .fn-gantt *,
 .fn-gantt *:after,
 .fn-gantt *:before {
@@ -230,6 +251,24 @@ label {
 	padding-top:2px;
 	padding-bottom:2px;
 }
+           .add_col_task_name{
+                width: 20%;
+            }
+            .add_col_days, .add_col_action{
+                width: 4%;
+            }
+            .add_col_start_date, .add_col_end_date{
+                width: 10%;
+            }
+            .add_col_manpower, .add_col_material{
+                width: 23%;
+            }
+            .add_col_equipment{
+                width: 10%;
+            }
+            .add_row_task.selected{
+                background-color: #ecffe6;
+            }
 <?php if($_SESSION["theuser"]['Type'] == 'client'){?>
 #act_list .project_table thead tr th:nth-child(6),#act_list  .project_table thead tr th:nth-child(2),#act_list  .project_table thead tr th:nth-child(3),
 #act_list .project_table thead tr th:nth-child(4),#act_list  .project_table thead tr th:nth-child(5){
@@ -239,7 +278,8 @@ label {
 #act_list .project_table tbody tr td:nth-child(4),#act_list  .project_table tbody tr td:nth-child(5){
     display:none;
 }
-#activities .project_table tbody tr td:nth-child(5),#activities .project_table thead tr th:nth-child(5){
+#activities .project_table tbody tr td:nth-child(5),#activities .project_table thead tr th:nth-child(5) , 
+#activities .project_table tbody tr td:nth-child(6),#activities .project_table thead tr th:nth-child(6){
     display:none;
 }
 <?php }?>
@@ -425,7 +465,7 @@ if ($project['LotSize'] == 'others'){
 </div>
 
 <div id="activities" style="position:relative;display:none;margin-top:10px;width:100%;padding:5px;background-color:#ffffff;border-style:solid;border-width:1px;border-color:#c6c6c6;min-height:300px;">
-<span style="font-size:18px;font-weight:lighter;">Project Activities</span><button id="addactbtnm" class="btn btn-sm btn-warning " style="margin-left:10px;display:none;" onclick="addAct()"><span class="glyphicon glyphicon-plus"></span> Add Activity</button>
+<span style="font-size:18px;font-weight:lighter;">Project Activities</span><button id="addactbtnm" class="btn btn-sm btn-warning " style="margin-left:10px;" onclick="addAct()"><span class="glyphicon glyphicon-plus"></span> Add Activity</button>
 <hr style="margin-top:5px;margin-bottom:5px;"/>
 <table class="project_table" style="width:100%;">
 <thead>
@@ -483,92 +523,118 @@ if ($project['LotSize'] == 'others'){
 
 </div>
 
-<div class="modal fade" id="addActModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document" style="width:80%;">
-    <div class="modal-content" style="overflow:hidden">
-      <div class="modal-header" style="background-color:#55AA55;">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel" style="color:white;"><span id="theModalTask">- - -</span></h4>
-      </div>
-      <div class="modal-body">
-      <span style="font-size:18px;font-weight:lighter;">Basic Information</span>
-		<hr style="margin-top:5px;margin-bottom:5px;"/>
-    	<table class="form_table">
-    	<tr>
-    	<td><label>Activity Name:</label></td><td style="padding-left:5px;"><input id="actname" type="text" style="width:250px;" /></td>
-    	</tr>
-    	<tr>
-    	<td><label>Start Date:</label></td><td style="padding-left:5px;"><input id="actstartdate" type="text" style="width:250px;" /></td>
-    	</tr>
-    	<tr>
-    	<td><label>End Date:</label></td><td style="padding-left:5px;"><input id="actenddate" type="text" style="width:250px;" /></td>
-    	</tr>
-    	<tr>
-    	<td></td><td style="padding-left:5px;"><input type="checkbox" id="actcneeded" value="1" style="margin-right:3px;" />Notify Client</td>
-    	</tr>
-    	</table>
-    	<br />
-    	<span style="font-size:18px;font-weight:lighter;">Activity Items <span id="act1total" style="font-size:12px;color:gray;"></span></span>
-		<hr style="margin-top:5px;margin-bottom:5px;"/>
-		<table class="project_table" style="width:100%;">
-<thead>
-<tr>
-<th>Item Name</th>
-<th>Quantity</th>
-<th>Price</th>
-<th>Options</th>
-</tr>
-</thead>
-<tbody id="addprjitms">
-</tbody>
-</table>
-    	<br />
-    	<span style="font-size:18px;font-weight:lighter;">Additional Items <span id="act2total" style="font-size:12px;color:gray;"></span></span>
-		<hr style="margin-top:5px;margin-bottom:5px;"/>
-		<table class="project_table" style="width:100%;">
-<thead>
-<tr>
-<th>Item Name</th>
-<th>Quantity</th>
-<th>Price</th>
-<th>Options</th>
-</tr>
-</thead>
-<tbody id="addprjadds">
-</tbody>
-</table>
-		<div style="margin-top:20px;">
-		<span style="font-size:18px;font-weight:lighter;">Add Items</span>
-		<hr style="margin-top:5px;margin-bottom:5px;"/>
-		<div style="padding:10px;width:50%;margin:0 auto;height:90px;border-style:solid;border-color:#c6c6c6;border-width:1px;margin-bottom:10px;box-shadow:0px 0px 3px black;">
-			<p id="itmname" style="text-align:center;">- - -</p>
-			<table style="margin:0 auto;">
-			<tr>
-			<td>Price per Unit:</td>
-			<td style="padding-left:5px;color:gray;">Php. <span id="itmprice">- - -</span></td>
-			</tr>
-			</table>
-		</div>
-		<table class="table_form">
-<tr>
-<td><label>Item Name:</label></td><td><select id="actadditem" style="width:200px;margin-left:5px;"><option value="">-- Select Item --</option></select></td>
-</tr>
-<tr>
-<td><label>Quantity:</label></td><td><input id="actadditemqty" onkeypress="return isNumber(event)" type="text" style="width:200px;margin-left:5px;" /></td>
-</tr>
-</table>
-</div>
-<button type="button" id="addactitmbtn" class="btn btn-success btn-sm">Add Activity Item</button>
-<button type="button" id="addactaddbtn" class="btn btn-warning btn-sm">Add Additional Item</button>
-		</div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button id="simgantt" type="button" class="btn btn-warning">Simulate Gantt</button>
-        <button id="addactbtn" type="button" class="btn btn-success">Add Activity</button>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="modal fade" id="addActivityModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document" style="width:80%; max-height: 80%;overflow:auto; ">
+                <div class="modal-content" style="overflow:hidden">
+                    <div class="modal-header" style="background-color:#55AA55;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel" style="color:white;"><span id="theModalTask">- - -</span></h4>
+                    </div>
+                    <input type="hidden" id="temporaryid" value="0"/>
+                    <input type="hidden" id="hiddenactivityid" value="0"/>
+                    
+                    <div class="modal-body">
+                        <table class="form_table">
+                            <tr>
+                                <td><label>Activity Name:</label></td><td style="padding-left:5px;"><input id="actname" type="text" style="width:250px;" /></td>
+                            </tr>
+                        </table>
+                       <hr style="margin-top:5px;margin-bottom:5px;"/>
+                        <table class="table_form task_form" style="display:none;"> 
+                            <tr>
+                                <td><label>Task Name:</label></td><td style="padding-left:5px;"><input id="addtaskname" type="text" style="width:250px;" /></td>
+                                <td><label>Days:</label></td><td style="padding-left:5px;"><input id="adddays" type="text" /></td>
+                            </tr>
+                            <tr>
+                                <td><label>Parent Task:</label></td><td><select id="addparent"  style="margin-left:5px;width:250px;"></select></td>
+                                
+                            </tr>
+                            <tr>
+                                <td><label>Start Date:</label></td><td style="padding-left:5px;"><input id="addstartdate" type="text" style="width:250px;" readonly="readonly"/></td>
+                                <td><label>End Date:</label></td><td style="padding-left:5px;"><input id="addenddate" type="text" style="width:250px;" /></td>
+                            </tr>
+                            <tr>
+                                <td><input id="addnotify" type="checkbox"/><label for="addnotify" >Notify Client</label></td>
+                            </tr>
+                            <tr id="tdnotify" style="display:none;">
+                                <td colspan="6">
+<textarea rows="10" cols="100" id="addmessage">
+
+</textarea>
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                                <td colspan="6">
+<textarea rows="10" cols="100" id="addmessagetemplate">
+Good day %clientNameHolder%,
+
+Please be reminded that your presence is required to be at %locationHolder% on %startDateHolder% for the %taskNameHolder% Task.
+
+Thank you and looking forward to seeing you.
+
+<?php echo getCompleteType($_SESSION["theuser"]['Type'])?>
+
+<?php echo $_SESSION["theuser"]['Name']?>
+</textarea>
+                                </td>
+                            </tr>
+                        </table>
+                        <input type="hidden" id="addhiddenid"/>
+                        <input type="hidden" id="addeditid"/>
+                        <button type="button" id="addtaskbutton" data-mode="none" class="btn btn-success btn-sm">Add Task</button>
+                        <button id="canceltaskbutton" class="btn btn-danger task_form btn-sm" style="display:none;">Cancel</button>
+                        <hr style="margin-top:5px;margin-bottom:5px;"/>
+                        <span style="font-size:18px;font-weight:lighter;">Activity Tasks</span>
+                        <hr style="margin-top:5px;margin-bottom:5px;"/>
+                        <table class="project_table add_task_table" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th class = 'add_col_task_name'>Task Name</th>
+                                    <th class = 'add_col_days'>Days</th>
+                                    <th class = 'add_col_start_date'>Start Date</th>
+                                    <th class = 'add_col_end_date'>End Date</th>
+                                    <th class = 'add_col_manpower'>Manpower</th>
+                                    <th class = 'add_col_material'>Materials</th>
+                                    <th class = 'add_col_equipment'>Equipment</th>
+                                    <th class = 'add_col_action'></th>
+                                </tr>
+                            </thead>
+                            <tbody id="addtasktable">
+                            </tbody>
+                        </table>
+                        <div style="margin-top:20px;">
+                            <span style="font-size:18px;font-weight:lighter;">Add Items</span>
+                            <table class="project_table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th class = 'add_col_action'></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="addprjitms">
+                                </tbody>
+                            </table>
+                            <hr style="margin-top:5px;margin-bottom:5px;"/>
+                            <table class="table_form">
+                                <tr>
+                                    <td><label>Item Name:</label></td><td><select id="actadditem" style="width:200px;margin-left:5px;"><option value="">-- Select Item --</option></select></td>
+                                </tr>
+                                <tr>
+                                    <td><label>Quantity:</label></td><td><input id="actadditemqty" type="text"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                                                <button type="button" id="addactitmbtn" class="btn btn-success btn-sm">Add Item</button>
+                    </div> 
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="addactbtn" type="button" class="btn btn-success">Add Activity</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 <div class="modal fade" id="ganttModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document" style="width:80%;">

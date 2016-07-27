@@ -436,29 +436,39 @@ switch($jsr["do"]) {
 	break;
 
         case "add_activity": 
-		if (!isset($jsr["projectid"]) || empty($jsr["projectid"]) || !isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["startdate"]) || empty($jsr["startdate"]) || !isset($jsr["enddate"]) || empty($jsr["enddate"]) || !isset($jsr["clientneeded"])) {
+		if (!isset($jsr["projectid"]) || empty($jsr["projectid"]) ) {
 			dexit(1);
 		}
+                $pid = $jsr["projectid"];
+                $activity = json_decode($jsr['activities']);
+ 
+//		if ($_SESSION["theuser"]["Type"] !== "admin") {
+//			$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), "0"));
+//			$mysqli->query($query);
+//		}
 
-		if ($_SESSION["theuser"]["Type"] !== "admin") {
-			$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), "0"));
-			$mysqli->query($query);
-		}
 
-		$query = insertsql("activities", array("ProjectID", "Name", "StartDate", "EndDate", "ClientNeeded"), array($jsr["projectid"], $jsr["name"], $jsr["startdate"], $jsr["enddate"], $jsr["clientneeded"]));
-		$mysqli->query($query);
-		$actid = $mysqli->insert_id;
-		$act_total = $mysqli->query("SELECT * FROM activities WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'")->num_rows;
-		$act_weight = 100 / $act_total;
-		$mysqli->query("UPDATE activities SET Weight='".$mysqli->real_escape_string($act_weight)."' WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'");
-		if (isset($jsr["items"]) && is_array($jsr["items"])) {
-			for ($c = 0; $c < count($jsr["items"]); $c++) {
-				if (isset($jsr["items"][$c]["resourceid"]) && !empty($jsr["items"][$c]["resourceid"]) && isset($jsr["items"][$c]["quantity"]) && !empty($jsr["items"][$c]["quantity"]) && isset($jsr["items"][$c]["type"])) {
-					$query = insertsql("activities_resources", array("ProjectID", "ActivityID", "ResourceID", "Quantity", "Used", "Remaining", "Type"), array($jsr["projectid"], $actid, $jsr["items"][$c]["resourceid"], $jsr["items"][$c]["quantity"], "0", $jsr["items"][$c]["quantity"], $jsr["items"][$c]["type"]));
-					$mysqli->query($query);
-				}
-			}
-		}
+                    $query = insertsql("activities", array("ProjectID", "Name"), array($pid, $activity->name));
+                    $mysqli->query($query);
+                    $actid = $mysqli->insert_id;
+                    foreach ($activity->tasks as $tasks)
+                    {
+                        $query = insertsql("task", 
+                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent", "ClientNeeded"),
+                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $tasks->parentid,  $tasks->notify));
+                        $mysqli->query($query);
+                        $taskid = $mysqli->insert_id;
+                        
+                        $resources_array = array_merge($tasks->manpower,$tasks->material,$tasks->equipment);
+                        foreach($resources_array as $resources)
+                        {
+                            $query = insertsql("task_resources",
+                                    array("ProjectID", "TaskId", "ResourceID", "Quantity", "Remaining"),
+                                        array($pid,$taskid, $resources->id, $resources->quantity,$resources->quantity));
+                            $mysqli->query($query);
+                        }
+                    }
+
 		$progress = updatePercentage($jsr["projectid"]);
 		die(json_encode(array("success"=>true, "progress"=>$progress)));
 	break;

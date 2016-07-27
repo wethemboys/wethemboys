@@ -476,7 +476,7 @@ $( document ).ready(function() {
         taskstartday = $("#addstartdate").val();
         if ( taskDay != "" && taskstartday != "" ) {
             var end =  new Date(taskstartday );
-            end.setDate(end.getDate() + parseInt(taskDay) +2); 
+            end.setDate(end.getDate() + parseInt(taskDay)  -1); 
             $('#addenddate').datepicker('setDate', end);
         }   
     });
