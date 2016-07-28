@@ -283,6 +283,12 @@ label {
     display:none;
 }
 <?php }?>
+
+#resourcescont .project_table thead{
+    color:#30abe7;
+    cursor: pointer;
+}
+
 </style>
 </head>
 <body>
@@ -369,7 +375,7 @@ label {
 <li id="commentsbtn" class="selected"><a>Comments</a></li>
 <li id="controlmonitoringbtn"><a>Controlling Monitoring</a></li>
 <li id="activitiesbtn"><a>Activities</a></li>
-<li id="ganttpreviewbtn"><a>Gantt Preview</a></li>
+<li id="ganttpreviewbtn"><a>Gantt Chart</a></li>
 <li id="filesbtn"><a>Files</a></li>
 <li id="resourcesbtn"><a>Resources</a></li>
 </nav>
@@ -510,7 +516,7 @@ if ($project['LotSize'] == 'others'){
 <table class="project_table" style="width:100%;">
 <thead>
 <tr>
-<th>Resource Name</th>
+    <th><span class ="glyphicon glyphicon-chevron-down"> </span>Resource Name</th>
 <th>Quantity</th>
 <th>Price</th>
 </tr>

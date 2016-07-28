@@ -54,7 +54,6 @@
 }
 
 .fn-gantt .leftPanel .fn-label {
-    font-weight: bold;
     display: inline-block;
     margin: 0 0 0 5px;
     color: #484A4D;
@@ -84,6 +83,7 @@
     margin: 0;
     border-bottom: 1px solid #DDD;
     background-color: #f6f6f6;
+    font-style: italic;
 }
 
 .fn-gantt .leftPanel .name {

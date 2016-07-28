@@ -880,11 +880,12 @@ function getactivities() {
                             "to":activities[i]["EndDate"].substring(0,10),
                             "actualTo":activities[i]["ActualEndDate"].substring(0,10),
                             "label":activities[i]["Name"],
-                            "activity":"Earthworks",
+                            "activity":activities[i]["Activity"],
                             "days":activities[i]["Days"],
                             "actualDays":activities[i]["ActualDays"],
                             "temporaryid":activities[i]["TaskID"],
                             "parent":activities[i]["Parent"],
+                            "done" : activities[i]["Done"]
                             };
 			$("#activityview").append(theActivity);
                         $('#temporaryid').val(activities[i]["TaskID"]);
@@ -1793,4 +1794,9 @@ Date.locale = {
         } else {
             showError("Activity not Added", "Please fill up activity name. (Activity name is required)");
         }
+    });
+    
+    
+    $("#resourcescont .project_table thead").click(function(){
+        $("#resourcescont .project_table tbody").slideToggle();
     });

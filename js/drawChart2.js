@@ -18,6 +18,7 @@ function drawChart(){
             mainTaskJson.name = activity;
             mainTaskJson.desc = dataParameters.label;
             mainTaskJson.values = [];
+            mainTaskJson.done = dataParameters.done;
             values = new Object();
             
             from = new Date(dataParameters.from).getTime();
@@ -44,10 +45,12 @@ function drawChart(){
             values.latestFinish  ="/Date("+latestFinish+")/";
             values.to ="/Date("+to+")/";
             values.label= dataParameters.label;
+            values.done = dataParameters.done;
 //            values.customClass = dataParameters.label;
 //            values.customClass = "ganttGreen";
             mainTaskJson.values.push(values);
             sourceJson.push(mainTaskJson);
+            console.log(mainTaskJson);
             
             
 //            var latestStart= new Object();

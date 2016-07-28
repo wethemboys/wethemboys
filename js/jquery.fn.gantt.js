@@ -333,8 +333,12 @@
                         entries.push('</div>');
 
                         if (entry.desc) {
+                            var strike= '';
+                            if(entry.done == '1'){
+                                strike = "style = 'text-decoration:line-through'";
+                            }
                             entries.push('<div class="row desc row' + i + ' " id="RowdId_' + i + '" data-id="' + entry.id + '">');
-                            entries.push('<span class="fn-label' + (entry.cssClass ? ' ' + entry.cssClass : '') + '">' + entry.desc + '</span>');
+                            entries.push('<span '+ strike+' class="fn-label' + (entry.cssClass ? ' ' + entry.cssClass : '') + '">' + entry.desc + '</span>');
                             entries.push('</div>');
                         }
 
@@ -1065,8 +1069,6 @@
                                     var dTo = tools.genId(tools.dateDeserialize(day.to).getTime(), element.scaleStep);
                                     var to = $(element).find('#dh-' + dTo);
 
-                                    console.log(dFrom, dTo);
-
                                     var cFrom = from.attr("offset");
                                     var cTo = to.attr("offset");
                                     var dl = Math.floor((cTo - cFrom) / tools.getCellSize()) + 1;
@@ -1235,13 +1237,13 @@
                                     var top = tools.getCellSize() * 4 + 2 + parseInt(topEl.attr("offset"), 10);
                                     _bar.css({ 'top': top, 'left': Math.floor(cFrom) ,'z-index':99 });
                                     datapanel.append(_bar);
-
+                                    if(day.done!=1){
                                     _latestStart.css({ 'top': top, 'left': Math.floor(clateststart),'background-color':'#65D065','z-index':100 });
                                     datapanel.append(_latestStart);
                                     
                                     _latestFinish.css({ 'top': top, 'left': Math.floor(clatestfinish),'background-color':'#F88484' ,'z-index':100});
                                     datapanel.append(_latestFinish);
-                                    
+                                    }
                                     if(day.actualDays != "0"){
                                         _extension = core.createExtensionBar(
                                                     parseInt(day.actualDays) -parseInt(day.days) - diffDays,
