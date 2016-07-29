@@ -1,3 +1,5 @@
+$( document ).ready(function() {
+
 $("#actstartdate").datepicker({dateFormat:'yy-mm-dd'});
 $("#actenddate").datepicker({dateFormat:'yy-mm-dd'});
 $("#prjstartdate").datepicker({dateFormat:'yy-mm-dd'});
@@ -14,7 +16,7 @@ xhr.open("POST", "backend.php");
 xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 xhrd = {
 	"do":"getuserinfo"
-}
+};
 xhr.send(JSON.stringify(xhrd));
 xhr.onload = function() {
 	user = JSON.parse(xhr.responseText);
@@ -37,6 +39,21 @@ xhr.onload = function() {
 	getcomments();
 }
 
+$( document ).ready(function() {
+    	xhr2 = new XMLHttpRequest();
+	xhr2.open("POST", "backend.php");
+	xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	xhrd = {
+		"do":"getprojectprogress",
+		"projectid":ProjectID
+	};
+	xhr2.send(JSON.stringify(xhrd));
+	xhr2.onload = function() {
+		data = JSON.parse(xhr2.responseText);
+                updatePie(data);
+	};
+        });
+});
 function isNumber(evt) {
     evt = (evt) ? evt : window.event;
     var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -295,9 +312,7 @@ if ($("#actname").val() !== "" && $("#actstartdate").val() !== "" && $("#actendd
                 } else {
 						$("#statusindicator").html("In Progress");
                 }
-					var completed = Math.round(xx["progress"]);
-					var inprogress = 100 - completed;
-					updatePie(inprogress, completed);
+					updatePie(xx["progress"]);
 					$("#addActModal").modal("hide");
 					showOk("Activity Added", "The activity is successfully added.");
 					getactivities();
@@ -580,30 +595,32 @@ function prjitemdel(theitm) {
 	calculateTotal();
 }
 
-function updatePie(one, two) {
-	var ctx = document.getElementById("myChart");
-	var data = {
-	    labels: [
-	        "In Progress ("+one+"%)",
-	        "Complete ("+two+"%)"
-	    ],
-	    datasets: [
-	        {
-	            data: [one, two],
-	            backgroundColor: [
-	                "#FF6384",
-	                "#36A2EB"
-	            ],
-	            hoverBackgroundColor: [
-	                "#FF6384",
-	                "#36A2EB"
-	            ]
-	        }]
-	};
-	var myPieChart = new Chart(ctx,{
-	    type: 'pie',
-	    data: data
-	});
+function updatePie(data) {
+//    console.log(one);
+//    console.log(two);
+console.log(data);
+//    data.project.
+//    $("#progressTable").css( 'background-color','#dedede'); 
+    $("#progressTable").append('<tr><td style="font-style:italic;font-weight:bold;">'+data.progress.project.Name+'</td><td><svg id="bar_project"></svg></td></tr>'); //.html('<svg id="bar_project"></svg>');
+    $("#bar_project").ProgressBar({
+        percent: data.progress.project.Progress,
+        width: 350,
+        height: 20,
+        fontSize: 13
+    });
+    console.log(data.progress.activity);
+   $.each(data.progress.activity, function(key,value){
+       console.log(value);
+    $("#progressTable").append('<tr><td style="font-style:italic;">'+value.Name+'</td><td><svg id="activity'+key+'"></svg></td></tr>'); //.html('<svg id="bar_project"></svg>');
+    $("#activity"+key).ProgressBar({
+        percent: value.Progress,
+        width: 350,
+        barColor:'#46CFB0',
+        height: 20,
+        fontSize: 13
+    });
+   });
+
 }
 
 function unselectall() {
@@ -812,9 +829,7 @@ function deleteAct(theActt) {
 			} else {
 				$("#statusindicator").html("In Progress");
 			}
-			var completed = Math.round(delres["progress"]);
-			var inprogress = 100 - completed;
-			updatePie(inprogress, completed);
+			updatePie(delres["progress"]);
 			theRow.parentNode.removeChild(theRow);
 			showOk("Activity Deleted", "The Activity was deleted successfully");
 		}
@@ -1105,9 +1120,7 @@ $(document).on("change" ,".doneCheckbox",function() {
 			} else {
 				$("#statusindicator").html("In Progress");
 			}
-			var completed = Math.round(theCheck["progress"]);
-			var inprogress = 100 - completed;
-			updatePie(inprogress, completed);
+			updatePie(delres["progress"]);
 			getactivities();
 		}
 	}
@@ -1782,9 +1795,7 @@ Date.locale = {
             } else {
                                 $("#statusindicator").html("In Progress");
             }
-                        var completed = Math.round(xx["progress"]);
-                        var inprogress = 100 - completed;
-                        updatePie(inprogress, completed);
+                        updatePie(xx["progress"]);
                         $("#addActivityModal").modal("hide");
                         showOk("Activity Added", "The activity is successfully added.");
                         getactivities();

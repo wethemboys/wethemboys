@@ -72,6 +72,7 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 <script src="js/prettify/prettify.min.js"></script>
 <link href="css/gantt.css" type="text/css" rel="stylesheet" />
 <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+<script src="js/jquery.progress.js"></script>
 <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
 <link rel="stylesheet" href="js/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="js/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
@@ -298,7 +299,7 @@ label {
     <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
         <div style="display:table;width:100%;">
             <div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>
-            <div style="display:table-cell;vertical-align:top;"><span id="uname_display" style="font-weight:bold;display:block;">Marvin Gaye</span><span id="usr_type" style="display:block;font-size:12px;font-weight:bold;color:gray;">Administrator</span></div>
+            <div style="display:table-cell;vertical-align:top;"><span id="uname_display" style="font-weight:bold;display:block;"></span><span id="usr_type" style="display:block;font-size:12px;font-weight:bold;color:gray;">Administrator</span></div>
         </div>
 
         <table style="width:100%;margin-top:10px;" class="menu_options">
@@ -309,7 +310,7 @@ label {
 <div id="mmE" style="z-index:99999;display:none;position:absolute;right:10px;border-style:solid;border-width:1px;border-color:#c6c6c6;box-shadow:0px 0px 3px #c6c6c6;padding:5px;min-height:100px;position:absolute;width:200px;background-color:white;">
 	<div style="display:table;width:100%;">
 	<div style="display:table-cell;"><img src="https://tracker.moodle.org/secure/attachment/30912/f3.png" style="width:50px;height:50px;border-style:solid;border-color:#c6c6c6;border-width:1px;" /></div>
-	<div style="display:table-cell;vertical-align:top;"><span id="uname_display" style="font-weight:bold;display:block;">Marvin Gaye</span><span id="usr_type" style="display:block;font-size:12px;font-weight:bold;color:gray;">Administrator</span></div>
+	<div style="display:table-cell;vertical-align:top;"><span id="uname_display" style="font-weight:bold;display:block;"></span><span id="usr_type" style="display:block;font-size:12px;font-weight:bold;color:gray;">Administrator</span></div>
 	</div>
 
 	<table style="width:100%;margin-top:10px;" class="menu_options">
@@ -364,9 +365,13 @@ label {
 </div>
 <div class="col-md-6" style="margin:0px;padding:0px;padding-left:10px;">
 <div style="width:100%;border-style:solid;border-color:#c6c6c6;border-width:1px;padding:10px;">
-<span style="font-size:18px;font-weight:lighter;">Project Progress</span>
+<span style="font-size:18px;font-weight:lighter;" id="myChartDiv">Project Progress</span>
 <hr style="margin-top:5px;margin-bottom:5px;"/>
-<canvas id="myChart" style="width:100%;"></canvas>
+<table id="progressTable" style = 'width: 100%;'>
+    
+</table>
+<!--<svg id="bar_project"></svg-->
+<!--<canvas id="myChart" style="width:100%;"></canvas>-->
 </div>
 </div>
 </div>
@@ -766,10 +771,19 @@ ProjectID = '<?php echo $project["ProjectID"];?>';
 </script>
 <script src="js/viewproj.js"></script>
 <script>
-<?php
- $completed = round($project["Progress"]);
- $inprogress = 100 - $completed;
- echo "updatePie(".$inprogress.", ".$completed.");"
-?>
+//$( document ).ready(function() {
+//    	xhr = new XMLHttpRequest();
+//	xhr.open("POST", "backend.php");
+//	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//	xhrd = {
+//		"do":"getprojectprogress",
+//		"projectid":ProjectID
+//	};
+//	xhr.send(JSON.stringify(xhrd));
+//	xhr.onload = function() {
+//		data = JSON.parse(xhr.responseText);
+//                updatePie(data);
+//	};
+//        });
 </script>
 </html>

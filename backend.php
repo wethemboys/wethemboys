@@ -1,12 +1,20 @@
 <?php
 	// PROJECT MANAGEMENT SYSTEM
 	// VERSION 1.0
-        error_reporting(0);
+//        error_reporting(0);
 // LOGIN CHECK
 session_name('evypms');
 session_start();
 header("Content-Type: text/json");
 
+//
+//$mysqli = new mysqli("localhost", "root", "", "evypms");
+//$return = updatePercentage(1 ,2 );
+//echo '<pre>';updatePercentage
+//    print_r($return);
+//echo '</pre>';
+//die();
+//die();
 function dexit($errorcode) {
 	die(json_encode(array("success"=>false,"error"=>$errorcode)));
 }
@@ -50,29 +58,78 @@ function updatesql($table, $columns, $values, $where) {
 	$query = substr($query, 0, -2);
 	return $query . " WHERE ".$where[0]."='".$mysqli->real_escape_string($where[1])."'";
 }
+function updatePercentage($projectid, $activityid = 0){
 
-function updatePercentage($projectid) {
+    $return['project'] = updatePercentageProject($projectid );
+    $return['activity'] =[];
+    $return['activity'] = updatePercentageActivity($projectid, $activityid);
+    
+    return $return;
+}
+function updatePercentageProject($projectid) {
 	global $mysqli;
-	$totaldays = $mysqli->query("select sum(Days) TotalDays from task where ProjectID ='".$mysqli->real_escape_string($projectid)."'");
+	$totaldays = $mysqli->query("select count(*) TotalTask from task where ProjectID ='".$mysqli->real_escape_string($projectid)."'");
         if ($totaldays->num_rows > 0) {
 		$totaldays = $totaldays->fetch_assoc();
-		$totaldays = $totaldays["TotalDays"];
+		$totaldays = $totaldays["TotalTask"];
 	}
-        $daysDone = $mysqli->query("select sum(Days) DaysDone  from task where ProjectID ='".$mysqli->real_escape_string($projectid)."'  and Done =1");
-        if ($daysDone->num_rows > 0) {
-		$daysDone = $daysDone->fetch_assoc();
-		$progress = $daysDone["DaysDone"] / $totaldays * 100;
-		if ($progress == 100) {
-			$query = "UPDATE projects SET Status=1, Progress='100' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
-		} else {
-			$query = "UPDATE projects SET Status=0, Progress='".$mysqli->real_escape_string($progress)."' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
-		}
-		$mysqli->query($query);
-		return $progress;
+        if($totaldays !=0){
+            $daysDone = $mysqli->query("select count(*) TotalTaskDone  from task where ProjectID ='".$mysqli->real_escape_string($projectid)."'  and Done =1");
+            if ($daysDone->num_rows > 0) {
+                    $daysDone = $daysDone->fetch_assoc();
+                    $progress = $daysDone["TotalTaskDone"] / $totaldays * 100;
+                    if ($progress == 100) {
+                            $query = "UPDATE projects SET Status=1, Progress='100' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
+                    } else {
+                            $query = "UPDATE projects SET Status=0, Progress='".$mysqli->real_escape_string($progress)."' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
+                    }
+                    $mysqli->query($query);
+            }
+            else{
+                $query = "UPDATE projects SET Status=0, Progress='0' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
+                $mysqli->query($query);
+            }
+        }
+        $query = "select Name, Progress from projects WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
+	$returnquery=$mysqli->query($query);
+
+        $return = $returnquery->fetch_assoc();
+	return $return;
+}
+
+function updatePercentageActivity($projectid, $activityid) {
+	global $mysqli;
+	$totaldays = $mysqli->query("select count(*) TotalTask  from task where ActivityID ='".$mysqli->real_escape_string($activityid)."'");
+        if ($totaldays->num_rows > 0) {
+		$totaldaysassoc = $totaldays->fetch_assoc();
+		$totaldays = $totaldaysassoc["TotalTask"];
 	}
-	$query = "UPDATE projects SET Status=0, Progress='0' WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
-	$mysqli->query($query);
-	return "0";
+        if($totaldays !=0){
+            $daysDone = $mysqli->query("select count(*) TotalTaskDone  from task where ActivityID ='".$mysqli->real_escape_string($activityid)."'  and Done =1");
+            if ($daysDone->num_rows > 0) {
+                    $daysDone = $daysDone->fetch_assoc();
+                    $progress = $daysDone["TotalTaskDone"] / $totaldays * 100;
+                    if ($progress == 100) {
+                            $query = "UPDATE activities SET Done=1, Progress='100' WHERE ActivityID='".$mysqli->real_escape_string($activityid)."'";
+                    } else {
+                            $query = "UPDATE activities SET Done=0, Progress='".$mysqli->real_escape_string($progress)."' WHERE ActivityID='".$mysqli->real_escape_string($activityid)."'";
+                    }
+                    $mysqli->query($query);
+
+            }
+            else{
+                $query = "UPDATE activity SET Done=0, Progress='0' WHERE ActivityID='".$mysqli->real_escape_string($activityid)."'";
+                $mysqli->query($query);
+            }
+        }
+        $return =[];
+        $query = "select Name, Progress from activities WHERE ProjectID='".$mysqli->real_escape_string($projectid)."'";
+	$returnquery=$mysqli->query($query);
+
+        while ($qqRow = $returnquery->fetch_assoc()) {
+            array_push($return, $qqRow);
+        }
+	return $return;
 }
 
 function updateEndDate($taskId, $startdate) {
@@ -421,7 +478,7 @@ switch($jsr["do"]) {
      
 			$mysqli->query($query);
                         updateEndDate($jsr["taskid"], date('Y-m-d'));
-			$progress = updatePercentage($theAct["ProjectID"]);
+			$progress = updatePercentage($theAct["ProjectID"],$theAct["ActivityID"]);
 			die(json_encode(array("success"=>true, "progress"=>$progress)));
 		} else {
 			dexit(1);
@@ -453,7 +510,7 @@ switch($jsr["do"]) {
 //			}
 
 			$mysqli->query($query);
-			$progress = updatePercentage($theAct["ProjectID"]);
+			$progress = updatePercentage($theAct["ProjectID"],$theAct["ActivityID"]);
 			die(json_encode(array("success"=>true, "progress"=>$progress)));
 		} else {
 			dexit(1);
@@ -494,7 +551,7 @@ switch($jsr["do"]) {
                         }
                     }
 
-		$progress = updatePercentage($jsr["projectid"]);
+		$progress = updatePercentage($jsr["projectid"],$actid);
 		die(json_encode(array("success"=>true, "progress"=>$progress)));
 	break;
 
@@ -863,7 +920,13 @@ switch($jsr["do"]) {
 			die("[]");
 		}
 	break;
-
+	case "getprojectprogress":
+		if (!isset($jsr["projectid"]) || empty($jsr["projectid"])) {
+			$search = " ";
+		} 			
+                $progress = updatePercentage($jsr["projectid"]);
+		die(json_encode(array("success"=>true, "progress"=>$progress)));
+	break;
 	case "add_comment":
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"]) || !isset($jsr["commentdata"]) || empty($jsr["commentdata"])) {
 			dexit(1);
