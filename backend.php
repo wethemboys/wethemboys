@@ -1,7 +1,7 @@
 <?php
 	// PROJECT MANAGEMENT SYSTEM
 	// VERSION 1.0
-//        error_reporting(0);
+        error_reporting(0);
 // LOGIN CHECK
 session_name('evypms');
 session_start();
@@ -47,7 +47,40 @@ function insertsql($table, $columns, $values) {
 	}
 	return substr($query, 0, -2).")";
 }
-
+function get_manpower_if_outsource($resourceid,$startdate,$enddate,$taskresid,$qty){
+    	global $mysqli;
+                $max = 30;
+		$query = "select task.Done, task_resources.TaskResId,task_resources.Quantity,task.StartDate,task.EndDate 
+from task_resources left join task on task_resources.TaskId = task.TaskID 
+where task_resources.ResourceID ='".$resourceid."' 
+AND '".$startdate."' BETWEEN task.StartDate AND task.EndDate
+AND '".$enddate."' BETWEEN task.StartDate AND task.EndDate
+AND task.Done != 1
+order by task_resources.TaskResId asc";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			
+			while ($row = $qq->fetch_assoc()) {
+				if($taskresid == $row['TaskResId'])
+                                    break;
+                                $max = $max - $row['Quantity'];
+			}
+                        if($max >= $qty){
+                            return  $qty ;
+                        }
+                        if($max <= 0){
+                            $quantity = $max - $qty;
+                        }else{
+                            $quantity = $qty - $max ;
+                        }
+                        $quantity = $quantity < 0 ? 0 : $quantity;
+                        $outsource =$qty- $quantity ;
+                        $outsource = $outsource < 0 ? 0 : $outsource;
+                        return $quantity . '/ <span style="color:red;" > ' . $outsource .'</span>';
+		} else {
+			return  $qty ;
+		}
+}
 function updatesql($table, $columns, $values, $where) {
 	global $mysqli;
 	$query = "UPDATE ".$table." SET ";
@@ -289,16 +322,48 @@ switch($jsr["do"]) {
 				$c = 0;
 				while ($activity = $qq->fetch_assoc()) {
 					$project["activities"][$c] = $activity;
-					$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE TaskID='".$mysqli->real_escape_string($activity["TaskID"])."'";
+					$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType,resources.Price as ResourcePrice FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE TaskID='".$mysqli->real_escape_string($activity["TaskID"])."'  and Additional != 1 ";
 					$project["activities"][$c]["resources"] = array();
 					$qqd = $mysqli->query($query);
 					if ($qqd->num_rows > 0) {
 						$d = 0;
 						while ($res = $qqd->fetch_assoc()) {
+
+                                                        if($res['ResourceType'] == 'manpower'){
+                                                            $res['QuantityText'] = get_manpower_if_outsource($res['ResourceID'],$activity["StartDate"],$activity["EndDate"],$res['TaskResID'],$res['Quantity']);
+//                                                            echo '<pre>';
+//                                                            print_r($res['QuantityText'] );
+//                                                            echo '</pre>';
+//                                                  
+                                                        }else{
+                                                            $res['QuantityText'] =$res['Quantity'] ;
+                                                        }
 							$project["activities"][$c]["resources"][$d] = $res;
 							$d++;
 						}
 					}
+                                        $project["activities"][$c]["additional"] = array();
+                                        $query = "select Reason,TaskAddID,TaskID from task_resources_additional where TaskID = '".$mysqli->real_escape_string($activity["TaskID"])."'";
+                                        $taskadd = $mysqli->query($query);
+                                        if ($qq->num_rows > 0) {
+                                                $d = 0;
+                                                while ($taskaddrow = $taskadd->fetch_assoc()) {
+                                                    $project["activities"][$c]["additional"][$d] = $taskaddrow;
+                                                    $query = "SELECT task_resources.*,task_resources_additional.Reason,resources.Type as ResourceType, resources.Name as ResourceName, resources.Price as ResourcePrice FROM `task_resources_additional` INNER JOIN task_resources ON task_resources_additional.TaskAddID=task_resources.TaskAddID INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE task_resources_additional.TaskAddID='".$taskaddrow["TaskAddID"]."' ";
+                                                    
+                                                    $qqd = $mysqli->query($query);
+                                                    $project["activities"][$c]["additional"][$d]["items"] = array();
+                                                    if ($qqd->num_rows > 0) {
+                                                            $e = 0;
+                                                            while ($res = $qqd->fetch_assoc()) {
+                                                                     $project["activities"][$c]["additional"][$d]["items"][$e] = $res;
+                                                                    $e++;
+                                                            }
+                                                    }
+                                                    $d++;
+                                                }
+                                        
+                                        }
 				$c++;
 				}
 			} 
@@ -348,14 +413,14 @@ switch($jsr["do"]) {
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"])) {
 			dexit(1);
 		}
-		$query = "SELECT * FROM task WHERE CURDATE() <= EndDate AND CURDATE() >= StartDate AND ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
+		$query = "SELECT * FROM task WHERE CURDATE() >= StartDate AND ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'";
 		$qqx = $mysqli->query($query);
 		if ($qqx->num_rows > 0) {
 			$c = 0;
 			while ($acts = $qqx->fetch_assoc()) {
 				$curact[$c] = $acts;
 				$curact[$c]["resources"] = array();
-				$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON resources.ResourceID=task_resources.ResourceID WHERE TaskID='".$curact[$c]["TaskID"]."'";
+				$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON resources.ResourceID=task_resources.ResourceID WHERE TaskID='".$curact[$c]["TaskID"]."' and resources.Type != 'manpower'";
 				$qq = $mysqli->query($query);
 				if ($qq->num_rows > 0) {
 					$x = 0;
@@ -483,6 +548,18 @@ switch($jsr["do"]) {
 		} else {
 			dexit(1);
 		}
+	break;
+        case "add_days_task":
+		if (!isset($jsr["taskid"]) || empty($jsr["taskid"])) {
+			dexit(1);
+		}
+
+                $query = "UPDATE task SET AdditionalDays= AdditionalDays + ". $jsr["days"]. ",EndDate = date('".$jsr["enddate"]."') WHERE TaskID='".$mysqli->real_escape_string($jsr["taskid"])."'";
+
+                $mysqli->query($query);
+                updateEndDate($jsr["taskid"], $jsr["enddate"]);
+                die(json_encode(array("success"=>true)));
+
 	break;
 	case "activity_done":
 		if (!isset($jsr["activityid"]) || empty($jsr["activityid"])) {
@@ -904,6 +981,101 @@ switch($jsr["do"]) {
 		} else {
 			$search = " WHERE Name LIKE '%".$mysqli->real_escape_string($jsr["search"])."%' ";
 		}
+		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			$resources = array();
+			$c = 0;
+			while ($resource = $qq->fetch_assoc()) {
+				foreach ($resource as $key=>$value) {
+					$resources[$c][$key] = $value;
+				}
+				$c++;
+			}
+			die(json_encode($resources));
+		} else {
+			die("[]");
+		}
+	break;
+	case "list_resources":
+		if (!isset($jsr["search"]) || empty($jsr["search"])) {
+			$search = " ";
+		} else {
+			$search = " WHERE Name LIKE '%".$mysqli->real_escape_string($jsr["search"])."%' ";
+		}
+		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			$resources = array();
+			$c = 0;
+			while ($resource = $qq->fetch_assoc()) {
+				foreach ($resource as $key=>$value) {
+					$resources[$c][$key] = $value;
+				}
+				$c++;
+			}
+			die(json_encode($resources));
+		} else {
+			die("[]");
+		}
+	break;
+        case "add_manpower_task":
+
+                foreach($jsr['manpower'] as $manpower){
+                    $query = "SELECT * FROM task_resources WHERE TaskID = '".$mysqli->real_escape_string($jsr["taskid"])."' and ResourceID =  '".$mysqli->real_escape_string($manpower["id"])."'";
+                    $qq = $mysqli->query($query);
+                    if ($qq->num_rows > 0) {
+                        $query = "UPDATE task_resources SET Quantity=Quantity + ".$manpower['quantity'].", Remaining=Remaining + ".$manpower['quantity']." WHERE TaskID = '".$mysqli->real_escape_string($jsr["taskid"])."' and ResourceID =  '".$mysqli->real_escape_string($manpower["id"])."'";
+                        $mysqli->query($query);
+                    }
+                    else
+                    {
+                        $query = insertsql("task_resources",
+                                    array("ProjectID", "TaskId", "ResourceID", "Quantity", "Remaining"),
+                                        array($jsr["projectid"],$jsr["taskid"], $manpower["id"],$manpower["quantity"],$manpower["quantity"]));
+                            $mysqli->query($query);
+                    }
+                }
+                die(json_encode(array("success"=>true)));
+	break;        
+        case "add_material_task":
+                 $query = insertsql("task_resources_additional",
+                    array( "TaskID", "Reason"),
+                    array($jsr['taskid'],$jsr['reason']));
+                $mysqli->query($query);
+                $addid = $mysqli->insert_id;
+                foreach($jsr['material'] as $material)
+                {
+                    $query = insertsql("task_resources",
+                            array("ProjectID", "TaskId", "ResourceID", "Quantity", "Remaining","Additional","TaskAddID"),
+                                array($jsr['projectid'],$jsr['taskid'], $material['id'], $material['quantity'], $material['quantity'],1,$addid));
+                    $mysqli->query($query);
+                }
+                 die(json_encode(array("success"=>true)));
+	break;
+	case "get_manpower":
+                $search = " WHERE Type LIKE 'manpower' ";
+		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
+
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			$resources = array();
+			$c = 0;
+			while ($resource = $qq->fetch_assoc()) {
+				foreach ($resource as $key=>$value) {
+					$resources[$c][$key] = $value;
+				}
+				$c++;
+			}
+			die(json_encode($resources));
+		} else {
+			die("[]");
+		}
+	break;	
+        case "get_manpower_if_outsource":
+	break;
+	case "get_materials":
+                $search = " WHERE Type LIKE 'material' ";
 		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {

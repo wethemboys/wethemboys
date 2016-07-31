@@ -417,7 +417,7 @@ Thank you and looking forward to seeing you.
                                 </tr>
                             </table>
                         </div>
-                                                <button type="button" id="addactitmbtn" class="btn btn-success btn-sm">Add Item</button>
+                        <button type="button" id="addactitmbtn" class="btn btn-success btn-sm">Add Item</button>
                     </div> 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

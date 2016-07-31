@@ -11,6 +11,22 @@ $("#prjenddate").datepicker({dateFormat:'yy-mm-dd'});
     $("#addenddate").datepicker('disable');
     $("#adddays").TouchSpin();
     $("#actadditemqty").TouchSpin({"min":1});
+
+
+$( document ).ready(function() {
+    	xhr2 = new XMLHttpRequest();
+	xhr2.open("POST", "backend.php");
+	xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	xhrd = {
+		"do":"getprojectprogress",
+		"projectid":ProjectID
+	};
+	xhr2.send(JSON.stringify(xhrd));
+	xhr2.onload = function() {
+		data = JSON.parse(xhr2.responseText);
+                updatePie(data);
+	};
+        });
 xhr = new XMLHttpRequest();
 xhr.open("POST", "backend.php");
 xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -36,23 +52,11 @@ xhr.onload = function() {
 		$("#sendreqbtn").css("display", "inline");
 		$("#delprojbtn").css("display", "none");
 	}
+        
+//        getManpower();
 	getcomments();
+        
 }
-
-$( document ).ready(function() {
-    	xhr2 = new XMLHttpRequest();
-	xhr2.open("POST", "backend.php");
-	xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-	xhrd = {
-		"do":"getprojectprogress",
-		"projectid":ProjectID
-	};
-	xhr2.send(JSON.stringify(xhrd));
-	xhr2.onload = function() {
-		data = JSON.parse(xhr2.responseText);
-                updatePie(data);
-	};
-        });
 });
 function isNumber(evt) {
     evt = (evt) ? evt : window.event;
@@ -169,6 +173,40 @@ function getCompleteType(type) {
                 resourcesview.append(cc);
             }
             resourcesview = $("#actadditem");
+            for (i = 0; i < resources.length; i++) {
+                cc = "<option data-name='" + resources[i]["Name"] + "' type='" + resources[i]["Type"] + "' price='" + resources[i]["Price"] + "' value='" + resources[i]["ResourceID"] + "'>" + resources[i]["Name"] + "("+resources[i]["Price"]+")</option>";
+                resourcesview.append(cc);
+            }
+        };
+    }
+    function get_outsource(resourceid,startdate,enddate,taskresid,quantity) {
+        xhr = new XMLHttpRequest();
+        xhr.open("POST", "backend.php",false);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.send(JSON.stringify(
+                {
+                    "do": "get_manpower_if_outsource",
+                    "resourceid": resourceid,
+                    "startdate":startdate,
+                    "enddate": enddate,
+                    "taskresid" : taskresid,
+                    "quantity" : quantity
+            
+                }
+                ));
+        xhr.onload = function () {
+            resources = JSON.parse(xhr.responseText);
+            console.log(resources);
+        };
+    }
+    function getManpower() {
+        xhr = new XMLHttpRequest();
+        xhr.open("POST", "backend.php");
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.send(JSON.stringify({"do": "get_manpower"}));
+        xhr.onload = function () {
+            resources = JSON.parse(xhr.responseText);
+            resourcesview = $("#addManpowerManpower");
             for (i = 0; i < resources.length; i++) {
                 cc = "<option data-name='" + resources[i]["Name"] + "' type='" + resources[i]["Type"] + "' price='" + resources[i]["Price"] + "' value='" + resources[i]["ResourceID"] + "'>" + resources[i]["Name"] + "("+resources[i]["Price"]+")</option>";
                 resourcesview.append(cc);
@@ -596,11 +634,7 @@ function prjitemdel(theitm) {
 }
 
 function updatePie(data) {
-//    console.log(one);
-//    console.log(two);
-console.log(data);
-//    data.project.
-//    $("#progressTable").css( 'background-color','#dedede'); 
+    $("#progressTable").html('');
     $("#progressTable").append('<tr><td style="font-style:italic;font-weight:bold;">'+data.progress.project.Name+'</td><td><svg id="bar_project"></svg></td></tr>'); //.html('<svg id="bar_project"></svg>');
     $("#bar_project").ProgressBar({
         percent: data.progress.project.Progress,
@@ -608,9 +642,7 @@ console.log(data);
         height: 20,
         fontSize: 13
     });
-    console.log(data.progress.activity);
    $.each(data.progress.activity, function(key,value){
-       console.log(value);
     $("#progressTable").append('<tr><td style="font-style:italic;">'+value.Name+'</td><td><svg id="activity'+key+'"></svg></td></tr>'); //.html('<svg id="bar_project"></svg>');
     $("#activity"+key).ProgressBar({
         percent: value.Progress,
@@ -864,7 +896,7 @@ function getactivities() {
                             activityheader = activities[i]["Activity"];
                         }
 //			if (user["Type"] == "client") {
-				theActivity = '<tr taskid="%taskid%" class="coloredtr activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input onchange="checkState(event)" class="doneCheckbox" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
+				theActivity = '<tr taskid="%taskid%" class="coloredtr activity_'+activities[i]["ActivityID"]+' row_task"><td style="padding-left: 20px;">%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><input class="doneCheckbox" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			} else {
 //				theActivity = '<tr actid="%actid%"><td>%actname%</td><td>%days% Day/s</td><td>%startdate%</td><td>%enddate%</td><td>Php. %totalprice%</td><td><button onclick="editAct(event)" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-plus"></span> Edit Activity/Items</button> <button onclick="deleteAct(event)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete Activity</button><input onchange="checkState(event)" type="checkbox" style="margin-left:5px;margin-right:3px;" %checked%/>Done</td></tr>';
 //			}
@@ -1114,13 +1146,13 @@ $(document).on("change" ,".doneCheckbox",function() {
 			showOk("Edit Request Sent", "Change Request successfully sent.");
 			theRowx.target.value = "";
 		} else {
-			$("#progressindicator").html(Math.round(theCheck["progress"]) + "%");
-			if (theCheck["progress"] == "100" || theCheck["progress"] == 100) {
-				$("#statusindicator").html("Completed");
-			} else {
-				$("#statusindicator").html("In Progress");
-			}
-			updatePie(delres["progress"]);
+//			$("#progressindicator").html(Math.round(theCheck["progress"]) + "%");
+//			if (theCheck["progress"] == "100" || theCheck["progress"] == 100) {
+//				$("#statusindicator").html("Completed");
+//			} else {
+//				$("#statusindicator").html("In Progress");
+//			}
+			updatePie(theCheck);
 			getactivities();
 		}
 	}
@@ -1213,7 +1245,7 @@ function getcurrentactivity() {
 		theCont = $("#currentacts");
 		theCont.html("");
 		for (var i = 0; i < tActivity.length; i++) {
-			mmT = "<span style=\"font-size:18px;font-weight:lighter;display:block;margin-top:3px;\">Current Task: <span style=\"font-size:12px;color:gray;font-weight:normal;\">%theactivityname%<\/span><\/span>\r\n<hr style=\"margin-top:5px;margin-bottom:5px;\"\/>\r\n<table class=\"project_table\" style=\"width:100%;border-bottom:1px solid #929292;\">\r\n<thead>\r\n<tr>\r\n<th style=\"width:40%\">Resource Name<\/th>\r\n<th style=\"width:20%\">Quantity<\/th>\r\n<th style=\"width:20%\">Used<\/th>\r\n<th style=\"width:20%\">Remaining<\/th>\r\n<\/tr>\r\n<\/thead>\r\n<tbody>\r\n%tdata%\r\n<\/tbody>\r\n<\/table>";
+			mmT = "<span style=\"font-size:18px;font-weight:lighter;display:block;padding-top:15px;border-top:3px #dedede solid;\">Current Task: <span style=\"font-size:12px;color:gray;font-weight:normal;\">%theactivityname%<\/span><\/span>\r\n<hr style=\"margin-top:5px;margin-bottom:5px;\"\/>\r\n<table class=\"project_table\" style=\"width:100%;border-bottom:1px solid #929292;\">\r\n<thead>\r\n<tr>\r\n<th style=\"width:40%\">Resource Name<\/th>\r\n<th style=\"width:20%\">Quantity<\/th>\r\n<th style=\"width:20%\">Used<\/th>\r\n<th style=\"width:20%\">Remaining<\/th>\r\n<\/tr>\r\n<\/thead>\r\n<tbody>\r\n%tdata%\r\n<\/tbody>\r\n<\/table>";
 			nnT = "";
 			for (var j = 0; j < tActivity[i]["resources"].length; j++) {
 				if (user["Type"] == "client") {
@@ -1256,7 +1288,6 @@ function getallresources() {
 			theTbl.append(tblPlate);
 			tPrice += parseInt(theResources[i]["PriceTotal"]);
 		}
-                theTbl.append("<hr/>");
 		$("#overallresourcesprice").html("Php. " + tPrice);
 		getcurrentactivity();
 	}
@@ -1296,14 +1327,31 @@ function controls() {
 		} else {
 			$("#programmedcostindicator2").html("Php. 0.00");
 		}
-		$("#act_list").html("");
+                $("#act_list").remove();
+                $("#control_monitor").append("<div id='act_list'></div>")
+		$("#").html("");
 		for (var a = 0; a < proj["activities"].length; a++) {
-			tBlex = '<span style="margin-top:5px;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table>';
-			tBlex = tBlex.replace("%header%",proj["activities"][a]["Activity"] +' - '+proj["activities"][a]["Name"]);
+                    tBlex = '<h3><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+			//tBlex = '<h3><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+                      //  tBlex = '<div class="activity_task"><span style="margin-top:5px;padding-top:15px;border-top:3px #787878 solid;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+			if(parseInt(proj["activities"][a]["AdditionalDays"]) == 0 ){
+                            additionalDays = '';
+                        }else{
+                            additionalDays = '<tr><td>Additional Days </td><td>'+proj["activities"][a]["AdditionalDays"]+' </td></tr>';
+                        }
+                        
+                        tBlex = tBlex.replace("%header%",proj["activities"][a]["Activity"] +' - '+proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%actname%", proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%startdate%", FormalDateTime(proj["activities"][a]["StartDate"])[0]);
-			tBlex = tBlex.replace("%enddate%", FormalDateTime(proj["activities"][a]["EndDate"])[0]);
-                        tBlex = tBlex.replace("%astatus%", proj["activities"][a]["Done"]== 1 ? 'Done':'In Progress');
+			tBlex = tBlex.replace("%enddate%", FormalDateTime(proj["activities"][a]["EndDate"])[0] +additionalDays);
+                        if(proj["activities"][a]["Done"]== 1 ){
+                            status =  'Done'
+                        }else{
+                            status = 'In Progress' + '<tr><td><button class="btn btn-sm btn-success addAdditionalMaterial" data-taskid="'+proj["activities"][a]["TaskID"] +'"><span class="glyphicon glyphicon-plus"></span>Add Additonal Materials</button></td></tr>';
+                        }
+                        
+                        tBlex = tBlex.replace("%astatus%", status);
+                        
 			if (proj["activities"][a]["ProgrammedCost"] !== null && proj["activities"][a]["ProgrammedCost"] !== "0") {
 				tBlex = tBlex.replace("%pcost%", "Php. " + proj["activities"][a]["ProgrammedCost"]);
 			} else {
@@ -1317,21 +1365,50 @@ function controls() {
 			ActPrice = 0;
 			bLejx = "";
 			for (var b = 0; b < proj["activities"][a]["resources"].length; b++) {
-				bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
-				bLej = bLej.replace("%name%", proj["activities"][a]["resources"][b]["ResourceName"]);
-				bLej = bLej.replace("%qty%", proj["activities"][a]["resources"][b]["Quantity"]);
+                                bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td></tr>";
+				//bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
+//				if(proj["activities"][a]["resources"][b]["ResourceType"] == 'manpower'){
+//                                    quantity = get_outsource(proj["activities"][a]["resources"][b]["ResourceID"],
+//                                    proj["activities"][a]["StartDate"],
+//                                    proj["activities"][a]["EndDate"],
+//                                    proj["activities"][a]["resources"][b]["TaskResID"] ,
+//                                    proj["activities"][a]["resources"][b]["Quantity"]);
+//                                    console.log(quantity)
+//                                }else{
+//                                   quantity = proj["activities"][a]["resources"][b]["Quantity"];
+//                                }
+                                bLej = bLej.replace("%name%", proj["activities"][a]["resources"][b]["ResourceName"]);
+				bLej = bLej.replace("%qty%", proj["activities"][a]["resources"][b]["QuantityText"]);
+//                                bLej = bLej.replace("%qty%",quantity);
 				bLej = bLej.replace("%remaining%", proj["activities"][a]["resources"][b]["Remaining"]);
 				bLej = bLej.replace("%used%", proj["activities"][a]["resources"][b]["Used"]);
 				thePrice = parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Quantity"]);
-				bLej = bLej.replace("%pcost%", "Php. " + thePrice);
-				bLej = bLej.replace("%acost%", "Php. " + parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Used"]));
-				ActPrice += thePrice;
+//				bLej = bLej.replace("%pcost%", "Php. " + thePrice);
+//				bLej = bLej.replace("%acost%", "Php. " + parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Used"]));
+				
 				bLejx += bLej;
 			}
 			tBlex = tBlex.replace("%tbldata%", bLejx);
 			tBlex = tBlex.replace("%actprice%", "Php. " + ActPrice);
 			$("#act_list").append(tBlex);
+		
+                additional_html= '';
+		for (var e= 0; e < proj["activities"][a]["additional"].length; e++) {
+                    if( proj["activities"][a]["additional"].length ){
+                         additional_html = '<table class="table_form" style="width:100%; border-top:1px #343434 solid;"><tr style="font-weight: bold;"><td style="width:50%;">Additional Material</td><td style="width:25%";>Quantity</td><td style="width:25%;">Additional Cost</td>';
+                    }
+                    for (var f= 0; f < proj["activities"][a]["additional"][e]["items"].length; f++) {
+                        additional_html =additional_html + '<tr class="coloredtr"><td>'+ proj["activities"][a]["additional"][e]["items"][f]["ResourceName"]+'</td><td>'+ proj["activities"][a]["additional"][e]["items"][f]["Quantity"]+'</td><td>'+ proj["activities"][a]["additional"][e]["items"][f]["ResourcePrice"]+'</td>';
+                    }
+                    if( proj["activities"][a]["additional"].length ){
+                        additional_html =additional_html + "<tr style='font-weight: bold;'><td colspan=3>Reason</td></tr>";
+                        additional_html =additional_html + "<tr><td colspan=3>"+proj["activities"][a]["additional"][e]["Reason"]+"</td></tr>";
+                        $("#act_list .activity_task:last").append(additional_html);
+                    }
 		}
+
+            }
+            $("#act_list").accordion({heightStyle: "content"});
 	}
 }
 
@@ -1808,6 +1885,227 @@ Date.locale = {
     });
     
     
-    $("#resourcescont .project_table thead").click(function(){
-        $("#resourcescont .project_table tbody").slideToggle();
+    $("#resourcescont .project_table:first thead").click(function(){
+        $("#resourcescont .project_table:first tbody").slideToggle();
     });
+    
+    $(" #addDaysDays").on("change", function () {
+        taskDay =$("#addDaysDays").val();
+        taskstartday = $("#addDaysEnddateHidden").val();
+        if ( taskDay != "" && taskstartday != "" ) {
+            var end =  new Date(taskstartday );
+            end.setDate(end.getDate() + parseInt(taskDay)); 
+            $('#addDaysEnddate').datepicker('setDate', end);
+        }   
+    });
+    
+    $("#addDaysButton").on("click", function () {
+        days = $("#addDaysDays").val();
+        $("#addDaysButton").attr('disabled','disabled');
+        if (days !=0 ) {
+			jsr = {
+				"do":"add_days_task",
+				"taskid":$("#addDaysTaskid").val(),
+				"enddate":$("#addDaysEnddate").val(),
+                                "days":$("#addDaysDays").val(),
+                                
+			};
+
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "backend.php");
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(jsr));
+            xhr.onload = function() {
+                xx = JSON.parse(xhr.responseText);
+                if (xx["success"]) {
+                    
+                    
+                        $("#addDaysButton").removeAttr('disabled');
+                        $("#AddDaysModal").modal("hide");
+                        showOk("Days Added", "The task is successfully updated.");
+                        window.location.href = "viewproject.php?pid="+ProjectID;
+
+            }
+            }
+
+        } else {
+              $("#addDaysButton").removeAttr('disabled');
+            showError("Days not Added", "Please fill up no of days . ");
+        }
+    });
+    
+    $("#addManpowerAddButton").on("click", function () {
+        actAddItem = $("#addManpowerManpower");
+        resourceid = actAddItem.find(":selected").val();
+        actAddItemQty = $("#addManpowerQuantity");
+        if (actAddItem.val() != "" && actAddItemQty.val() != "") {
+            if($("#addManpowerRowID" + resourceid).length > 0){
+                parameters = $("#addManpowerRowID" + resourceid).data('parameters');
+                totalprice = (parseInt(actAddItem.find(":selected").attr("price")) * parseInt(actAddItemQty.val()));
+                jsonObject = {
+                        "id":resourceid ,
+                        "name":actAddItem.find(":selected").data("name"),
+                        "type":actAddItem.find(":selected").attr("type"),
+                        "quantity":parseInt(actAddItemQty.val()) +parseInt(parameters.quantity) ,
+                        "totalprice":totalprice + parseInt(parameters.totalprice),
+                        "price": actAddItem.find(":selected").attr("price")};
+                itemTemplate = '<td>%itemname%</td><td>%itemqty%</td><td>%itemprice%</td><td><button class="btn btn-xs deleteManpowerButton"><span class="glyphicon glyphicon-remove"></span></button></td>';
+                itemTemplate = itemTemplate.replace("%itemname%", jsonObject.name);
+                itemTemplate = itemTemplate.replace("%itemqty%", jsonObject.quantity);
+                itemTemplate = itemTemplate.replace("%itemprice%", "Php. " + jsonObject.totalprice);
+                $("#addManpowerRowID" + resourceid).html(itemTemplate);
+                actAddItem.val("");
+                actAddItemQty.val("");
+                $("#addManpowerRowID" + resourceid).data('parameters',jsonObject);
+            }
+            else{
+                totalprice = (parseInt(actAddItem.find(":selected").attr("price")) * parseInt(actAddItemQty.val()));
+                jsonObject = {
+                    "id":resourceid ,
+                    "name":actAddItem.find(":selected").data("name"),
+                    "type":actAddItem.find(":selected").attr("type"),
+                    "quantity":actAddItemQty.val(),
+                    "totalprice":totalprice,
+                    "price": actAddItem.find(":selected").attr("price")};
+                itemTemplate = '<tr id="%itemrowid%" class="addManpowerRow"><td>%itemname%</td><td>%itemqty%</td><td>%itemprice%</td><td><button class="deleteManpowerButton btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button></td></tr>';
+                itemTemplate = itemTemplate.replace("%itemrowid%", "addManpowerRowID" +resourceid);
+                itemTemplate = itemTemplate.replace("%itemname%", actAddItem.find(":selected").data("name"));
+                itemTemplate = itemTemplate.replace("%itemqty%", actAddItemQty.val());
+                itemTemplate = itemTemplate.replace("%itemprice%", "Php. " + totalprice);
+                $("#addManpowerItems").append(itemTemplate);
+                actAddItem.val("");
+                actAddItemQty.val("");
+                $("#addManpowerRowID" + resourceid).data('parameters',jsonObject);
+            }
+        } else {
+            showError("Item not Added", "Please select the item and the desired quantity.");
+        }
+    });
+    
+    $(document).on("click" ,".deleteManpowerButton",function() {
+        $(this).closest('.addManpowerRow').remove();
+    });
+    
+   $(document).on("click" ,"#AddManpowerButton",function() {
+       manpower = [];
+        $('#addManpowerItems .addManpowerRow').each(function(){
+            manpower.push($(this).data('parameters'));
+        });
+            jsr = {
+                    "do":"add_manpower_task",
+                    "taskid":$("#addManpowerTaskid").val(),
+                    "manpower": manpower,
+                    "projectid":ProjectID
+            };
+
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "backend.php");
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(jsr));
+            xhr.onload = function() {
+                xx = JSON.parse(xhr.responseText);
+                if (xx["success"]) {
+                    window.location.href = "viewproject.php?pid="+ProjectID;
+                }
+            }
+    });
+    $(document).on("click" ,".addAdditionalMaterial",function() {
+        getMaterials();
+        $("#addMaterialTaskid").val($(this).data('taskid'));
+        $("#AddMaterialModal").modal('show');
+    });
+    function getMaterials() {
+        xhrm = new XMLHttpRequest();
+        xhrm.open("POST", "backend.php");
+        xhrm.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhrm.send(JSON.stringify({"do": "get_materials"}));
+        xhrm.onload = function () {
+            resources = JSON.parse(xhrm.responseText);
+            resourcesview = $("#addMaterialMaterial");
+            for (i = 0; i < resources.length; i++) {
+                cc = "<option data-name='" + resources[i]["Name"] + "' type='" + resources[i]["Type"] + "' price='" + resources[i]["Price"] + "' value='" + resources[i]["ResourceID"] + "'>" + resources[i]["Name"] + "("+resources[i]["Price"]+")</option>";
+                resourcesview.append(cc);
+            }
+        };
+    }
+    $("#addMaterialAddButton").on("click", function () {
+        actAddItem = $("#addMaterialMaterial");
+        resourceid = actAddItem.find(":selected").val();
+        actAddItemQty = $("#addMaterialQuantity");
+        if (actAddItem.val() != "" && actAddItemQty.val() != "") {
+            if($("#addMaterialRowID" + resourceid).length > 0){
+                parameters = $("#addMaterialRowID" + resourceid).data('parameters');
+                totalprice = (parseInt(actAddItem.find(":selected").attr("price")) * parseInt(actAddItemQty.val()));
+                jsonObject = {
+                        "id":resourceid ,
+                        "name":actAddItem.find(":selected").data("name"),
+                        "type":actAddItem.find(":selected").attr("type"),
+                        "quantity":parseInt(actAddItemQty.val()) +parseInt(parameters.quantity) ,
+                        "totalprice":totalprice + parseInt(parameters.totalprice),
+                        "price": actAddItem.find(":selected").attr("price")};
+                itemTemplate = '<td>%itemname%</td><td>%itemqty%</td><td>%itemprice%</td><td><button class="btn btn-xs deleteManpowerButton"><span class="glyphicon glyphicon-remove"></span></button></td>';
+                itemTemplate = itemTemplate.replace("%itemname%", jsonObject.name);
+                itemTemplate = itemTemplate.replace("%itemqty%", jsonObject.quantity);
+                itemTemplate = itemTemplate.replace("%itemprice%", "Php. " + jsonObject.totalprice);
+                $("#addMaterialRowID" + resourceid).html(itemTemplate);
+                actAddItem.val("");
+                actAddItemQty.val("");
+                $("#addMaterialRowID" + resourceid).data('parameters',jsonObject);
+            }
+            else{
+                totalprice = (parseInt(actAddItem.find(":selected").attr("price")) * parseInt(actAddItemQty.val()));
+                jsonObject = {
+                    "id":resourceid ,
+                    "name":actAddItem.find(":selected").data("name"),
+                    "type":actAddItem.find(":selected").attr("type"),
+                    "quantity":actAddItemQty.val(),
+                    "totalprice":totalprice,
+                    "price": actAddItem.find(":selected").attr("price")};
+                itemTemplate = '<tr id="%itemrowid%" class="addMaterialRow"><td>%itemname%</td><td>%itemqty%</td><td>%itemprice%</td><td><button class="deleteMaterialButton btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button></td></tr>';
+                itemTemplate = itemTemplate.replace("%itemrowid%", "addMaterialRowID" +resourceid);
+                itemTemplate = itemTemplate.replace("%itemname%", actAddItem.find(":selected").data("name"));
+                itemTemplate = itemTemplate.replace("%itemqty%", actAddItemQty.val());
+                itemTemplate = itemTemplate.replace("%itemprice%", "Php. " + totalprice);
+                $("#addMaterialItems").append(itemTemplate);
+                actAddItem.val("");
+                actAddItemQty.val("");
+                $("#addMaterialRowID" + resourceid).data('parameters',jsonObject);
+            }
+        } else {
+            showError("Item not Added", "Please select the item and the desired quantity.");
+        }
+    });
+    
+    $(document).on("click" ,".deleteMaterialButton",function() {
+        $(this).closest('.addMaterialRow').remove();
+    });
+    
+   $(document).on("click" ,"#AddMaterialButton",function() {
+       material = [];
+        $('#addMaterialItems .addMaterialRow').each(function(){
+            material.push($(this).data('parameters'));
+        });
+            jsr = {
+                    "do":"add_material_task",
+                    "taskid":$("#addMaterialTaskid").val(),
+                    "material": material,
+                    "reason": $("#addMaterialReason").val(),
+                    "projectid":ProjectID
+
+            };
+
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "backend.php");
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(jsr));
+            xhr.onload = function() {
+                xx = JSON.parse(xhr.responseText);
+                if (xx["success"]) {
+                    $("#AddMaterialModal").modal("hide");
+                    controls();
+                    showOk("Additonal Material Added", "Additonal Materials is successfully added.");
+                }
+            }
+    });
+    
+    

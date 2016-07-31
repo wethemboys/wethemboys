@@ -346,17 +346,16 @@ function getnotifications() {
 	}));
 	xhr.onload = function() {
 		notifs = JSON.parse(xhr.responseText);
+                console.log(notifs);
 		$("#notif_table").html("");
 		for (i = 0; i < notifs.length; i++) {
 			if (user["Type"] !== "client") {
 				notif_tmp = '<tr notifindex="%notifindex%"><td>%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></td></tr>';
+                                delayed_tmp = '<tr notifindex="%notifindex%"><td>%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span style="margin-left:3px;color:red"><a href="%urlmanpower%">Add Manpower</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></td></tr>';
 			} else {
 				notif_tmp = '<tr notifindex="%notifindex%"><td>%message%<br /><span style="color:gray;">%datetime%</span></td></tr>';	
 			}
-			notif_tmp = notif_tmp.replace("%notifindex%", i);
-			notif_tmp = notif_tmp.replace("%name%", notifs[i]["Username"]);
-			theDateTime = FormalDateTime(notifs[i]["TimeStamp"]);
-			notif_tmp = notif_tmp.replace("%datetime%", theDateTime[0] + " | " + theDateTime[1]);
+
 
 			minfo = JSON.parse(notifs[i]["RequestData"]);
                         console.log(minfo);
@@ -366,9 +365,13 @@ function getnotifications() {
 				break
                                 
 				case "late_task":
-					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
+                                        urldays = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=days';
+                                        urlmanpower = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=manpower';
+					delayed_tmp = delayed_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
+                                        delayed_tmp = delayed_tmp.replace("%urldays%",urldays);
+                                        notif_tmp = delayed_tmp.replace("%urlmanpower%",urlmanpower);
 				break;
-
+ID
 				case "advance_activity":
 					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is advanced by <b>"+minfo["AdvanceDays"]+" Days</b>");
 				break;
@@ -398,7 +401,10 @@ function getnotifications() {
 					notif_tmp = notif_tmp.replace("%message%", "<b>"+notifs[i]["Username"]+"</b> has created a project modification");
 				break;
 			}
-
+			notif_tmp = notif_tmp.replace("%notifindex%", i);
+			notif_tmp = notif_tmp.replace("%name%", notifs[i]["Username"]);
+			theDateTime = FormalDateTime(notifs[i]["TimeStamp"]);
+			notif_tmp = notif_tmp.replace("%datetime%", theDateTime[0] + " | " + theDateTime[1]);
 			$("#notif_table").append(notif_tmp);
 		}
 	}

@@ -55,6 +55,14 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 } else {
 	die();
 }
+
+if (isset($_GET["taskid"]) && !empty($_GET["taskid"])) {
+	$query = "SELECT task.* from task WHERE TaskID='".$mysqli->real_escape_string($_GET["taskid"])."'";
+	$qq = $mysqli->query($query);
+	if ($qq->num_rows > 0) {
+		$task = $qq->fetch_assoc();
+	} 
+} 
 ?>
 <!DOCTYPE html>
 <html>
@@ -77,7 +85,13 @@ if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 <link rel="stylesheet" href="js/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="js/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
 <style>
-#adddays, #actadditemqty{
+.toggle-title:hover,
+.toggle-title:active,
+.active { /* Added .active rule */
+    background: #000;
+    color: white;
+}
+#adddays, #actadditemqty,#addDaysDays{
 width: 50px;
 }
 .fn-gantt *,
@@ -692,40 +706,6 @@ Thank you and looking forward to seeing you.
   </div>
 </div>
 
- <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content" style="overflow:hidden">
-      <div class="modal-header" style="background-color:#D46A6A;">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="errorTitle" style="color:white;">Project not Added</h4>
-      </div>
-      <div class="modal-body">
-        <p id="errorMessage" style="font-size:12px;">Please fill up all the required fields. (all fields are required)</p>
-      </div>
-      <div class="modal-footer">
-        <a type="button" class="btn btn-danger" style="border-radius:0px;" data-dismiss="modal" >OK</a>
-      </div>
-    </div>
-  </div>
-</div>
-
- <div class="modal fade" id="okModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content" style="overflow:hidden">
-      <div class="modal-header" style="background-color:#55AA55;">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="okTitle" style="color:white;">Project not Added</h4>
-      </div>
-      <div class="modal-body">
-        <p id="okMessage" style="font-size:12px;">Please fill up all the required fields. (all fields are required)</p>
-      </div>
-      <div class="modal-footer">
-        <a id="okbtn" type="button" class="btn btn-success" style="border-radius:0px;" data-dismiss="modal" >OK</a>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="overflow:hidden">
@@ -761,7 +741,160 @@ Thank you and looking forward to seeing you.
   </div>
 </div>
 
+<div class="modal fade" id="AddDaysModal" tabindex="200" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="overflow:hidden">
+      <div class="modal-header" style="background-color:#55AA55;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="color:white;" id="myModalLabel">Add Days</h4>
+      </div>
+      <div class="modal-body">
+        <table class="form_table" style="width:100%;">
+        <tr>
+            <td><label>Start Date:</label></td><td><input id="addDaysStartdate" type="text" style="width:200px;margin-left:5px;" value="<?php echo substr($task['StartDate'],0,10); ?> " readonly="readonly"/></td>
+            <td><label>End Date:</label></td><td><input id="addDaysEnddate" type="text" style="width:200px;margin-left:5px;" value="<?php echo  substr($task['EndDate'],0,10); ?>" readonly="readonly"/> </td>
+        </tr>
+        </table>
+            <table>
+        <tr>
+            <td><label>Days:</label></td><td style="padding-left:40px;width:50px"><span><input id="addDaysDays" type="text" value="0"/></span></td>
+            <td>
+                <input id="addDaysEnddateHidden" type="hidden" value="<?php echo  substr($task['EndDate'],0,10); ?>"/>
+                <input id="addDaysTaskid" type="hidden" value="<?php echo  $task['TaskID']; ?>"/>
+            </td>
+        </tr>
+             </table>
+      </div>
+      <div class="modal-footer">
+        <button data-dismiss="modal" style="border-radius:0px;" class="btn btn-default">Cancel</button>
+        <button id="addDaysButton" style="border-radius:0px;" class="btn btn-success">Add days</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+<div class="modal fade" id="AddManpowerModal" tabindex="200" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="overflow:hidden">
+      <div class="modal-header" style="background-color:#55AA55;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="color:white;" id="myModalLabel">Add Manpower</h4>
+      </div>
+        <input id="addManpowerTaskid" type="hidden" value="<?php echo  $task['TaskID']; ?>"/>
+      <div class="modal-body">
+<div>
+                            <table class="project_table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Manpower</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th class = 'add_col_action'></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="addManpowerItems">
+                                </tbody>
+                            </table>
+                            <hr style="margin-top:5px;margin-bottom:5px;"/>
+                            <table class="table_form">
+                                <tr>
+                                    <td><label>Item Name:</label></td><td><select id="addManpowerManpower" style="width:200px;margin-left:5px;"><option value="">-- Select Item --</option></select></td>
+                                </tr>
+                                <tr>
+                                    <td><label>Quantity:</label></td><td><input id="addManpowerQuantity" type="text"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <button type="button" id="addManpowerAddButton" class="btn btn-success btn-sm">Add Item</button>
 
+      </div>
+      <div class="modal-footer">
+        <button data-dismiss="modal" style="border-radius:0px;" class="btn btn-default">Cancel</button>
+        <button id="AddManpowerButton" style="border-radius:0px;" class="btn btn-success">Add Manpower</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+<div class="modal fade" id="AddMaterialModal" tabindex="200" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="overflow:hidden">
+      <div class="modal-header" style="background-color:#55AA55;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="color:white;" id="myModalLabel">Add Additional Materials</h4>
+      </div>
+        <input id="addMaterialTaskid" type="hidden"/>
+      <div class="modal-body">
+<div>
+                            <table class="project_table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th class = 'add_col_action'></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="addMaterialItems">
+                                </tbody>
+                            </table>
+                            <hr style="margin-top:5px;margin-bottom:5px;"/>
+                            <table class="table_form">
+                                <tr>
+                                    <td><label>Item Name:</label></td><td><select id="addMaterialMaterial" style="width:200px;margin-left:5px;"><option value="">-- Select Item --</option></select></td>
+                                </tr>
+                                <tr>
+                                    <td><label>Quantity:</label></td><td><input id="addMaterialQuantity" type="text"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <button type="button" id="addMaterialAddButton" class="btn btn-success btn-sm">Add Item</button>
+                        <br/>
+                        <labe>Reason:</labe><br/>
+                        <textarea rows="5" cols="50" id="addMaterialReason"></textarea>
+                        <br/>
+      </div>
+      <div class="modal-footer">
+        <button data-dismiss="modal" style="border-radius:0px;" class="btn btn-default">Cancel</button>
+        <button id="AddMaterialButton" style="border-radius:0px;" class="btn btn-success">Add Material</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="overflow:hidden">
+      <div class="modal-header" style="background-color:#D46A6A;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="errorTitle" style="color:white;">Project not Added</h4>
+      </div>
+      <div class="modal-body">
+        <p id="errorMessage" style="font-size:12px;">Please fill up all the required fields. (all fields are required)</p>
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="btn btn-danger" style="border-radius:0px;" data-dismiss="modal" >OK</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <div class="modal fade" id="okModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="overflow:hidden">
+      <div class="modal-header" style="background-color:#55AA55;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="okTitle" style="color:white;">Project not Added</h4>
+      </div>
+      <div class="modal-body">
+        <p id="okMessage" style="font-size:12px;">Please fill up all the required fields. (all fields are required)</p>
+      </div>
+      <div class="modal-footer">
+        <a id="okbtn" type="button" class="btn btn-success" style="border-radius:0px;" data-dismiss="modal" >OK</a>
+      </div>
+    </div>
+  </div>
+</div>
 <footer>
 <p style="text-align:center;">&copy; 2016 E.V.Y. Corporation</p>
 </footer>
@@ -771,19 +904,17 @@ ProjectID = '<?php echo $project["ProjectID"];?>';
 </script>
 <script src="js/viewproj.js"></script>
 <script>
-//$( document ).ready(function() {
-//    	xhr = new XMLHttpRequest();
-//	xhr.open("POST", "backend.php");
-//	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-//	xhrd = {
-//		"do":"getprojectprogress",
-//		"projectid":ProjectID
-//	};
-//	xhr.send(JSON.stringify(xhrd));
-//	xhr.onload = function() {
-//		data = JSON.parse(xhr.responseText);
-//                updatePie(data);
-//	};
-//        });
+<?php if (isset($_GET['action'])){
+    if($_GET['action']=='days'){
+        echo '$("#AddDaysModal").modal("show");';
+        echo '$("#addDaysStartdate").datepicker({dateFormat:"yy-mm-dd"}).datepicker("disable");';
+        echo '$("#addDaysEnddate").datepicker({dateFormat:"yy-mm-dd"}).datepicker("disable");';
+        echo ' $("#addDaysDays").TouchSpin();';
+    }elseif($_GET['action']=='manpower'){
+        echo '$("#AddManpowerModal").modal("show");';
+        echo 'setTimeout(function(){getManpower()},1000);';
+    }
+}
+?>;
 </script>
 </html>
