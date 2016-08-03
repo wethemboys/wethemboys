@@ -221,6 +221,12 @@ function controls() {
 		"do":"getproject",
 		"projectid":ProjectID
 	}));
+        selected = false ;
+        if($("#control_monitor").find('.ui-state-active').length >0){
+            selectedId = $("#control_monitor").find('.ui-state-active').attr('taskid');
+//            selectedIdArray = selectedId.split("-");
+            selected =selectedId;
+        }
 	xhr.onload = function() {
 		proj = JSON.parse(xhr.responseText);
 		$("#prjnameindicator2").html(proj["Name"]);
@@ -247,13 +253,36 @@ function controls() {
 		} else {
 			$("#programmedcostindicator2").html("Php. 0.00");
 		}
-		$("#act_list").html("");
+                $("#act_list").remove();
+                $("#control_monitor").append("<div id='act_list'></div>")
+		$("#").html("");
 		for (var a = 0; a < proj["activities"].length; a++) {
-			tBlex = '<span style="margin-top:5px;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Activity Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Activity Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table>';
-			tBlex = tBlex.replace("%header%", proj["activities"][a]["Name"]);
+                    tBlex = '<h3 taskid="'+proj["activities"][a]["TaskID"]+'"><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Original Quantity<span style="color:red;font-size:10px;font-weight:normal;">/outsource</span></th><th>Updated Quantity</th><th>Used</th><th>Remaining</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+			//tBlex = '<h3><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+                      //  tBlex = '<div class="activity_task"><span style="margin-top:5px;padding-top:15px;border-top:3px #787878 solid;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+			if(parseInt(proj["activities"][a]["AdditionalDays"]) == 0 ){
+                            additionalDays = '';
+                        }else{
+                            additionalDays = '<tr><td>Additional Days </td><td>'+proj["activities"][a]["AdditionalDays"]+' </td></tr>';
+                        }
+                        
+                        tBlex = tBlex.replace("%header%",proj["activities"][a]["Activity"] +' - '+proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%actname%", proj["activities"][a]["Name"]);
 			tBlex = tBlex.replace("%startdate%", FormalDateTime(proj["activities"][a]["StartDate"])[0]);
-			tBlex = tBlex.replace("%enddate%", FormalDateTime(proj["activities"][a]["EndDate"])[0]);
+			tBlex = tBlex.replace("%enddate%", FormalDateTime(proj["activities"][a]["EndDate"])[0] +additionalDays);
+                        if(proj["activities"][a]["Done"]== 1 ){
+                            status =  'Done'
+                        }else{
+                            console.log(proj["activities"][a]["StartDate"]);
+                            status = 'In Progress'
+                            if(new Date() > new Date(proj["activities"][a]["StartDate"]))
+                            {
+                                //status = status + '<tr><td><button class="btn btn-sm btn-success addAdditionalMaterial" data-taskid="'+proj["activities"][a]["TaskID"] +'"><span class="glyphicon glyphicon-plus"></span>Add Additonal Materials</button></td></tr>';
+                            }
+                        }
+                        
+                        tBlex = tBlex.replace("%astatus%", status);
+                        
 			if (proj["activities"][a]["ProgrammedCost"] !== null && proj["activities"][a]["ProgrammedCost"] !== "0") {
 				tBlex = tBlex.replace("%pcost%", "Php. " + proj["activities"][a]["ProgrammedCost"]);
 			} else {
@@ -267,23 +296,51 @@ function controls() {
 			ActPrice = 0;
 			bLejx = "";
 			for (var b = 0; b < proj["activities"][a]["resources"].length; b++) {
-				bLej = "<tr><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
-				bLej = bLej.replace("%name%", proj["activities"][a]["resources"][b]["ResourceName"]);
-				bLej = bLej.replace("%qty%", proj["activities"][a]["resources"][b]["Quantity"]);
-				bLej = bLej.replace("%remaining%", proj["activities"][a]["resources"][b]["Remaining"]);
-				bLej = bLej.replace("%used%", proj["activities"][a]["resources"][b]["Used"]);
+                                bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%updatedqty%</td><td>%used%</td><td>%remaining%</td></tr>";
+				//bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
+				if(proj["activities"][a]["resources"][b]["ResourceType"] == 'manpower'){
+                                    used = '-';
+                                    remaining = '-';
+                                }else{
+                                    used = proj["activities"][a]["resources"][b]["Used"];
+                                    remaining = proj["activities"][a]["resources"][b]["Remaining"];
+                                }
+                                bLej = bLej.replace("%name%", proj["activities"][a]["resources"][b]["ResourceName"]);
+				bLej = bLej.replace("%qty%", proj["activities"][a]["resources"][b]["QuantityText"]);
+                                bLej = bLej.replace("%updatedqty%", proj["activities"][a]["resources"][b]["AddedQuantity"]);
+//                                bLej = bLej.replace("%qty%",quantity);
+				bLej = bLej.replace("%remaining%", remaining);
+				bLej = bLej.replace("%used%",used);
 				thePrice = parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Quantity"]);
-				bLej = bLej.replace("%pcost%", "Php. " + thePrice);
-				bLej = bLej.replace("%acost%", "Php. " + parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Used"]));
-				ActPrice += thePrice;
+//				bLej = bLej.replace("%pcost%", "Php. " + thePrice);
+//				bLej = bLej.replace("%acost%", "Php. " + parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Used"]));
+				
 				bLejx += bLej;
 			}
 			tBlex = tBlex.replace("%tbldata%", bLejx);
 			tBlex = tBlex.replace("%actprice%", "Php. " + ActPrice);
 			$("#act_list").append(tBlex);
+		
+                additional_html= '';
+		for (var e= 0; e < proj["activities"][a]["additional"].length; e++) {
+                    if( proj["activities"][a]["additional"].length ){
+                         additional_html = '<table class="table_form" style="width:100%; border-top:1px #343434 solid;"><tr style="font-weight: bold;"><td style="width:50%;">Additional Material</td><td style="width:25%";>Quantity</td><td style="width:25%;">Additional Cost</td>';
+                    }
+                    for (var f= 0; f < proj["activities"][a]["additional"][e]["items"].length; f++) {
+                        additional_html =additional_html + '<tr class="coloredtr"><td>'+ proj["activities"][a]["additional"][e]["items"][f]["ResourceName"]+'</td><td>'+ proj["activities"][a]["additional"][e]["items"][f]["Quantity"]+'</td><td>'+ proj["activities"][a]["additional"][e]["items"][f]["ResourcePrice"]+'</td>';
+                    }
+                    if( proj["activities"][a]["additional"].length ){
+                        additional_html =additional_html + "<tr style='font-weight: bold;'><td colspan=3>Reason</td></tr>";
+                        additional_html =additional_html + "<tr><td colspan=3>"+proj["activities"][a]["additional"][e]["Reason"]+"</td></tr>";
+                        $("#act_list .activity_task:last").append(additional_html);
+                    }
 		}
-		window.print();
-		window.close();
+
+            }
+//            $("#act_list").accordion({heightStyle: "content"});
+//            if(selected){
+//                $("#act_list").find('h3[taskid="'+selectedId+'"]').trigger('click');
+//            }
 	}
 }
 controls();

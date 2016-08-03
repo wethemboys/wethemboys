@@ -361,6 +361,7 @@ function getnotifications() {
 			if (user["Type"] !== "client") {
 				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
                                 delayed_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span style="margin-left:3px;color:red"><a href="%urlmanpower%">Add Manpower</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
+                                latest_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
 			} else {
 				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span></div>';	
 			}
@@ -381,7 +382,6 @@ function getnotifications() {
 				break
                                 
 				case "late_task":
-                                    console.log(user);
                                         if (user["Type"] == "client") {
                                                 notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
                                         } else {
@@ -393,7 +393,18 @@ function getnotifications() {
                                         }
                                        
 				break;
-
+				case "late_finish":
+                                        if (user["Type"] == "client") {
+                                                notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is on latest finish, delayed by<b>"+minfo["DelayDays"]+" Days </b>");
+                                        } else {
+                                                urldays = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=days&days='+minfo["DelayDays"];
+//                                                urlmanpower = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=manpower';
+                                                latest_tmp = latest_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is on latest finish, delayed by<b>"+minfo["DelayDays"]+" Days </b>");
+                                                notif_tmp = latest_tmp.replace("%urldays%",urldays);
+//                                                notif_tmp = delayed_tmp.replace("%urlmanpower%",urlmanpower);	
+                                        }
+                                       
+				break;
 				case "advance_activity":
 					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is advanced by <b>"+minfo["AdvanceDays"]+" Days</b>");
 				break;

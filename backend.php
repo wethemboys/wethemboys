@@ -705,6 +705,23 @@ switch($jsr["do"]) {
 				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_task", json_encode($kiss), $cake["ClientID"], $cake["ProjectID"], $cake["TaskID"])));
 			}
 		}
+                
+
+
+		// late notifications
+		$query = "SELECT task.*, DATEDIFF(CURDATE(), task.EndDate) as DelayDays,
+ projects.UserID as ClientID, projects.Name as ProjectName FROM task 
+ INNER JOIN projects ON task.ProjectID=projects.ProjectID 
+ WHERE Done=0 AND CURDATE()  < ADDDATE(task.EndDate,3)  and CURDATE()  > task.EndDate order by ProjectID";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			while ($cake = $qq->fetch_assoc()) {
+				$mysqli->query("DELETE FROM notifications WHERE Type='late_finish' AND TaskID='".$mysqli->real_escape_string($cake["TaskID"])."' AND ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."'");
+				$kiss = array("TaskName"=>$cake["Name"], "ProjectName"=>$cake["ProjectName"], "DelayDays"=>$cake["DelayDays"]);
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_finish", json_encode($kiss), "0", $cake["ProjectID"], $cake["TaskID"])));
+				$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID", "TaskID"), array("0", "late_finish", json_encode($kiss), $cake["ClientID"], $cake["ProjectID"], $cake["TaskID"])));
+			}
+		}                
 //
 //		// payment notification
 //		$query = "SELECT * FROM projects WHERE DateDiff(StartDate, CURDATE()) = 7";
@@ -745,9 +762,9 @@ switch($jsr["do"]) {
 			}
 		}
 		if ($_SESSION["theuser"]["Type"] == "admin" || $_SESSION["theuser"]["Type"] == "manager" || $_SESSION["theuser"]["Type"] == "engineer" || $_SESSION["theuser"]["Type"] == "architect") {
-			$query = "SELECT notifications.*, users.Name as Username FROM notifications LEFT JOIN users ON notifications.UserID=users.UserID WHERE ToUser='0'";
+			$query = "SELECT notifications.*, users.Name as Username FROM notifications LEFT JOIN users ON notifications.UserID=users.UserID WHERE ToUser='0' order by ProjectID";
 		} else {
-			$query = "SELECT notifications.*, users.Name as Username FROM notifications LEFT JOIN users ON notifications.UserID=users.UserID WHERE ToUser='".$_SESSION["theuser"]["UserID"]."'";
+			$query = "SELECT notifications.*, users.Name as Username FROM notifications LEFT JOIN users ON notifications.UserID=users.UserID WHERE ToUser='".$_SESSION["theuser"]["UserID"]."'  order by ProjectID";
 		}
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
