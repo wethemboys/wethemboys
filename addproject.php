@@ -36,7 +36,7 @@ function getCompleteType($type) {
         <script src="js/project.js"></script>
         <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
         <script src="js/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
-        <script src="js/jquery.fn.gantt.js"></script>
+        <script src="js/jquery.fn.gantt1.js"></script>
         <script src="js/jquery.bootstrap-touchspin.js"></script>
         <link href="js/prettify/prettify.min.css" rel="stylesheet" type="text/css">
         <script src="js/prettify/prettify.min.js"></script>

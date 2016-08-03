@@ -926,13 +926,15 @@ function getactivities() {
                             "from":activities[i]["StartDate"].substring(0,10),
                             "to":activities[i]["EndDate"].substring(0,10),
                             "actualTo":activities[i]["ActualEndDate"].substring(0,10),
+                            "preTo":activities[i]["PreEndDate"].substring(0,10),
                             "label":activities[i]["Name"],
                             "activity":activities[i]["Activity"],
                             "days":activities[i]["Days"],
                             "actualDays":activities[i]["ActualDays"],
                             "temporaryid":activities[i]["TaskID"],
                             "parent":activities[i]["Parent"],
-                            "done" : activities[i]["Done"]
+                            "done" : activities[i]["Done"],
+                            "addeddays" : activities[i]["AdditionalDays"]
                             };
 			$("#activityview").append(theActivity);
                         $('#temporaryid').val(activities[i]["TaskID"]);
@@ -1337,7 +1339,7 @@ function controls() {
                 $("#control_monitor").append("<div id='act_list'></div>")
 		$("#").html("");
 		for (var a = 0; a < proj["activities"].length; a++) {
-                    tBlex = '<h3 taskid="'+proj["activities"][a]["TaskID"]+'"><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Original Quantity</th><th>Updated Quantity</th><th>Used</th><th>Remaining</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+                    tBlex = '<h3 taskid="'+proj["activities"][a]["TaskID"]+'"><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Original Quantity<span style="color:red;font-size:10px;font-weight:normal;">/outsource</span></th><th>Updated Quantity</th><th>Used</th><th>Remaining</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
 			//tBlex = '<h3><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
                       //  tBlex = '<div class="activity_task"><span style="margin-top:5px;padding-top:15px;border-top:3px #787878 solid;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
 			if(parseInt(proj["activities"][a]["AdditionalDays"]) == 0 ){
@@ -1922,7 +1924,7 @@ Date.locale = {
             $('#addDaysEnddate').datepicker('setDate', end);
             
             var endproject =  new Date(projectendday );
-            endproject.setDate(endproject.getDate() + parseInt(taskDay)); 
+            endproject.setDate(endproject.getDate() + parseInt(taskDay) -1); 
             endproject.toInputFormat();
             $("#addDaysAnnotation").html("If <span style='color:black;font-weight:bold;'>"+ taskDay +"</span> days will be added, the new project End date will now be <span style='color:black;font-weight:bold;'>" + endproject.toInputFormat() + "</span>");
         }   

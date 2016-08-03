@@ -218,8 +218,8 @@ switch($jsr["do"]) {
                             $parent = $temporary_id[$tasks->parentid];
                         }
                         $query = insertsql("task", 
-                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent", "ClientNeeded","Message"),
-                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $parent,  $tasks->notify,$tasks->message));
+                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate","PreStartDate", "PreEndDate", "Days","Parent", "ClientNeeded","Message"),
+                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to,$tasks->from, $tasks->to, $tasks->days, $parent,  $tasks->notify,$tasks->message));
                         $mysqli->query($query);
                         $taskid = $mysqli->insert_id;
                         $temporary_id[$tasks->temporaryid] = $taskid;
@@ -444,7 +444,7 @@ switch($jsr["do"]) {
 			dexit(1);
 		}
 
-		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable";
+		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable order by ResourceType, ResourceName";
 		$prj = $mysqli->query($query);
 		if ($prj->num_rows > 0) {
 			$resources = array();
@@ -544,6 +544,7 @@ switch($jsr["do"]) {
 			$mysqli->query($query);
                         updateEndDate($jsr["taskid"], date('Y-m-d'));
                         $query = "update projects set EndDate = (select max(EndDate) from task where ProjectID =".$theAct["ProjectID"].")  where ProjectID =".$theAct["ProjectID"];
+                        $mysqli->query($query);
 			$progress = updatePercentage($theAct["ProjectID"],$theAct["ActivityID"]);
 			die(json_encode(array("success"=>true, "progress"=>$progress)));
 		} else {
@@ -558,6 +559,9 @@ switch($jsr["do"]) {
                 $query = "UPDATE task SET AdditionalDays= AdditionalDays + ". $jsr["days"]. ",EndDate = date('".$jsr["enddate"]."') WHERE TaskID='".$mysqli->real_escape_string($jsr["taskid"])."'";
 
                 $mysqli->query($query);
+                $query = "update projects set EndDate = (select max(EndDate) from task where ProjectID =".$theAct["ProjectID"].")  where ProjectID =".$theAct["ProjectID"];
+                $mysqli->query($query);
+                
                 updateEndDate($jsr["taskid"], $jsr["enddate"]);
                 die(json_encode(array("success"=>true)));
 

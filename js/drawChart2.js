@@ -24,6 +24,9 @@ function drawChart(){
             from = new Date(dataParameters.from).getTime();
             values.from ="/Date("+from+")/";
             
+            preTo = new Date(dataParameters.preTo).getTime();
+            values.preTo ="/Date("+preTo+")/";
+            values.addeddays =dataParameters.addeddays;
             values.actualTo= '';
             if(dataParameters.actualTo != '0000-00-00') {
                 actualTo = new Date(dataParameters.actualTo).getTime();
@@ -52,49 +55,7 @@ function drawChart(){
             sourceJson.push(mainTaskJson);
             console.log(mainTaskJson);
             
-            
-//            var latestStart= new Object();
-//            latestStart.name = '';
-//            latestStart.desc = "<span class='font-blue'>Latest Start</span>";
-//            latestStart.values = [];
-//            values = new Object();
-//            
-//            var baseFrom = new Date(dataParameters.from );
-//            baseFrom.setDate(baseFrom.getDate() +2); 
-//            from = baseFrom.getTime();
-//            values.from ="/Date("+from+")/";
-//            
-////            var baseTo = new Date(dataParameters.from );
-////            baseTo.setDate(baseTo.getDate() + 3); 
-////            to = baseTo.getTime();
-//            values.to ="/Date("+to+")/";
-//            
-//            values.label= 'Latest Start';
-//            values.customClass = "ganttRed";
-//            latestStart.values.push(values);
-//            sourceJson.push(latestStart);
-            
-//            
-//            
-//            var latestEnd= new Object();
-//            latestEnd.name = '';
-//            latestEnd.desc =  "<span class='font-red'>Latest Finish</span>";
-//            latestEnd.values = [];
-//            values = new Object();
-//            
-//            var baseFrom = new Date(dataParameters.to );
-//            baseFrom.setDate(baseFrom.getDate() -2); 
-//            from = baseFrom.getTime();
-//            values.from ="/Date("+from+")/";
-//            
-//            var baseTo = new Date(dataParameters.to );
-//            baseTo.setDate(baseTo.getDate() ); 
-//            to = baseTo.getTime();
-//            values.to ="/Date("+to+")/";
-//            values.label= 'Latest Finish';
-//            values.customClass =dataParameters.label + " - Latest Finish";
-//            latestEnd.values.push(values);
-//            sourceJson.push(latestEnd);
+
         });
 //        console.log(sourceJson.length);
         if(sourceJson.length > 0){
@@ -113,7 +74,7 @@ function drawChart(){
 //                    alert("Empty space clicked - add an item!");
                 },
                 onRender: function() {
-                        $('.row.spacer').html('<table style="margin: auto;font-weight:bold;"><tbody style="text-align: center;"><tr><td colspan="2">LEGENDS</td></tr><tr><td>Latest Start:</td><td style="background-color: #65D065;height: 15px;width: 30px;"></td></tr><tr><td>Latest Finish:</td><td style="background-color: #F88484;height: 15px;width: 30px;"></td></tr><tr><td>Dalayed:</td><td style="background-color: #FCB872;height: 15px;width: 30px;"></td></tr></tbody></table>');
+                        $('.row.spacer').html('<table style="margin: auto;font-weight:bold;"><tbody style="text-align: center;"><tr><td colspan="4">LEGENDS</td></tr><tr><td style="background-color: #65D065;height: 15px;width: 30px;"></td><td style="width:100px;">Latest Start</td><td style="background-color: #F88484;height: 15px;width: 30px;"></td><td style="width:100px;">Latest Finish</td></tr><tr><td style="background-color: #FCB872;height: 15px;width: 30px;"></td><td >Delayed</td><td style="background-color: #FBFB90;height: 15px;width: 30px;"></td><td >Days added</td></tr></tbody></table>');
 //                    if (window.console && typeof console.log === "function") {
 //                        console.log("chart rendered");
 //                    }

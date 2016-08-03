@@ -977,17 +977,6 @@
                 });
                 return bar;
             },
-            createPreBar: function (days, daysid, cls, desc, label, dataObj) {
-                var cellWidth = tools.getCellSize();
-                var barMarg = tools.getProgressBarMargin() || 0;
-                var bar = $('<div class="bar"><div class="fn-label">' + '' + '</div></div>')
-                        .addClass(cls)
-                        .css({
-                            width: ((cellWidth * days) - barMarg) 
-                        })
-                        .data("dataObj", dataObj);
-                return bar;
-            },
             
             createLatestBar: function (days, daysid, cls, desc, label, dataObj) {
                 var cellWidth = tools.getCellSize();
@@ -1069,7 +1058,6 @@
                             var _bar = null;
                             var _latestStart = null;
                             var _latestFinish = null;
-                            var _prebar = null;
                             var _extension = null;
                             var diffDays =0;
                             switch (settings.scale) {
@@ -1190,7 +1178,7 @@
 
                                 // **Days**
                                 default:
-//                                    console.log(day);
+                                    console.log(day);
                                     var dFrom = tools.genId(tools.dateDeserialize(day.from).getTime());
                                     var dTo = tools.genId(tools.dateDeserialize(day.to).getTime());
                                     if(day.actualTo){
@@ -1201,6 +1189,7 @@
                                         }
                                         
                                     }
+                                    
                                     var from = $(element).find("#dh-" + dFrom);
                                     var cFrom = from.attr("offset");
 
@@ -1250,27 +1239,6 @@
                                     var top = tools.getCellSize() * 4 + 2 + parseInt(topEl.attr("offset"), 10);
                                     _bar.css({ 'top': top, 'left': Math.floor(cFrom) ,'z-index':99 });
                                     datapanel.append(_bar);
-//                                    
-                                    if(parseInt(day.addeddays) > 0){
-                                        
-                                        var dFrom = tools.genId(tools.dateDeserialize(day.preTo).getTime());
-                                        var dTo = tools.genId(tools.dateDeserialize(day.to).getTime());
-                                       
-                                        var dl = Math.floor(((dTo / 1000) - (dFrom / 1000)) / 86400) + 1;
-                                        var from = $(element).find("#dh-" + dFrom);
-                                        var cFrom = from.attr("offset");
-
-                                    _prebar = core.createPreBar(
-                                                dl ,
-                                                day.id ? day.id : "",
-                                                day.customClass ? day.customClass : "",
-                                                day.desc ? day.desc : "",
-                                                day.label ? day.label : "",
-                                                day.dataObj ? day.dataObj : null
-                                        );
-                                        _prebar.css({ 'top': top, 'left': Math.floor(cFrom),'background-color':'#FBFB90','z-index':100 });
-                                        datapanel.append(_prebar);
-                                    }
                                     if(day.done!=1){
                                     _latestStart.css({ 'top': top, 'left': Math.floor(clateststart),'background-color':'#65D065','z-index':100 });
                                     datapanel.append(_latestStart);
@@ -1280,14 +1248,14 @@
                                     }
                                     if(day.actualDays != "0"){
                                         _extension = core.createExtensionBar(
-                                                    parseInt(day.actualDays) -parseInt(day.days) - parseInt(day.addeddays)- diffDays,
+                                                    parseInt(day.actualDays) -parseInt(day.days) - diffDays,
                                                     day.id ? day.id : "",
                                                     day.customClass ? day.customClass : "",
                                                     day.desc ? day.desc : "",
                                                     day.label ? day.label : "",
                                                     day.dataObj ? day.dataObj : null
                                             );
-                                    _extension.css({ 'top': top, 'left': parseInt(_bar.css('left') )+parseInt( _bar.width())  ,'background-color':'#FCB872' ,'z-index':97});
+                                    _extension.css({ 'top': top, 'left': parseInt(_bar.css('left') )+parseInt( _bar.width())  ,'background-color':'#FCB872' ,'z-index':98});
                                     datapanel.append(_extension);
                                     }
                                     break;
