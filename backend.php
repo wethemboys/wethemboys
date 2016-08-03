@@ -1097,8 +1097,9 @@ switch($jsr["do"]) {
         case "get_manpower_if_outsource":
 	break;
 	case "get_materials":
-                $search = " where ResourceID in (select ResourceID from task_resources where TaskID=".$jsr['taskid']." and Quantity= Used)  ";
-		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
+                $search = " where ResourceID in (select ResourceID from task_resources where TaskID=".$jsr['taskid']."  AND ( (((Remaining / Quantity) * 100 ) < 21) or (Quantity <5 AND Remaining =1) )  )  ";
+		$query = "SELECT * FROM resources".$search."  AND `Type`= 'material' ORDER BY Name DESC";
+             
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			$resources = array();
