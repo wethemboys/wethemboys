@@ -49,8 +49,9 @@ function insertsql($table, $columns, $values) {
 }
 function get_manpower_if_outsource($resourceid,$startdate,$enddate,$taskresid,$qty){
     	global $mysqli;
-                $max = 30;
-		$query = "select task.Done, task_resources.TaskResId,task_resources.Quantity,task.StartDate,task.EndDate 
+                $setMax = true;
+		$query = "select task.Done, task_resources.TaskResId,task_resources.Quantity,task.StartDate,task.EndDate
+                    ,(select Quantity from resources where resources.ResourceID ='".$resourceid."' )as `Max`
 from task_resources left join task on task_resources.TaskId = task.TaskID 
 where task_resources.ResourceID ='".$resourceid."' 
 AND '".$startdate."' BETWEEN task.StartDate AND task.EndDate
@@ -61,6 +62,12 @@ order by task_resources.TaskResId asc";
 		if ($qq->num_rows > 0) {
 			
 			while ($row = $qq->fetch_assoc()) {
+
+                            if($setMax){
+                                $max = $row['Max'];
+                                $setMax=false;
+                            }
+                            
 				if($taskresid == $row['TaskResId'])
                                     break;
                                 $max = $max - $row['Quantity'];
@@ -1011,7 +1018,8 @@ switch($jsr["do"]) {
 			while ($resource = $qq->fetch_assoc()) {
 
                                     if($resource['Type']=='manpower' || $resource['Type']=='equipment'){
-                                      $query=   "select IFNULL(SUM(task_resources.Quantity),0) as Quantity
+                                      $query=   "select IFNULL(SUM(task_resources.Quantity),0) as Taken
+                                          ,(select Quantity from resources where resources.ResourceID ='".$resource['ResourceID']."' )as `Max`
 from task_resources left join task on task_resources.TaskId = task.TaskID 
 where task_resources.ResourceID ='".$resource['ResourceID']."' 
 AND curdate() BETWEEN task.StartDate AND task.EndDate
@@ -1023,10 +1031,10 @@ $qqq = $mysqli->query($query);
 		if ($qqq->num_rows > 0) {
                         while ($row = $qqq->fetch_assoc()) {
                             
-                            if($row['Quantity']>30){
-                                $outsource =  ' <span>30 - (30/<span style="color:red;">'. abs(30 - $row['Quantity']).'</span>)</span>';
+                            if($row['Taken']>$row['Max']){
+                                $outsource =  ' <span>'.$row['Max'].' - ('.$row['Max'].'/<span style="color:red;">'. abs($row['Max'] - $row['Taken']).'</span>)</span>';
                             }else{
-                                $outsource= ' <span>30 - ('.$row['Quantity'].'/<span style="color:red;">0</span>)</span> ';
+                                $outsource= ' <span>'.$row['Max'].' - ('.$row['Taken'].'/<span style="color:red;">0</span>)</span> ';
                             }
                             $resource['outsource']=$outsource;
                         }
