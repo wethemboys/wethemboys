@@ -317,7 +317,8 @@ $("#logout_btn").on("click", function() {
 });
 
 function delnotif(cool) {
-	bc = parseInt(cool.target.parentNode.parentNode.getAttribute("notifindex"));
+    console.log(cool.target.parentNode);
+	bc = parseInt(cool.target.parentNode.getAttribute("notifindex"));
 	xhr = new XMLHttpRequest();
 	xhr.open("POST", "backend.php");
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -327,7 +328,7 @@ function delnotif(cool) {
 	}
 	xhr.send(JSON.stringify(xhrd));
 	xhr.onload = function() {
-		$(cool.target.parentNode.parentNode).remove();
+		$(cool.target.parentNode).remove();
 		showOk("Notification Deleted", "Notification Deleted Successfully");
 	}
 }
@@ -359,11 +360,11 @@ function getnotifications() {
                 header= '';
 		for (i = 0; i < notifs.length; i++) {
 			if (user["Type"] !== "client") {
-				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
-                                delayed_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span style="margin-left:3px;color:red"><a href="%urlmanpower%">Add Manpower</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
-                                latest_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
+				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;" notifindex="%notifindex%">%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
+                                delayed_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;" notifindex="%notifindex%">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span style="margin-left:3px;color:red"><a href="%urlmanpower%">Add Manpower</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
+                                latest_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;" notifindex="%notifindex%">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
 			} else {
-				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span></div>';	
+				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;" notifindex="%notifindex%">%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';	
 			}
 
 

@@ -196,7 +196,7 @@ function getCompleteType(type) {
                 ));
         xhr.onload = function () {
             resources = JSON.parse(xhr.responseText);
-            console.log(resources);
+       
         };
     }
     function getManpower() {
@@ -445,7 +445,7 @@ function showOk(title, message) {
                 itemTemplate = itemTemplate.replace("%itemprice%", "Php. " + totalprice);
                 $("#addprjitms").append(itemTemplate);
                 actAddItem.val("");
-                actAddItemQty.val("");console.log(jsonObject);
+                actAddItemQty.val("");
                 $("#actItmRowID" + resourceid).data('parameters',jsonObject);
             }
             updateItemColumn();
@@ -905,7 +905,7 @@ function getactivities() {
  
                         theActivity = theActivity.replace("%enddate%", FormalDateTime(endDate)[0]);
 			if (activities[i]["TotalPrice"] !== null) {
-				theActivity = theActivity.replace("%totalprice%", activities[i]["TotalPrice"]);
+				theActivity = theActivity.replace("%totalprice%", activities[i]["TotalPrice"].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +'.00');
 				ActTotalPrice += parseInt(activities[i]["TotalPrice"]);
 			} else {
 				theActivity = theActivity.replace("%totalprice%", "0");
@@ -1286,7 +1286,7 @@ function getallresources() {
 			tblPlate = "<tr class='coloredtr'><td>%name%</td><td>%quantity%</td><td>%price%</td></tr>";
 			tblPlate = tblPlate.replace("%name%", theResources[i]["ResourceName"]);
 			tblPlate = tblPlate.replace("%quantity%", theResources[i]["QuantityTotal"]);
-			tblPlate = tblPlate.replace("%price%", "Php. " + theResources[i]["PriceTotal"]);
+			tblPlate = tblPlate.replace("%price%", "Php. " + theResources[i]["PriceTotal"].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +'.00');
 			theTbl.append(tblPlate);
 			tPrice += parseInt(theResources[i]["PriceTotal"]);
 		}
@@ -1355,7 +1355,6 @@ function controls() {
                         if(proj["activities"][a]["Done"]== 1 ){
                             status =  'Done'
                         }else{
-                            console.log(proj["activities"][a]["StartDate"]);
                             status = 'In Progress'
                             if(new Date() > new Date(proj["activities"][a]["StartDate"]))
                             {
@@ -1902,11 +1901,10 @@ Date.locale = {
     $("#resourcescont .project_table:first thead").click(function(){
         $("#resourcescont .project_table:first tbody").slideToggle(0,function(){
         if($("#resourcescont .project_table:first tbody").is(':visible')){
-            console.log('show');
+        
             $("#resourcescont .project_table:first thead th:eq(1)").show();
             $("#resourcescont .project_table:first  thead th:eq(2)").show();
         }else{
-            console.log('hide');
             $("#resourcescont .project_table:first thead th:eq(1)").hide();
             $("#resourcescont .project_table:first  thead th:eq(2)").hide();
         }
