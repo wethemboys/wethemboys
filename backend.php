@@ -1010,7 +1010,7 @@ switch($jsr["do"]) {
 			$c = 0;
 			while ($resource = $qq->fetch_assoc()) {
 
-                                    if($resource['Type']=='manpower'){
+                                    if($resource['Type']=='manpower' || $resource['Type']=='equipment'){
                                       $query=   "select IFNULL(SUM(task_resources.Quantity),0) as Quantity
 from task_resources left join task on task_resources.TaskId = task.TaskID 
 where task_resources.ResourceID ='".$resource['ResourceID']."' 
@@ -1024,9 +1024,9 @@ $qqq = $mysqli->query($query);
                         while ($row = $qqq->fetch_assoc()) {
                             
                             if($row['Quantity']>30){
-                                $outsource =  ' <span>(30/<span style="color:red;">'. abs(30 - $row['Quantity']).'</span>)</span>';
+                                $outsource =  ' <span>30 - (30/<span style="color:red;">'. abs(30 - $row['Quantity']).'</span>)</span>';
                             }else{
-                                $outsource= ' <span>('.$row['Quantity'].')</span> ';
+                                $outsource= ' <span>30 - ('.$row['Quantity'].'/<span style="color:red;">0</span>)</span> ';
                             }
                             $resource['outsource']=$outsource;
                         }

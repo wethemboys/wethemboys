@@ -352,8 +352,7 @@ function reloadData() {
 			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%name%", resources[i]["Name"]);
 			trt = trt.replace("%price%", resources[i]["Price"]);
-                        if( resources[i]["Type"]=='manpower'){
-                            console.log(resources[i]["outsource"]);
+                        if( resources[i]["Type"]=='manpower' || resources[i]["Type"]=='equipment'){
                             	trt = trt.replace("%type%", resources[i]["Type"]+resources[i]["outsource"]);
                         }
                         else{
