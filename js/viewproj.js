@@ -350,7 +350,7 @@ if ($("#actname").val() !== "" && $("#actstartdate").val() !== "" && $("#actendd
                 } else {
 						$("#statusindicator").html("In Progress");
                 }
-					updatePie(xx["progress"]);
+					updatePie(xx);
 					$("#addActModal").modal("hide");
 					showOk("Activity Added", "The activity is successfully added.");
 					getactivities();
@@ -861,7 +861,7 @@ function deleteAct(theActt) {
 			} else {
 				$("#statusindicator").html("In Progress");
 			}
-			updatePie(delres["progress"]);
+			updatePie(delres);
 			theRow.parentNode.removeChild(theRow);
 			showOk("Activity Deleted", "The Activity was deleted successfully");
 		}
@@ -1886,7 +1886,7 @@ Date.locale = {
             } else {
                                 $("#statusindicator").html("In Progress");
             }
-                        updatePie(xx["progress"]);
+                        updatePie(xx);
                         $("#addActivityModal").modal("hide");
                         showOk("Activity Added", "The activity is successfully added.");
                         getactivities();
