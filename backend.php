@@ -1,7 +1,7 @@
 <?php
 	// PROJECT MANAGEMENT SYSTEM
 	// VERSION 1.0
-        error_reporting(0);
+//        error_reporting(0);
 // LOGIN CHECK
 session_name('evypms');
 session_start();
@@ -322,7 +322,7 @@ switch($jsr["do"]) {
 				$c = 0;
 				while ($activity = $qq->fetch_assoc()) {
 					$project["activities"][$c] = $activity;
-					$query = "SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType,resources.Price as ResourcePrice FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE TaskID='".$mysqli->real_escape_string($activity["TaskID"])."'  and Additional != 1 ";
+					$query = "SELECT task_resources.*,IFNULL((Select t.Quantity from task_resources t where t.TaskID='".$activity["TaskID"]."'  and t.Additional = 1 and t.ResourceID = task_resources.ResourceID),'-') AddedQuantity ,resources.Name as ResourceName, resources.Type as ResourceType,resources.Price as ResourcePrice FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE TaskID='".$mysqli->real_escape_string($activity["TaskID"])."'  and Additional != 1 ";
 					$project["activities"][$c]["resources"] = array();
 					$qqd = $mysqli->query($query);
 					if ($qqd->num_rows > 0) {
@@ -543,6 +543,7 @@ switch($jsr["do"]) {
      
 			$mysqli->query($query);
                         updateEndDate($jsr["taskid"], date('Y-m-d'));
+                        $query = "update projects set EndDate = (select max(EndDate) from task where ProjectID =".$theAct["ProjectID"].")  where ProjectID =".$theAct["ProjectID"];
 			$progress = updatePercentage($theAct["ProjectID"],$theAct["ActivityID"]);
 			die(json_encode(array("success"=>true, "progress"=>$progress)));
 		} else {
@@ -690,7 +691,7 @@ switch($jsr["do"]) {
 	case "get_notifications":
 
 		// late notifications
-		$query = "SELECT task.*, DATEDIFF(CURDATE(), task.EndDate) as DelayDays, projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND CURDATE() > task.EndDate";
+		$query = "SELECT task.*, DATEDIFF(CURDATE(), task.EndDate) as DelayDays, projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND CURDATE() > task.EndDate order by ProjectID";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			while ($cake = $qq->fetch_assoc()) {
@@ -1075,7 +1076,7 @@ switch($jsr["do"]) {
         case "get_manpower_if_outsource":
 	break;
 	case "get_materials":
-                $search = " WHERE Type LIKE 'material' ";
+                $search = " where ResourceID in (select ResourceID from task_resources where TaskID=".$jsr['taskid']." and Quantity= Used)  ";
 		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {

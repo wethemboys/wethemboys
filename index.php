@@ -60,7 +60,14 @@ footer {
 	color:#111;
 }
 
-
+.notif_container{
+    margin-left:-30px;
+    margin-right:-30px;
+    margin-top:-10px;
+}
+.notif_container a{
+color: blue;
+}
 .menu_bar {
 	position:relative;
     list-style-type: none;
@@ -177,8 +184,10 @@ footer {
 </nav>
 			<h5 style="text-align:center;"><span class="glyphicon glyphicon-bell"></span> Notifications:</h5>
 			<div style="width:100%;min-height:75%;background-color:white;padding:5px;border-style:solid;border-color:#c6c6c6;border-width:1px;">
-			<table id="notif_table" style="width:100%;background-color:white;font-size:12px;">
-			</table>
+<!--			<table id="notif_table" style="width:100%;background-color:white;font-size:12px;">
+			</table>-->
+                            <div id="notif_div">
+                            </div>
 			</div>
 
 
@@ -346,26 +355,33 @@ function getnotifications() {
 	}));
 	xhr.onload = function() {
 		notifs = JSON.parse(xhr.responseText);
-                console.log(notifs);
-		$("#notif_table").html("");
+		$("#notif_div").html("");
+                header= '';
 		for (i = 0; i < notifs.length; i++) {
 			if (user["Type"] !== "client") {
-				notif_tmp = '<tr notifindex="%notifindex%"><td>%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></td></tr>';
-                                delayed_tmp = '<tr notifindex="%notifindex%"><td>%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span style="margin-left:3px;color:red"><a href="%urlmanpower%">Add Manpower</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></td></tr>';
+				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
+                                delayed_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span><span style="margin-left:3px;color:red"><a href="%urldays%">Add Days</a></span><span style="margin-left:3px;color:red"><a href="%urlmanpower%">Add Manpower</a></span><span onclick="delnotif(event)" style="margin-left:3px;color:red">Delete</span></div>';
 			} else {
-				notif_tmp = '<tr notifindex="%notifindex%"><td>%message%<br /><span style="color:gray;">%datetime%</span></td></tr>';	
+				notif_tmp = '<div style="width:100%;border-bottom:1px #787878 solid;">%message%<br /><span style="color:gray;">%datetime%</span></div>';	
 			}
 
 
 			minfo = JSON.parse(notifs[i]["RequestData"]);
-                        console.log(minfo);
+                        if(header ==''){
+                            $("#notif_div").append('<h3>'+minfo["ProjectName"]+'</h3><div class="notif_container"></div>');
+                            header= notifs[i]["ProjectID"];
+                        }
+                        if(header != notifs[i]["ProjectID"]){
+                            $("#notif_div").append('<h3>'+minfo["ProjectName"]+'</h3><div class="notif_container"></div>');
+                            header= notifs[i]["ProjectID"];
+                        }
 			switch (notifs[i]["Type"]) {
 				case "late_activity":
 					notif_tmp = notif_tmp.replace("%message%", "Task: <b>"+minfo["ActivityName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
 				break
                                 
 				case "late_task":
-                                        urldays = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=days';
+                                        urldays = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=days&days='+minfo["DelayDays"];
                                         urlmanpower = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=manpower';
 					delayed_tmp = delayed_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> has been delayed by <b>"+minfo["DelayDays"]+" Days</b>");
                                         delayed_tmp = delayed_tmp.replace("%urldays%",urldays);
@@ -405,8 +421,10 @@ ID
 			notif_tmp = notif_tmp.replace("%name%", notifs[i]["Username"]);
 			theDateTime = FormalDateTime(notifs[i]["TimeStamp"]);
 			notif_tmp = notif_tmp.replace("%datetime%", theDateTime[0] + " | " + theDateTime[1]);
-			$("#notif_table").append(notif_tmp);
+			$("#notif_div").find('.notif_container:last').append(notif_tmp);
+//                        $("#notif_div").accordion();
 		}
+                $("#notif_div").accordion({heightStyle: "content"});
 	}
 }
 

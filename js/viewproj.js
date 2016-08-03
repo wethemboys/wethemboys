@@ -1301,6 +1301,12 @@ function controls() {
 		"do":"getproject",
 		"projectid":ProjectID
 	}));
+        selected = false ;
+        if($("#control_monitor").find('.ui-state-active').length >0){
+            selectedId = $("#control_monitor").find('.ui-state-active').attr('taskid');
+//            selectedIdArray = selectedId.split("-");
+            selected =selectedId;
+        }
 	xhr.onload = function() {
 		proj = JSON.parse(xhr.responseText);
 		$("#prjnameindicator2").html(proj["Name"]);
@@ -1331,7 +1337,7 @@ function controls() {
                 $("#control_monitor").append("<div id='act_list'></div>")
 		$("#").html("");
 		for (var a = 0; a < proj["activities"].length; a++) {
-                    tBlex = '<h3><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
+                    tBlex = '<h3 taskid="'+proj["activities"][a]["TaskID"]+'"><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Original Quantity</th><th>Updated Quantity</th><th>Used</th><th>Remaining</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
 			//tBlex = '<h3><span style="font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;">%actprice%</span></span></h3><div class="activity_task"><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
                       //  tBlex = '<div class="activity_task"><span style="margin-top:5px;padding-top:15px;border-top:3px #787878 solid;font-size:18px;font-weight:lighter;display:block;">%header% <span style="font-size:12px;color:gray;">%actprice%</span></span><hr style="margin-top:5px;margin-bottom:5px;"/><table class="form_table" style="min-width:300px;"><tr><td>Task Name:</td><td style="color:gray;">%actname%</td></tr><tr><td>Start Date:</td><td style="color:gray;">%startdate%</td></tr><tr><td>End Date:</td><td style="color:gray;">%enddate%</td></tr><tr><td>Programmed Cost:</td><td style="color:gray;">%pcost%</td></tr><tr><td>Actual Cost:</td><td style="color:gray;">%acost%</td></tr><tr><td>Status:</td><td style="color:gray;">%astatus%</td></tr></table><h4 style="text-align:center;font-weight:lighter">Task Resources</h4><table class="project_table" style="width:100%;"><thead><tr><th>Resource Name</th><th>Quantity</th><th>Used</th><th>Remaining</th><th>Cost</th><th>Actual Cost</th></tr></thead><tbody>%tbldata%</tbody></table></div>';
 			if(parseInt(proj["activities"][a]["AdditionalDays"]) == 0 ){
@@ -1347,7 +1353,12 @@ function controls() {
                         if(proj["activities"][a]["Done"]== 1 ){
                             status =  'Done'
                         }else{
-                            status = 'In Progress' + '<tr><td><button class="btn btn-sm btn-success addAdditionalMaterial" data-taskid="'+proj["activities"][a]["TaskID"] +'"><span class="glyphicon glyphicon-plus"></span>Add Additonal Materials</button></td></tr>';
+                            console.log(proj["activities"][a]["StartDate"]);
+                            status = 'In Progress'
+                            if(new Date() > new Date(proj["activities"][a]["StartDate"]))
+                            {
+                                status = status + '<tr><td><button class="btn btn-sm btn-success addAdditionalMaterial" data-taskid="'+proj["activities"][a]["TaskID"] +'"><span class="glyphicon glyphicon-plus"></span>Add Additonal Materials</button></td></tr>';
+                            }
                         }
                         
                         tBlex = tBlex.replace("%astatus%", status);
@@ -1365,23 +1376,21 @@ function controls() {
 			ActPrice = 0;
 			bLejx = "";
 			for (var b = 0; b < proj["activities"][a]["resources"].length; b++) {
-                                bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td></tr>";
+                                bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%updatedqty%</td><td>%used%</td><td>%remaining%</td></tr>";
 				//bLej = "<tr class='coloredtr'><td>%name%</td><td>%qty%</td><td>%used%</td><td>%remaining%</td><td>%pcost%</td><td>%acost%</td></tr>";
-//				if(proj["activities"][a]["resources"][b]["ResourceType"] == 'manpower'){
-//                                    quantity = get_outsource(proj["activities"][a]["resources"][b]["ResourceID"],
-//                                    proj["activities"][a]["StartDate"],
-//                                    proj["activities"][a]["EndDate"],
-//                                    proj["activities"][a]["resources"][b]["TaskResID"] ,
-//                                    proj["activities"][a]["resources"][b]["Quantity"]);
-//                                    console.log(quantity)
-//                                }else{
-//                                   quantity = proj["activities"][a]["resources"][b]["Quantity"];
-//                                }
+				if(proj["activities"][a]["resources"][b]["ResourceType"] == 'manpower'){
+                                    used = '-';
+                                    remaining = '-';
+                                }else{
+                                    used = proj["activities"][a]["resources"][b]["Used"];
+                                    remaining = proj["activities"][a]["resources"][b]["Remaining"];
+                                }
                                 bLej = bLej.replace("%name%", proj["activities"][a]["resources"][b]["ResourceName"]);
 				bLej = bLej.replace("%qty%", proj["activities"][a]["resources"][b]["QuantityText"]);
+                                bLej = bLej.replace("%updatedqty%", proj["activities"][a]["resources"][b]["AddedQuantity"]);
 //                                bLej = bLej.replace("%qty%",quantity);
-				bLej = bLej.replace("%remaining%", proj["activities"][a]["resources"][b]["Remaining"]);
-				bLej = bLej.replace("%used%", proj["activities"][a]["resources"][b]["Used"]);
+				bLej = bLej.replace("%remaining%", remaining);
+				bLej = bLej.replace("%used%",used);
 				thePrice = parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Quantity"]);
 //				bLej = bLej.replace("%pcost%", "Php. " + thePrice);
 //				bLej = bLej.replace("%acost%", "Php. " + parseInt(proj["activities"][a]["resources"][b]["ResourcePrice"]) * parseInt(proj["activities"][a]["resources"][b]["Used"]));
@@ -1409,6 +1418,9 @@ function controls() {
 
             }
             $("#act_list").accordion({heightStyle: "content"});
+            if(selected){
+                $("#act_list").find('h3[taskid="'+selectedId+'"]').trigger('click');
+            }
 	}
 }
 
@@ -1886,16 +1898,33 @@ Date.locale = {
     
     
     $("#resourcescont .project_table:first thead").click(function(){
-        $("#resourcescont .project_table:first tbody").slideToggle();
+        $("#resourcescont .project_table:first tbody").slideToggle(0,function(){
+        if($("#resourcescont .project_table:first tbody").is(':visible')){
+            console.log('show');
+            $("#resourcescont .project_table:first thead th:eq(1)").show();
+            $("#resourcescont .project_table:first  thead th:eq(2)").show();
+        }else{
+            console.log('hide');
+            $("#resourcescont .project_table:first thead th:eq(1)").hide();
+            $("#resourcescont .project_table:first  thead th:eq(2)").hide();
+        }
+        });
+
     });
     
     $(" #addDaysDays").on("change", function () {
         taskDay =$("#addDaysDays").val();
         taskstartday = $("#addDaysEnddateHidden").val();
+        projectendday = $("#addDaysEnddateProject").val();
         if ( taskDay != "" && taskstartday != "" ) {
             var end =  new Date(taskstartday );
             end.setDate(end.getDate() + parseInt(taskDay)); 
             $('#addDaysEnddate').datepicker('setDate', end);
+            
+            var endproject =  new Date(projectendday );
+            endproject.setDate(endproject.getDate() + parseInt(taskDay)); 
+            endproject.toInputFormat();
+            $("#addDaysAnnotation").html("If <span style='color:black;font-weight:bold;'>"+ taskDay +"</span> days will be added, the new project End date will now be <span style='color:black;font-weight:bold;'>" + endproject.toInputFormat() + "</span>");
         }   
     });
     
@@ -2010,15 +2039,15 @@ Date.locale = {
             }
     });
     $(document).on("click" ,".addAdditionalMaterial",function() {
-        getMaterials();
+        getMaterials($(this).data('taskid'));
         $("#addMaterialTaskid").val($(this).data('taskid'));
         $("#AddMaterialModal").modal('show');
     });
-    function getMaterials() {
+    function getMaterials(taskid) {
         xhrm = new XMLHttpRequest();
         xhrm.open("POST", "backend.php");
         xhrm.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhrm.send(JSON.stringify({"do": "get_materials"}));
+        xhrm.send(JSON.stringify({"do": "get_materials","taskid":taskid}));
         xhrm.onload = function () {
             resources = JSON.parse(xhrm.responseText);
             resourcesview = $("#addMaterialMaterial");

@@ -759,11 +759,21 @@ Thank you and looking forward to seeing you.
         <tr>
             <td><label>Days:</label></td><td style="padding-left:40px;width:50px"><span><input id="addDaysDays" type="text" value="0"/></span></td>
             <td>
+               
                 <input id="addDaysEnddateHidden" type="hidden" value="<?php echo  substr($task['EndDate'],0,10); ?>"/>
+                <input id="addDaysEnddateProject" type="hidden" value="<?php echo  substr($project['EndDate'],0,10); ?>"/>
                 <input id="addDaysTaskid" type="hidden" value="<?php echo  $task['TaskID']; ?>"/>
             </td>
         </tr>
+        <tr>
+        <td><label>Days Delayed:</label></td> 
+        <td style="color:red;">
+                <?php echo $_GET['days'];?>
+            </td>
+            
+        </tr>
              </table>
+          <div style="color:#787878;font-size:10px;" id="addDaysAnnotation"> </div>
       </div>
       <div class="modal-footer">
         <button data-dismiss="modal" style="border-radius:0px;" class="btn btn-default">Cancel</button>
@@ -806,6 +816,21 @@ Thank you and looking forward to seeing you.
                             </table>
                         </div>
                         <button type="button" id="addManpowerAddButton" class="btn btn-success btn-sm">Add Item</button>
+                        
+                        <div style="width:100%;">
+                            <h4>Current Manpower</h4>
+                            <table class="" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Manpower</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="addManpowerCurrent">
+                                </tbody>
+                            </table>
+
+                        </div>
 
       </div>
       <div class="modal-footer">
@@ -912,7 +937,24 @@ ProjectID = '<?php echo $project["ProjectID"];?>';
         echo ' $("#addDaysDays").TouchSpin();';
     }elseif($_GET['action']=='manpower'){
         echo '$("#AddManpowerModal").modal("show");';
-        echo 'setTimeout(function(){getManpower()},1000);';
+		$query = "SELECT task_resources.*, resources.Name as ResourceName,
+ resources.Price as ResourcePrice, resources.`Type` as ResourceType FROM task_resources
+ INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID
+ WHERE task_resources.TaskID='{$_GET['taskid']}'  and  resources.`Type` ='manpower'";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			$resources = array();
+			$c = 0;
+			while ($value = $qq->fetch_assoc()) {
+                                  
+                                    $string  = "<option data-name='" .$value["ResourceName"] . "' type='" . $value["ResourceType"] . "' price='" . $value["ResourcePrice"] . "' value='" . $value["ResourceID"] . "'>" . $value["ResourceName"] . "(".$value["ResourcePrice"].")</option>";
+                                    $tr  = "<tr class='coloredtr'><td>" .$value["ResourceName"] . "</td><td>" .$value["Quantity"] . "</td></tr>";
+                                    echo '$("#addManpowerManpower").append("'.$string.'");';
+                                    echo '$("#addManpowerCurrent").append("'.$tr.'");';
+				$c++;
+                                
+			}
+		} 
     }
 }
 ?>;
