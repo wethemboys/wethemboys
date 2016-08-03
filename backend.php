@@ -1,7 +1,7 @@
 <?php
 	// PROJECT MANAGEMENT SYSTEM
 	// VERSION 1.0
-//        error_reporting(0);
+        error_reporting(0);
 // LOGIN CHECK
 session_name('evypms');
 session_start();
