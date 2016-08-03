@@ -337,11 +337,10 @@ function controls() {
 		}
 
             }
-//            $("#act_list").accordion({heightStyle: "content"});
-//            if(selected){
-//                $("#act_list").find('h3[taskid="'+selectedId+'"]').trigger('click');
-//            }
+	window.print();
+		window.close();
 	}
+        	
 }
 controls();
 </script>
