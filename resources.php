@@ -386,7 +386,12 @@ $("#searchr").on("keydown", function() {
 			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%name%", resources[i]["Name"]);
 			trt = trt.replace("%price%", resources[i]["Price"]);
-			trt = trt.replace("%type%", resources[i]["Type"]);
+			      if( resources[i]["Type"]=='manpower' || resources[i]["Type"]=='equipment'){
+                            	trt = trt.replace("%type%", resources[i]["Type"]+resources[i]["outsource"]);
+                        }
+                        else{
+                            	trt = trt.replace("%type%", resources[i]["Type"]);
+                        }
 			theCont.append(trt);
 		}
 	}
