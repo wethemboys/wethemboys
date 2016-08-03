@@ -244,12 +244,12 @@ function controls() {
 			$("#statusindicator2").html("Completed");
 		}
 		if (proj["ActualCost"] !== null && proj["ActualCost"] !== "0") {
-			$("#actualcostindicator2").html("Php. " + proj["ActualCost"]);
+			$("#actualcostindicator2").html("Php. " + proj["ActualCost"].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +'.00');
 		} else {
 			$("#actualcostindicator2").html("Php. 0.00");
 		}
 		if (proj["ProgrammedCost"] !== null && proj["ProgrammedCost"] !== "0") {
-			$("#programmedcostindicator2").html("Php. " + proj["ProgrammedCost"]);
+			$("#programmedcostindicator2").html("Php. " + proj["ProgrammedCost"].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +'.00');
 		} else {
 			$("#programmedcostindicator2").html("Php. 0.00");
 		}
@@ -284,12 +284,12 @@ function controls() {
                         tBlex = tBlex.replace("%astatus%", status);
                         
 			if (proj["activities"][a]["ProgrammedCost"] !== null && proj["activities"][a]["ProgrammedCost"] !== "0") {
-				tBlex = tBlex.replace("%pcost%", "Php. " + proj["activities"][a]["ProgrammedCost"]);
+				tBlex = tBlex.replace("%pcost%", "Php. " + proj["activities"][a]["ProgrammedCost"].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +'.00');
 			} else {
 				tBlex = tBlex.replace("%pcost%", "Php. 0.00");
 			}
 			if (proj["activities"][a]["ActualCost"] !== null && proj["activities"][a]["ActualCost"] !== "0") {
-				tBlex = tBlex.replace("%acost%", "Php. " + proj["activities"][a]["ActualCost"]);
+				tBlex = tBlex.replace("%acost%", "Php. " + proj["activities"][a]["ActualCost"].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +'.00');
 			} else {
 				tBlex = tBlex.replace("%acost%", "Php. 0.00");
 			}

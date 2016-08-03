@@ -361,10 +361,10 @@ label {
 <td>Status:</td><td id="statusindicator" style="color:gray;"><?php echo ($project["Status"] == "1" ? "Completed" : "In Progress");?></td>
 </tr>
 <tr>
-<td>Programmed Cost:</td><td id="programmedcostindicator" style="color:gray;">Php. <?php echo ($project["ProgrammedCost"] > 0 ? $project["ProgrammedCost"] : "0.00");?></td>
+<td>Programmed Cost:</td><td id="programmedcostindicator" style="color:gray;">Php. <?php echo ($project["ProgrammedCost"] > 0 ?number_format( $project["ProgrammedCost"],2,'.',',') : "0.00");?></td>
 </tr>
 <tr>
-<td>Actual Cost:</td><td id="actualcostindicator" style="color:gray;">Php. <?php echo ($project["ProgrammedCost"] > 0 ? $project["ActualCost"] : "0.00");?></td>
+<td>Actual Cost:</td><td id="actualcostindicator" style="color:gray;">Php. <?php echo ($project["ProgrammedCost"] > 0 ? number_format( $project["ActualCost"],2,'.',',') : "0.00");?></td>
 </tr>
 </table>
 </div>

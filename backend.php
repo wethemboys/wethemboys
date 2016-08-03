@@ -618,8 +618,8 @@ switch($jsr["do"]) {
                     foreach ($activity->tasks as $tasks)
                     {
                         $query = insertsql("task", 
-                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate", "Days","Parent", "ClientNeeded"),
-                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to, $tasks->days, $tasks->parentid,  $tasks->notify));
+                                array("ProjectID","ActivityID", "Name", "StartDate", "EndDate","PreStartDate", "PreEndDate", "Days","Parent", "ClientNeeded"),
+                                array($pid,$actid, $tasks->label, $tasks->from, $tasks->to,$tasks->from, $tasks->to, $tasks->days, $tasks->parentid,  $tasks->notify));
                         $mysqli->query($query);
                         $taskid = $mysqli->insert_id;
                         
