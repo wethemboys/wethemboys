@@ -319,14 +319,17 @@ $("#add_resourcesbtn").on("click", function() {
 });
 
 function editResource(theRow) {
+    console.log(theRow);
 	modalMode = "edit";
 	$("#mdlTitle").html("Edit Resource");
 	$("#addresourcebtn").html("Edit Resource");
-	CURresID = theRow;
-	var theRow = document.getElementById(theRow+"res");
+	CURresID = $(theRow).data('resid');
+//	var theRow = document.getElementById(theRow+"res");
 	var theForm = document.getElementById("addResourceForm");
-	for (i = 0; i < theRow.childNodes.length; i++) {
-		theForm[i].value = theRow.childNodes[i].innerHTML;
+        console.log(theRow);
+	for (i = 0; i < $(theRow).find('td').length; i++) {
+            console.log($(theRow).find("td:eq('"+i+"')"));
+		theForm[i].value = $(theRow).find("td:eq('"+i+"')").data('value');
 	}
 	$("#addResource").modal("show");
 }
@@ -344,13 +347,23 @@ function reloadData() {
 		theCont = $("#resources_cont");
 		theCont.html("");
 		for (i = 0; i < resources.length; i++) {
-			trt = "<tr id='%resourceid%res' onclick=\"editResource('%rid%')\"><td>%name%</td><td>Php. %price%</td><td>%type%</td></tr>";
+			trt = "<tr id='%resourceid%res' data-resid=\"%rid%\" onclick=\"editResource(this)\"><td>%name%</td><td>Php. %price%</td><td>%type%</td></tr>";
 			trt = trt.replace("%resourceid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%name%", resources[i]["Name"]);
 			trt = trt.replace("%price%", resources[i]["Price"]);
-			trt = trt.replace("%type%", resources[i]["Type"]);
+                        if( resources[i]["Type"]=='manpower'){
+                            console.log(resources[i]["outsource"]);
+                            	trt = trt.replace("%type%", resources[i]["Type"]+resources[i]["outsource"]);
+                        }
+                        else{
+                            	trt = trt.replace("%type%", resources[i]["Type"]);
+                        }
+		
 			theCont.append(trt);
+                        $("#resources_cont").find('tr:last').find('td:eq(0)').data('value',resources[i]["Name"]);
+                        $("#resources_cont").find('tr:last').find('td:eq(1)').data('value',resources[i]["Price"]);
+                        $("#resources_cont").find('tr:last').find('td:eq(2)').data('value',resources[i]["Type"]);
 		}
 	}
 }
@@ -369,7 +382,7 @@ $("#searchr").on("keydown", function() {
 		theCont = $("#resources_cont");
 		theCont.html("");
 		for (i = 0; i < resources.length; i++) {
-			trt = "<tr id='%resourceid%res' onclick=\"editResource('%rid%')\"><td>%name%</td><td>Php. %price%</td><td>%type%</td></tr>";
+			trt = "<tr id='%resourceid%res' onclick=\"editResource(this)\"><td>%name%</td><td>Php. %price%</td><td>%type%</td></tr>";
 			trt = trt.replace("%resourceid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%name%", resources[i]["Name"]);

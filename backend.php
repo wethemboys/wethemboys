@@ -1,7 +1,7 @@
 <?php
 	// PROJECT MANAGEMENT SYSTEM
 	// VERSION 1.0
-        error_reporting(0);
+//        error_reporting(0);
 // LOGIN CHECK
 session_name('evypms');
 session_start();
@@ -1009,9 +1009,34 @@ switch($jsr["do"]) {
 			$resources = array();
 			$c = 0;
 			while ($resource = $qq->fetch_assoc()) {
-				foreach ($resource as $key=>$value) {
-					$resources[$c][$key] = $value;
-				}
+
+                                    if($resource['Type']=='manpower'){
+                                      $query=   "select IFNULL(SUM(task_resources.Quantity),0) as Quantity
+from task_resources left join task on task_resources.TaskId = task.TaskID 
+where task_resources.ResourceID ='".$resource['ResourceID']."' 
+AND curdate() BETWEEN task.StartDate AND task.EndDate
+AND curdate() BETWEEN task.StartDate AND task.EndDate
+AND task.Done != 1
+order by task_resources.TaskResId asc";
+                                      
+$qqq = $mysqli->query($query);
+		if ($qqq->num_rows > 0) {
+                        while ($row = $qqq->fetch_assoc()) {
+                            
+                            if($row['Quantity']>30){
+                                $outsource =  ' <span>(30/<span style="color:red;">'. abs(30 - $row['Quantity']).'</span>)</span>';
+                            }else{
+                                $outsource= ' <span>('.$row['Quantity'].')</span> ';
+                            }
+                            $resource['outsource']=$outsource;
+                        }
+                }
+                                    }
+//				foreach ($resource as $key=>$value) {
+//
+//					$resources[$c][$key] = $value;
+//				}
+                                array_push($resources,$resource);
 				$c++;
 			}
 			die(json_encode($resources));
