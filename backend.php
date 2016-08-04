@@ -457,7 +457,7 @@ switch($jsr["do"]) {
 			dexit(1);
 		}
 
-		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType, SUM(Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable order by ResourceType, ResourceName";
+		$query = "SELECT rtable.*, QuantityTotal * ResourcePrice as PriceTotal FROM (SELECT task_resources.*, resources.Name as ResourceName, resources.Type as ResourceType, SUM(task_resources.Quantity) as QuantityTotal, resources.Price as ResourcePrice FROM task_resources INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."' GROUP BY ResourceID) as rtable order by ResourceType, ResourceName";
 		$prj = $mysqli->query($query);
 		if ($prj->num_rows > 0) {
 			$resources = array();
