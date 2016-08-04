@@ -1165,15 +1165,23 @@ $(document).on("change" ,".editused",function() {
 //	tActResID = theRow.getAttribute("actresid");
 	theRow = $(this).closest('tr');
         ActResId = $(this).closest('tr').attr('actresid');
-        theQuantity = $(this).closest('tr').find('td:eq(1)').html();
-	if (parseInt($(this).val()) <= parseInt(theQuantity)) {
+        origQuantity = $(this).closest('tr').find('td:eq(1)').html();
+        theQuantity = $(this).closest('tr').find('td:eq(2)').html();
+//        console.log(parseInt$(this).val());
+//        console.log(parseInt($(this).closest('tr').find('td:eq(1)').html()));
+//        console.log(parseInt($(this).closest('tr').find('td:eq(2)').html()));
+        less = parseInt($(this).val());// + parseInt($(this).closest('tr').find('td:eq(1)').html()) - parseInt($(this).closest('tr').find('td:eq(2)').html());
+	console.log(less);
+        console.log(theQuantity);
+        
+        if (less <= parseInt(theQuantity)) {
 		xhr = new XMLHttpRequest();
 		xhr.open("POST", "backend.php");
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(JSON.stringify({
 			"do":"update_used_resource",
 			"taskresid":ActResId,
-			"use":$(this).val()
+			"use":less
 		}));
 		xhr.onload = function() {
 			eEe = JSON.parse(xhr.responseText);
@@ -1183,11 +1191,12 @@ $(document).on("change" ,".editused",function() {
 					showOk("Edit Request Sent", "Change Request successfully sent.");
 					$(this).val('');
 				} else {
-					tblPlate = "<td>%name%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' onchange='editused(event)' /></td><td>%remaining%</td>";
-					tblPlate = tblPlate.replace("%name%",  $(theRow).find('tr:eq(0)').html());
+					tblPlate = "<td>%name%</td><td>%originalquantity%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' onchange='editused(event)' class='editused' /></td><td>%remaining%</td>";
+					tblPlate = tblPlate.replace("%name%",  $(theRow).find('td:eq(0)').html());
+                                        tblPlate = tblPlate.replace("%originalquantity%", origQuantity);
 					tblPlate = tblPlate.replace("%quantity%", theQuantity);
-					tblPlate = tblPlate.replace("%used%", eEe["used"]);
-					tblPlate = tblPlate.replace("%remaining%", eEe["remaining"]);
+					tblPlate = tblPlate.replace("%used%", less);
+					tblPlate = tblPlate.replace("%remaining%", parseInt(theQuantity) -parseInt(less));
                                         $(theRow).html(tblPlate)
 				}
 			} 
@@ -1247,18 +1256,19 @@ function getcurrentactivity() {
 		theCont = $("#currentacts");
 		theCont.html("");
 		for (var i = 0; i < tActivity.length; i++) {
-			mmT = "<span style=\"font-size:18px;font-weight:lighter;display:block;padding-top:15px;border-top:3px #dedede solid;\">Current Task: <span style=\"font-size:12px;color:gray;font-weight:normal;\">%theactivityname%<\/span><\/span>\r\n<hr style=\"margin-top:5px;margin-bottom:5px;\"\/>\r\n<table class=\"project_table\" style=\"width:100%;border-bottom:1px solid #929292;\">\r\n<thead>\r\n<tr>\r\n<th style=\"width:40%\">Resource Name<\/th>\r\n<th style=\"width:20%\">Quantity<\/th>\r\n<th style=\"width:20%\">Used<\/th>\r\n<th style=\"width:20%\">Remaining<\/th>\r\n<\/tr>\r\n<\/thead>\r\n<tbody>\r\n%tdata%\r\n<\/tbody>\r\n<\/table>";
+			mmT = "<span style=\"font-size:18px;font-weight:lighter;display:block;padding-top:15px;border-top:3px #dedede solid;\">Current Task: <span style=\"font-size:12px;color:gray;font-weight:normal;\">%theactivityname%<\/span><\/span>\r\n<hr style=\"margin-top:5px;margin-bottom:5px;\"\/>\r\n<table class=\"project_table\" style=\"width:100%;border-bottom:1px solid #929292;\">\r\n<thead>\r\n<tr>\r\n<th style=\"width:40%\">Resource Name<\/th>\r\n<th style=\"width:15%\">Original Quantity<\/th>\r\n<th style=\"width:15%\">Quantity<\/th>\r\n<th style=\"width:15%\">Used<\/th>\r\n<th style=\"width:15%\">Remaining<\/th>\r\n<\/tr>\r\n<\/thead>\r\n<tbody>\r\n%tdata%\r\n<\/tbody>\r\n<\/table>";
 			nnT = "";
 			for (var j = 0; j < tActivity[i]["resources"].length; j++) {
 				if (user["Type"] == "client") {
-					tblPlate = "<tr actresid='%actresid%' class='coloredtr'><td>%name%</td><td>%quantity%</td><td>%used%</td><td>%remaining%</td></tr>";
+					tblPlate = "<tr actresid='%actresid%' class='coloredtr'><td>%name%</td><td>%originalquantity%</td><td>%quantity%</td><td>%used%</td><td>%remaining%</td></tr>";
 				} else {
-					tblPlate = "<tr actresid='%actresid%' class='coloredtr'><td>%name%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' class='editused' onchange='editused(event)' /></td><td>%remaining%</td></tr>";
+					tblPlate = "<tr actresid='%actresid%' class='coloredtr'><td>%name%</td><td>%originalquantity%</td><td>%quantity%</td><td><input placeholder='%used%' style='width:100px;border-style:solid;border-color:#c6c6c6;border-width:1px;' class='editused' onchange='editused(event)' /></td><td>%remaining%</td></tr>";
 				}
 				tblPlate = tblPlate.replace("%actresid%", tActivity[i]["resources"][j]["TaskResID"]);
 				tblPlate = tblPlate.replace("%name%", tActivity[i]["resources"][j]["ResourceName"]);
-				tblPlate = tblPlate.replace("%quantity%", tActivity[i]["resources"][j]["Quantity"]);
-				tblPlate = tblPlate.replace("%used%", tActivity[i]["resources"][j]["Used"]);
+                                tblPlate = tblPlate.replace("%originalquantity%", tActivity[i]["resources"][j]["Quantity"]);
+				tblPlate = tblPlate.replace("%quantity%", tActivity[i]["resources"][j]["Remaining"]);
+				tblPlate = tblPlate.replace("%used%", 0);
 				tblPlate = tblPlate.replace("%remaining%", tActivity[i]["resources"][j]["Remaining"]);
 				nnT += tblPlate;
 			}

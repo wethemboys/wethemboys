@@ -340,7 +340,7 @@ function showOk(title, message) {
 }
 
 function viewmessage(bitch) {
-	bc = parseInt(bitch.target.parentNode.parentNode.getAttribute("notifindex"));
+	bc = parseInt(bitch.target.parentNode.getAttribute("notifindex"));
 	message = JSON.parse(notifs[bc]["RequestData"]);
 	$("#subjectmsg").val(message["subject"]);
 	$("#themsg").val(message["message"]);
@@ -423,11 +423,11 @@ function getnotifications() {
 				break;
 
 				case "paymentstart":
-					notif_tmp = notif_tmp.replace("%message%", "Please pay starting 10% for the Project: <b>"+minfo["ProjectName"]+"</b>.");
+					notif_tmp = notif_tmp.replace("%message%", "A minimum payment of 10% of the total project cost is needed in order to mobilize the project: <b>"+minfo["ProjectName"]+"</b>.");
 				break;
 
 				case "paymentend":
-					notif_tmp = notif_tmp.replace("%message%", "Please pay the remaining 90% for the Project: <b>"+minfo["ProjectName"]+"</b>.");
+					notif_tmp = notif_tmp.replace("%message%", "Please pay your outstanding balance to settle your account: <b>"+minfo["ProjectName"]+"</b>.");
 				break;
 
 
@@ -438,7 +438,7 @@ function getnotifications() {
 			notif_tmp = notif_tmp.replace("%notifindex%", i);
 			notif_tmp = notif_tmp.replace("%name%", notifs[i]["Username"]);
 			theDateTime = FormalDateTime(notifs[i]["TimeStamp"]);
-			notif_tmp = notif_tmp.replace("%datetime%", theDateTime[0] + " | " + theDateTime[1]);
+			notif_tmp = notif_tmp.replace("%datetime%", theDateTime[0]);
 			$("#notif_div").find('.notif_container:last').append(notif_tmp);
 //                        $("#notif_div").accordion();
 		}
@@ -468,6 +468,26 @@ function FormalDateTime(datetime) {
     timestring = hh + ":" + timesplit[1] + " " + lvl;
     return Array(datestring, timestring);
 }
-
+function FormalDate(datetime) {
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    datetime = datetime.split(" ");
+    date = datetime[0];
+    time = datetime[1];
+    datesplit = date.split("-");
+    datestring = months[parseInt(datesplit[1]) - 1] + " " + datesplit[2] + ", " + datesplit[0];
+    timesplit = time.split(":");
+    if (parseInt(timesplit[0]) > 12) {
+        lvl = "PM";
+        hh = parseInt(timesplit[0]) - 12;
+    } else {
+        lvl = "AM";
+        hh = timesplit[0];
+        if (hh == 0) {
+            hh = "12";
+        }
+    }
+    timestring = hh + ":" + timesplit[1] + " " + lvl;
+    return Array(datestring, timestring);
+}
 </script>
 </html>

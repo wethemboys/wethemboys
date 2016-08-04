@@ -739,31 +739,31 @@ switch($jsr["do"]) {
 		}                
 //
 //		// payment notification
-//		$query = "SELECT * FROM projects WHERE DateDiff(StartDate, CURDATE()) = 7";
-//		$qq = $mysqli->query($query);
-//		if ($qq->num_rows > 0) {
-//			while ($cake = $qq->fetch_assoc()) {
-//				$ths = $mysqli->query("SELECT * FROM notifications WHERE ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."' AND Type='paymentstart'");
-//				if ($ths->num_rows <= 0) {
-//					$kiss = array("ProjectName"=>$cake["Name"]);
-//					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentstart", json_encode($kiss), $cake["UserID"], $cake["ProjectID"])));
-//					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentstart", json_encode($kiss), "0", $cake["ProjectID"])));
-//				}
-//			}
-//		}
+		$query = "SELECT * FROM projects WHERE StartDate = ADDDATE( CURDATE()  ,3) ";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			while ($cake = $qq->fetch_assoc()) {
+				$ths = $mysqli->query("SELECT * FROM notifications WHERE ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."' AND Type='paymentstart'");
+				if ($ths->num_rows <= 0) {
+					$kiss = array("ProjectName"=>$cake["Name"]);
+					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentstart", json_encode($kiss), $cake["UserID"], $cake["ProjectID"])));
+					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentstart", json_encode($kiss), "0", $cake["ProjectID"])));
+				}
+			}
+		}
 //
-//		$query = "SELECT * FROM projects WHERE DateDiff(EndDate, CURDATE()) = 7";
-//		$qq = $mysqli->query($query);
-//		if ($qq->num_rows > 0) {
-//			while ($cake = $qq->fetch_assoc()) {
-//				$ths = $mysqli->query("SELECT * FROM notifications WHERE ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."' AND Type='paymentend'");
-//				if ($ths->num_rows <= 0) {
-//					$kiss = array("ProjectName"=>$cake["Name"]);
-//					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentend", json_encode($kiss), $cake["UserID"], $cake["ProjectID"])));
-//					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentend", json_encode($kiss), "0", $cake["ProjectID"])));
-//				}
-//			}
-//		}
+		$query = "SELECT * FROM projects WHERE EndDate = ADDDATE( CURDATE()  ,3) ";
+		$qq = $mysqli->query($query);
+		if ($qq->num_rows > 0) {
+			while ($cake = $qq->fetch_assoc()) {
+				$ths = $mysqli->query("SELECT * FROM notifications WHERE ProjectID='".$mysqli->real_escape_string($cake["ProjectID"])."' AND Type='paymentend'");
+				if ($ths->num_rows <= 0) {
+					$kiss = array("ProjectName"=>$cake["Name"]);
+					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentend", json_encode($kiss), $cake["UserID"], $cake["ProjectID"])));
+					$mysqli->query(insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array("0", "paymentend", json_encode($kiss), "0", $cake["ProjectID"])));
+				}
+			}
+		}
 
 		// client needed notifications
 		$query = "SELECT task.*, projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND ClientNeeded=1 AND DateDiff(task.StartDate, CURDATE()) = 2";
@@ -811,11 +811,11 @@ switch($jsr["do"]) {
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			$theR = $qq->fetch_assoc();
-			$quantity = (int) $theR["Quantity"];
+			$quantity = (int) $theR["Remaining"];
 			$use = (int) $jsr["use"];
 			if ($use <= $quantity) {
 				$remaining = $quantity - $use;
-				$query = "UPDATE task_resources SET Used='".$mysqli->real_escape_string($use)."', Remaining='".$mysqli->real_escape_string($remaining)."' WHERE TaskResID='".$mysqli->real_escape_string($jsr["taskresid"])."'";
+				$query = "UPDATE task_resources SET Used=Used + '".$mysqli->real_escape_string($use)."', Remaining='".$mysqli->real_escape_string($remaining)."' WHERE TaskResID='".$mysqli->real_escape_string($jsr["taskresid"])."'";
 				$mysqli->query($query);
 				die(json_encode(array("success"=>true,"quantity"=>$quantity,"used"=>$use,"remaining"=>$remaining)));
 			} else {
@@ -1018,7 +1018,12 @@ switch($jsr["do"]) {
 		} else {
 			$search = " WHERE Name LIKE '%".$mysqli->real_escape_string($jsr["search"])."%' ";
 		}
-		$query = "SELECT * FROM resources".$search."ORDER BY Name DESC";
+                if (!isset($jsr["sortfield"]) || empty($jsr["sortfield"])) {
+			$sortqry = " ORDER BY Name ASC ";
+		} else {
+			$sortqry = " ORDER BY ".$mysqli->real_escape_string($jsr["sortfield"]). " " . $jsr["order"] ;
+		}
+		$query = "SELECT * FROM resources".$search.$sortqry;
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			$resources = array();
@@ -1167,9 +1172,9 @@ $qqq = $mysqli->query($query);
 		if (!isset($jsr["projectid"]) || empty($jsr["projectid"]) || !isset($jsr["commentdata"]) || empty($jsr["commentdata"])) {
 			dexit(1);
 		}
-		$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), "0"));
+		$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), "0",$jsr["projectid"]));
 		$mysqli->query($query);
-		$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), $mysqli->query("SELECT * FROM projects WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'")->fetch_assoc()["UserID"]));
+		$query = insertsql("notifications", array("UserID", "Type", "RequestData", "ToUser", "ProjectID"), array($_SESSION["theuser"]["UserID"], $jsr["do"], json_encode($jsr), $mysqli->query("SELECT * FROM projects WHERE ProjectID='".$mysqli->real_escape_string($jsr["projectid"])."'")->fetch_assoc()["UserID"]),$jsr["projectid"]);
 		$mysqli->query($query);
 		$query = insertsql("comments", array("ProjectID", "UserID", "Data"), array($jsr["projectid"], $_SESSION["theuser"]["UserID"], $jsr["commentdata"]));
 		$mysqli->query($query);

@@ -171,9 +171,9 @@ footer {
 		<div style="height:calc(100% - 100px);background-color:#ffffff;margin-top:10px;border-style:solid;border-color:#c6c6c6;border-width:1px;">
 		<table class="project_table" style="width:100%;background-color:#efefef;">
 			<tr>
-				<td>Resource Name</td>
+				<td class="sortresource" data-field ="Name" data-order="ASC">Resource Name</td>
 				<td>Price</td>
-				<td>Type</td>
+				<td class="sortresource" data-field ="Type" data-order="ASC">Type</td>
                                 <td>Quantity</td>
 			</tr>
 		</table>
@@ -372,7 +372,50 @@ function reloadData() {
 		}
 	}
 }
-
+$(document).on("click", '.sortresource',function(){
+        sort = $(this).data('field');
+        order = $(this).data('order');
+        if(order == "ASC"){
+            $(this).data('order','DESC');
+        }else{
+            $(this).data('order','ASC');
+        }
+        
+	xhr = new XMLHttpRequest();
+	xhr.open("POST", "backend.php");
+	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	xhr_do = {
+		"do":"list_resources",
+                "sortfield":sort,
+                "order" : order
+	}
+	xhr.send(JSON.stringify(xhr_do));
+	xhr.onload = function() {
+		resources = JSON.parse(xhr.responseText);
+		theCont = $("#resources_cont");
+		theCont.html("");
+		for (i = 0; i < resources.length; i++) {
+			trt = "<tr id='%resourceid%res' data-resid=\"%rid%\" onclick=\"editResource(this)\"><td>%name%</td><td>Php. %price%</td><td>%type%</td><td>%quantity%</td></tr>";
+			trt = trt.replace("%resourceid%", resources[i]["ResourceID"]);
+			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
+			trt = trt.replace("%name%", resources[i]["Name"]);
+			trt = trt.replace("%price%", resources[i]["Price"]);
+                        trt = trt.replace("%type%", resources[i]["Type"]);
+                        if( resources[i]["Type"]=='manpower' || resources[i]["Type"]=='equipment'){
+                            	trt = trt.replace("%quantity%", resources[i]["outsource"]);
+                        }
+                        else{
+                            	trt = trt.replace("%quantity%", ' ');
+                        }
+		
+			theCont.append(trt);
+                        $("#resources_cont").find('tr:last').find('td:eq(0)').data('value',resources[i]["Name"]);
+                        $("#resources_cont").find('tr:last').find('td:eq(1)').data('value',resources[i]["Price"]);
+                        $("#resources_cont").find('tr:last').find('td:eq(2)').data('value',resources[i]["Type"]);
+                        $("#resources_cont").find('tr:last').find('td:eq(3)').data('value',resources[i]["Type"]);
+		}
+	}
+});
 $("#searchr").on("keydown", function() {
 	xhr = new XMLHttpRequest();
 	xhr.open("POST", "backend.php");
