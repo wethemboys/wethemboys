@@ -1922,7 +1922,7 @@ Date.locale = {
             $('#addDaysEnddate').datepicker('setDate', end);
             
             var endproject =  new Date(projectendday );
-            endproject.setDate(endproject.getDate() + parseInt(taskDay) -1); 
+            endproject.setDate(endproject.getDate() + parseInt(taskDay) ); 
             endproject.toInputFormat();
             $("#addDaysAnnotation").html("If <span style='color:black;font-weight:bold;'>"+ taskDay +"</span> days will be added, the new project End date will now be <span style='color:black;font-weight:bold;'>" + endproject.toInputFormat() + "</span>");
         }   

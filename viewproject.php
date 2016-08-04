@@ -45,6 +45,8 @@ function FormalDateTime($datetime) {
 
 if (isset($_GET["pid"]) && !empty($_GET["pid"])) {
 	$mysqli = new mysqli("localhost", "root", "", "evypms");
+        $query = "update projects set EndDate = (select max(EndDate) from task where ProjectID =".$_GET["pid"].")  where ProjectID =".$_GET["pid"];
+        $mysqli->query($query);
 	$query = "SELECT projects.*, users.Name as ClientName, (SELECT SUM(task_resources.Used * resources.Price) as ActualCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ActualCost, (SELECT SUM(task_resources.Quantity * resources.Price) as ProgrammedCost FROM `task_resources` INNER JOIN resources ON task_resources.ResourceID=resources.ResourceID WHERE ProjectID=projects.ProjectID) as ProgrammedCost FROM projects INNER JOIN users ON projects.UserID=users.UserID WHERE ProjectID='".$mysqli->real_escape_string($_GET["pid"])."'";
 	$qq = $mysqli->query($query);
 	if ($qq->num_rows > 0) {
