@@ -710,7 +710,7 @@ switch($jsr["do"]) {
 	case "get_notifications":
 
 		// late notifications
-		$query = "SELECT task.*, DATEDIFF(CURDATE(), task.EndDate) as DelayDays, projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND CURDATE() > ADDDATE(task.EndDate,3) order by ProjectID";
+		$query = "SELECT task.*, DATEDIFF(CURDATE(), task.EndDate) -3 as DelayDays , projects.UserID as ClientID, projects.Name as ProjectName FROM task INNER JOIN projects ON task.ProjectID=projects.ProjectID WHERE Done=0 AND CURDATE() > ADDDATE(task.EndDate,3) order by ProjectID";
 		$qq = $mysqli->query($query);
 		if ($qq->num_rows > 0) {
 			while ($cake = $qq->fetch_assoc()) {
