@@ -12,11 +12,11 @@
                "equipment" : {}
            },
            "1" : {"temporaryid":2, "name" : "Excavation","days" : 12,"start" : 5,"end" : 16,"parentid":1,
-               "manpower" : {},
-               "material" : {
-                   "0" : {"id" : 3,"name" : "Sickle","quantity" : 1},
-                   "1" : {"id" : 4,"name" : "16mm Deformed Bar","quantity" : 3}
+               "manpower" : {
+                    "0" : {"id" : 1,"name" : "Foreman","quantity" : 1},
+                    "1" : {"id" : 2,"name" : "Labor","quantity" : 3}
                },
+               "material" : {},
                "equipment" : {}
            },
            "2" : {"temporaryid":3, "name" : "Soil Poisoning","days" : 5,"start" : 17,"end" : 21,"parentid":2,
