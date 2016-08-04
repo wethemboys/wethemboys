@@ -400,7 +400,7 @@ function getnotifications() {
                                         } else {
                                                 urldays = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=days&days='+minfo["DelayDays"];
 //                                                urlmanpower = 'viewproject.php?pid='+notifs[i]["ProjectID"]+'&taskid='+notifs[i]["TaskID"]+'&action=manpower';
-                                                latest_tmp = latest_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is on latest finish, delayed by<b>"+minfo["DelayDays"]+" Days </b>");
+                                                latest_tmp = latest_tmp.replace("%message%", "Task: <b>"+minfo["TaskName"]+"</b> on Project: <b>"+minfo["ProjectName"]+"</b> is on latest finish");
                                                 notif_tmp = latest_tmp.replace("%urldays%",urldays);
 //                                                notif_tmp = delayed_tmp.replace("%urlmanpower%",urlmanpower);	
                                         }
