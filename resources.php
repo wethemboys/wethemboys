@@ -35,11 +35,11 @@ if (!isset($_SESSION["theuser"])) {
 }
 
 .project_table > thead > th {
-	width:33.3%;
+	width:30%;
 }
 
 .project_table > tbody > tr > td {
-	width:33.3%;
+	width:30%;
 }
 
 .form_table td {
@@ -174,6 +174,7 @@ footer {
 				<td>Resource Name</td>
 				<td>Price</td>
 				<td>Type</td>
+                                <td>Quantity</td>
 			</tr>
 		</table>
 		<div style="overflow-y:auto;width:100%;height:calc(100% - 30px);">
@@ -208,6 +209,9 @@ footer {
       		</tr>
       		<tr>
       		<td><label>Type:</label></td><td><input style="width:250px;" name="type" type="text" /></td>
+      		</tr>
+                <tr style="display:none;">
+      		<td><label>Type:</label></td><td><input style="width:250px;" name="quanitity" type="text" /></td>
       		</tr>
       	</table>
       	</form>
@@ -347,22 +351,24 @@ function reloadData() {
 		theCont = $("#resources_cont");
 		theCont.html("");
 		for (i = 0; i < resources.length; i++) {
-			trt = "<tr id='%resourceid%res' data-resid=\"%rid%\" onclick=\"editResource(this)\"><td>%name%</td><td>Php. %price%</td><td>%type%</td></tr>";
+			trt = "<tr id='%resourceid%res' data-resid=\"%rid%\" onclick=\"editResource(this)\"><td>%name%</td><td>Php. %price%</td><td>%type%</td><td>%quantity%</td></tr>";
 			trt = trt.replace("%resourceid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%name%", resources[i]["Name"]);
 			trt = trt.replace("%price%", resources[i]["Price"]);
+                        trt = trt.replace("%type%", resources[i]["Type"]);
                         if( resources[i]["Type"]=='manpower' || resources[i]["Type"]=='equipment'){
-                            	trt = trt.replace("%type%", resources[i]["Type"]+resources[i]["outsource"]);
+                            	trt = trt.replace("%quantity%", resources[i]["outsource"]);
                         }
                         else{
-                            	trt = trt.replace("%type%", resources[i]["Type"]);
+                            	trt = trt.replace("%quantity%", ' ');
                         }
 		
 			theCont.append(trt);
                         $("#resources_cont").find('tr:last').find('td:eq(0)').data('value',resources[i]["Name"]);
                         $("#resources_cont").find('tr:last').find('td:eq(1)').data('value',resources[i]["Price"]);
                         $("#resources_cont").find('tr:last').find('td:eq(2)').data('value',resources[i]["Type"]);
+                        $("#resources_cont").find('tr:last').find('td:eq(3)').data('value',resources[i]["Type"]);
 		}
 	}
 }
@@ -386,11 +392,12 @@ $("#searchr").on("keydown", function() {
 			trt = trt.replace("%rid%", resources[i]["ResourceID"]);
 			trt = trt.replace("%name%", resources[i]["Name"]);
 			trt = trt.replace("%price%", resources[i]["Price"]);
-			      if( resources[i]["Type"]=='manpower' || resources[i]["Type"]=='equipment'){
-                            	trt = trt.replace("%type%", resources[i]["Type"]+resources[i]["outsource"]);
+			trt = trt.replace("%type%", resources[i]["Type"]);
+                        if( resources[i]["Type"]=='manpower' || resources[i]["Type"]=='equipment'){
+                            	trt = trt.replace("%quantity%", resources[i]["outsource"]);
                         }
                         else{
-                            	trt = trt.replace("%type%", resources[i]["Type"]);
+                            	trt = trt.replace("%quantity%", ' ');
                         }
 			theCont.append(trt);
 		}
