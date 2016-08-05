@@ -679,7 +679,8 @@ $("#newcommentarea").on("keypress, keyup, keydown", function(event) {
 		xhrd = {
 			"do":"add_comment",
 			"projectid":ProjectID,
-			"commentdata":event.target.value
+			"commentdata":event.target.value,
+                        "ProjectName": $('#prjnameindicator').html()
 		}
 		xhr.send(JSON.stringify(xhrd));
 		xhr.onload = function() {
