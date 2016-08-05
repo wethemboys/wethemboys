@@ -928,6 +928,7 @@ Thank you and looking forward to seeing you.
 </body>
 <script>
 ProjectID = '<?php echo $project["ProjectID"];?>';
+SESSIONUSERTYPE ='<?php echo  $_SESSION["theuser"]['Type'];?>';
 </script>
 <script src="js/viewproj.js"></script>
 <script>
