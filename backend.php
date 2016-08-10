@@ -886,18 +886,25 @@ switch($jsr["do"]) {
 	break;
 
 	case "add_resource":
-		if (!isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["price"]) || empty($jsr["price"]) || !isset($jsr["type"]) || empty($jsr["type"])) {
-			dexit(1);
+		if (!isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["type"]) || empty($jsr["type"])) {
+			echo 'bj';
+                        dexit(1);
 		}
+                if( !isset($jsr["price"]) || empty($jsr["price"]) ){
+                    $jsr["price"] =0;
+                }
 		$query = insertsql("resources", array("Name", "Price", "Type"), array($jsr["name"], $jsr["price"], $jsr["type"]));
 		$mysqli->query($query);
 		die(json_encode(array("success"=>true)));
 	break;
 
 	case "edit_resource":
-		if (!isset($jsr["resourceid"]) || empty($jsr["resourceid"]) || !isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["price"]) || empty($jsr["price"]) || !isset($jsr["type"]) || empty($jsr["type"])) {
+		if (!isset($jsr["resourceid"]) || empty($jsr["resourceid"]) || !isset($jsr["name"]) || empty($jsr["name"]) || !isset($jsr["type"]) || empty($jsr["type"])) {
 			dexit(1);
 		}
+                if( !isset($jsr["price"]) || empty($jsr["price"]) ){
+                    $jsr["price"] =0;
+                }
 		$query = updatesql("resources", array("Name", "Price", "Type"), array($jsr["name"], $jsr["price"], $jsr["type"]), array("ResourceID", $jsr["resourceid"]));
 		$mysqli->query($query);
 		die(json_encode(array("success"=>true)));

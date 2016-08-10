@@ -317,6 +317,7 @@ function showOk(title, message) {
 
 $("#add_resourcesbtn").on("click", function() {
 	modalMode = "add";
+        $("input[type='name']").val(0);
 	$("#mdlTitle").html("Add Resource");
 	$("#addresourcebtn").html("Add Resource");
 	$("#addResource").modal("show");
@@ -458,6 +459,10 @@ $("#addresourcebtn").on("click", function() {
 		theJSON["do"] = "add_resource";
 	}
 	for (i = 0; i < theForm.length; i++) {
+            if (i==3){
+                break
+            }
+            
 		if (theForm[i].value.length <= 0) {
 			submitForm = false;
 			break;
